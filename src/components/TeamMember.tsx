@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LinkedinIcon, GoogleScholarIcon } from "lucide-react";
+import { LinkedinIcon, BookOpenIcon } from "lucide-react";
 
 interface TeamMemberProps {
   name: string;
@@ -35,7 +35,7 @@ const TeamMember = ({ name, role, imageUrl, linkedinUrl, scholarUrl }: TeamMembe
           rel="noopener noreferrer"
           className="text-gray-600 hover:text-blue-600 transition-colors"
         >
-          <GoogleScholarIcon className="w-6 h-6" />
+          <BookOpenIcon className="w-6 h-6" />
         </a>
       </div>
     </div>

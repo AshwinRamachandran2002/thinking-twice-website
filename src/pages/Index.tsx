@@ -1,5 +1,5 @@
 
-import { LinkedinIcon, GoogleScholarIcon } from "lucide-react";
+import { LinkedinIcon, BookOpenIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TeamMember from "@/components/TeamMember";
 
