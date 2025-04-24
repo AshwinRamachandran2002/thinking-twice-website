@@ -1,9 +1,19 @@
-
+import React from 'react';
 import { LinkedinIcon, BookOpenIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TeamMember from "@/components/TeamMember";
 
 const Index = () => {
+  // Image placeholders with Unsplash URLs
+  const solutionImages = [
+    'https://images.unsplash.com/photo-1618770706760-5b7154d3cfcd',
+    'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
+    'https://images.unsplash.com/photo-1616161560015-6aa4bd5a28b6',
+    'https://images.unsplash.com/photo-1461749280684-dccba630e2f6',
+    'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d',
+    'https://images.unsplash.com/photo-1518770660439-4636190af475'
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -33,8 +43,19 @@ const Index = () => {
       <section className="section-padding">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">Our Solution</h2>
-          <div className="bg-gray-200 rounded-lg p-4 aspect-video flex items-center justify-center">
-            <p className="text-gray-600">[Placeholder] Upload product demo video</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {solutionImages.map((imageUrl, index) => (
+              <div 
+                key={index} 
+                className="bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow"
+              >
+                <img 
+                  src={imageUrl} 
+                  alt={`Solution demonstration ${index + 1}`} 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+            ))}
           </div>
         </div>
       </section>
