@@ -15,7 +15,12 @@ const MeetingScheduler = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Meeting request submitted:', { name, email, company, message });
-    // In a real implementation, you would send this data to your backend or a service like Calendly
+    // create a meeting on calendly
+    // Optional: Pre-fill Calendly info using query parameters
+    const calendlyUrl = `https://calendly.com/ashwinramachandrang/30min?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&a1=${encodeURIComponent(company)}&a2=${encodeURIComponent(message)}`;
+
+    window.open(calendlyUrl, '_blank'); // Open in new tab or use window.location.href to redirect
+
     setSubmitted(true);
   };
 
