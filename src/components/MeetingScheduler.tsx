@@ -24,7 +24,7 @@ const MeetingScheduler = () => {
       <div className="bg-white p-8 rounded-lg shadow-lg text-center">
         <h3 className="text-xl font-semibold mb-4">Thank you for your interest!</h3>
         <p className="text-gray-600">
-          We've received your request and will be in touch shortly to schedule a meeting.
+          We've received your request and will be in touch shortly to schedule a demo of Context Fort's security layer.
         </p>
       </div>
     );
@@ -32,6 +32,9 @@ const MeetingScheduler = () => {
 
   return (
     <div className="bg-white p-8 rounded-lg shadow-lg">
+      <p className="text-gray-600 mb-6">
+        Interested in securing your MCP clients? Let's discuss how Context Fort can help protect your systems from prompt injection attacks and unauthorized access.
+      </p>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -76,20 +79,20 @@ const MeetingScheduler = () => {
         </div>
         <div>
           <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-            Message (optional)
+            How are you using MCP clients today? (optional)
           </label>
           <Textarea
             id="message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Tell us about your specific needs or questions"
+            placeholder="Tell us about your specific needs or security concerns"
             rows={4}
           />
         </div>
         <div className="flex justify-center">
           <Button type="submit" className="bg-purple-600 hover:bg-purple-700 flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Schedule a Call
+            Schedule a Demo
           </Button>
         </div>
       </form>
