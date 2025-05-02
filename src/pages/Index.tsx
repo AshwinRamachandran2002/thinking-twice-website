@@ -1,19 +1,10 @@
+
 import React from 'react';
-import { LinkedinIcon, BookOpenIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { LinkedinIcon, BookOpenIcon, TwitterIcon, GithubIcon } from "lucide-react";
 import TeamMember from "@/components/TeamMember";
+import MeetingScheduler from "@/components/MeetingScheduler";
 
 const Index = () => {
-  // Image placeholders with Unsplash URLs
-  const solutionImages = [
-    'https://images.unsplash.com/photo-1618770706760-5b7154d3cfcd',
-    'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
-    'https://images.unsplash.com/photo-1616161560015-6aa4bd5a28b6',
-    'https://images.unsplash.com/photo-1461749280684-dccba630e2f6',
-    'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d',
-    'https://images.unsplash.com/photo-1518770660439-4636190af475'
-  ];
-
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -24,39 +15,29 @@ const Index = () => {
         <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-8">
           [Your Mission Statement] Empowering organizations to identify and neutralize threats through advanced AI-driven analysis
         </p>
-        <Button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-6 text-lg">
-          Get Started
-        </Button>
       </section>
 
       {/* Problem Section */}
       <section className="section-padding bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">The Problem</h2>
-          <div className="bg-gray-200 rounded-lg p-4 aspect-video flex items-center justify-center">
-            <p className="text-gray-600">[Placeholder] Upload threat recording demonstration</p>
+          <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+            <iframe 
+              src="https://drive.google.com/file/d/1sSNzBGDHqhYpK5ia1rSSgc_byV12xHMP/preview" 
+              className="absolute top-0 left-0 w-full h-full border-0"
+              allow="autoplay; fullscreen" 
+              allowFullScreen
+              title="Threat demonstration"
+            ></iframe>
           </div>
         </div>
       </section>
 
-      {/* Solution Section */}
+      {/* Meeting Scheduler Section */}
       <section className="section-padding">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Solution</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {solutionImages.map((imageUrl, index) => (
-              <div 
-                key={index} 
-                className="bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow"
-              >
-                <img 
-                  src={imageUrl} 
-                  alt={`Solution demonstration ${index + 1}`} 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-            ))}
-          </div>
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">Schedule a Sales Call</h2>
+          <MeetingScheduler />
         </div>
       </section>
 
@@ -71,6 +52,8 @@ const Index = () => {
               imageUrl="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&w=300"
               linkedinUrl="#"
               scholarUrl="#"
+              twitterUrl="#"
+              githubUrl="#"
             />
             <TeamMember
               name="[Team Member 2]"
@@ -78,6 +61,8 @@ const Index = () => {
               imageUrl="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&w=300"
               linkedinUrl="#"
               scholarUrl="#"
+              twitterUrl="#"
+              githubUrl="#"
             />
             <TeamMember
               name="[Team Member 3]"
@@ -85,6 +70,8 @@ const Index = () => {
               imageUrl="https://images.unsplash.com/photo-1519345182560-3f2917c472ef?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&w=300"
               linkedinUrl="#"
               scholarUrl="#"
+              twitterUrl="#"
+              githubUrl="#"
             />
           </div>
         </div>
