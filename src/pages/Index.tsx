@@ -12,7 +12,7 @@ const Index = () => {
           Context <span className="gradient-text">Fort</span>
         </h1>
         <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-8">
-          The first security layer purpose-built for Model Context Protocol clients, enforcing user-intent-driven access control
+          The first security layer purpose-built for Model Context Protocol clients
         </p>
       </section>
 
@@ -22,10 +22,7 @@ const Index = () => {
           <h2 className="text-3xl font-bold text-center mb-12">The Problem</h2>
           <div className="mb-8 text-gray-600 text-lg max-w-3xl mx-auto">
             <p className="mb-4">
-              Model Context Protocol (MCP) clients—Modern IDEs and Enterprise Copilots can now access privileged SaaS tools (CRMs, internal APIs, data lakes). While this unlocks powerful new workflows, it also introduces a dangerous new attack surface.
-            </p>
-            <p>
-              These MCP clients often hold keys to the kingdom—and today, there's no granular, intent-aware security layer ensuring they only do what the end-user truly intended. The result? They're highly susceptible to prompt injection, tool misuse, and unauthorized access.
+              Model Context Protocol (MCP) clients—Modern IDEs and Enterprise Copilots can now access privileged SaaS tools (CRMs, internal APIs, data lakes). The result? They're highly susceptible to prompt injection, tool misuse, and unauthorized access.
             </p>
           </div>
           <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
@@ -52,10 +49,10 @@ const Index = () => {
       <section className="section-padding bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">Our Team</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             <TeamMember
               name="Ashwin Ramachandran"
-              role="Co-Founder"
+              role="CEO"
               imageUrl="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&w=300"
               linkedinUrl="https://linkedin.com/in/"
               scholarUrl="https://scholar.google.com/"
@@ -64,8 +61,17 @@ const Index = () => {
             />
             <TeamMember
               name="Prof. Earlence Fernandes"
-              role="Co-Founder & Researcher"
+              role="Chief Research Scientist"
               imageUrl="https://images.unsplash.com/photo-1519345182560-3f2917c472ef?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&w=300"
+              linkedinUrl="https://linkedin.com/in/"
+              scholarUrl="https://scholar.google.com/"
+              twitterUrl="https://twitter.com/"
+              githubUrl="https://github.com/"
+            />
+            <TeamMember
+              name="Harshvardhan"
+              role="CTO"
+              imageUrl="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&w=300"
               linkedinUrl="https://linkedin.com/in/"
               scholarUrl="https://scholar.google.com/"
               twitterUrl="https://twitter.com/"
@@ -83,6 +89,9 @@ const Index = () => {
               </li>
               <li>
                 <strong>Professor Earlence Fernandes</strong> (UC San Diego) - Security researcher since 2010. Led the team that did the "Stop sign" attack for computer vision (featured at the Science Museum in London); hacked Tour De France bikes showcasing a new form of wireless doping in sport; discovered information leakage in Google's Gemini fine-tuning service and demonstrated automated data exfiltration attacks on Mistral.
+              </li>
+              <li>
+                <strong>Harshvardhan</strong> - 
               </li>
             </ul>
           </div>
