@@ -4,18 +4,24 @@
   <meta charset="utf-8">
   <title>Redirecting...</title>
   <script>
-    // Get the current path excluding the base path
-    const path = window.location.pathname.replace(/^\/thinking-twice-website/, '');
+    // Check if we're on a custom domain or GitHub Pages
+    const isCustomDomain = !window.location.hostname.includes('github.io');
+    const basePath = isCustomDomain ? '' : '/thinking-twice-website';
+    
+    // Get the current path excluding the base path if necessary
+    const path = isCustomDomain 
+      ? window.location.pathname 
+      : window.location.pathname.replace(new RegExp(`^${basePath}`), '');
     
     // Store the path for use after redirect
     sessionStorage.setItem('redirect', path);
     
-    // Redirect to the base URL
-    window.location.href = '/thinking-twice-website/';
+    // Redirect to the appropriate base URL
+    window.location.href = `${basePath}/`;
   </script>
 </head>
 <body>
   <h1>Redirecting...</h1>
-  <p>If you are not redirected automatically, <a href="/thinking-twice-website/">click here</a>.</p>
+  <p>If you are not redirected automatically, <a href="/">click here</a>.</p>
 </body>
 </html>
