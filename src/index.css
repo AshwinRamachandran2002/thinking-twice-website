@@ -98,6 +98,13 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  a {
+    @apply text-blue-600 no-underline;
+  }
+  a:hover {
+    @apply underline;
+  }
 }
 
 @layer base {
