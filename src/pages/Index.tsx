@@ -15,7 +15,7 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       {/* Hero Section - Compact version */}
       <section className="section-padding flex flex-col items-center justify-center min-h-[30vh] text-center py-8">
-        <h1 className="text-2xl md:text-4xl font-bold mb-2">
+        <h1 className="text-6xl md:text-6xl font-bold mb-2">
           Context <span className="gradient-text">Fort</span>
         </h1>
         <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-6">
