@@ -126,7 +126,11 @@ No more clicking through countless pages in Shopify or other web apps to find wh
               scholarUrl="https://scholar.google.com/citations?user=y7H-6IgAAAAJ&hl=en"
               twitterUrl="https://x.com/ashwinram2002"
               githubUrl="https://github.com/AshwinRamachandran2002/"
-              bio="Published at top Machine Learning conferences (NeurIPS and ICLR). Saved 1700 SWE hours at Google during his internship by automating code migration. (Masters, UC San Diego; B.Tech, CSE, IIT Bombay)"
+              bio={
+              <>
+              Published at top Machine Learning conferences (NeurIPS and ICLR). Saved 1700 SWE hours at Google during his internship by automating code migration. (Masters, UC San Diego; B.Tech, CSE, IIT Bombay)
+              </>
+              } 
             />
             
             <TeamMember
@@ -137,7 +141,13 @@ No more clicking through countless pages in Shopify or other web apps to find wh
               scholarUrl="https://scholar.google.com/citations?user=OSPeHGAAAAAJ&hl=en"
               twitterUrl="https://x.com/earlencef"
               githubUrl="https://github.com/earlence-security"
-              bio="Security researcher since 2010. Led the team that did the 'Stop sign' attack for computer vision (featured at the Science Museum in London). Hacked Tour De France bikes showcasing a new form of wireless doping in sport; discovered information leakage in Google's Gemini fine-tuning service and demonstrated automated data exfiltration attacks on Mistral. (Assistant Professor at UC San Diego"
+              bio={
+                <>
+                  Earlence has done work in machine learning security since before it was cool. He led the team that did the
+                  <a href="https://x.com/EarlenceF/status/1158768185262432257"> Stop sign </a>
+                  attack for computer vision (featured at the Science Museum in London and in the opening chapter of <a href="https://www.amazon.com/Not-Bug-But-Sticker-Learning/dp/1119883989">"Not with a bug, but with a sticker"</a>: Attacks on machine learning systems and what to do about them). He recently demonstrated vulnerabilities in <a href="https://www.wired.com/story/shimano-wireless-bicycle-shifter-jamming-replay-attacks/"> Tour De France </a>bikes showcasing a new form of wireless doping in sport. He also discovered information leakages in <a href="https://arstechnica.com/security/2025/03/gemini-hackers-can-deliver-more-potent-attacks-with-a-helping-hand-from-gemini/"> Google's Gemini </a>fine-tuning service and demonstrated automated data exfiltration attacks on <a href="https://www.wired.com/story/ai-imprompter-malware-llm/"> Mistral's LeChat </a>agent. (Assistant Professor at UC San Diego)
+                </>
+              }
               imageOnRight={true}
             />
             
@@ -149,7 +159,11 @@ No more clicking through countless pages in Shopify or other web apps to find wh
               scholarUrl="https://scholar.google.com/citations?hi=en&user=ECWdNxIAAAAJ"
               twitterUrl="https://x.com/Harshva90132589"
               githubUrl="https://github.com/draco976"
-              bio="Published at ICML, and represented IIT Bombay at the ICPC World Finals. (Masters, Stanford; B.Tech, CSE, IIT Bombay)"
+              bio={
+              <>
+                Published at ICML, and represented IIT Bombay at the ICPC World Finals. (Masters, Stanford; B.Tech, CSE, IIT Bombay)
+              </>
+              }
             />
           </div>
           

@@ -9,7 +9,7 @@ interface TeamMemberProps {
   scholarUrl: string;
   twitterUrl: string;
   githubUrl: string;
-  bio?: string;
+  bio?: React.ReactNode;
   imageOnRight?: boolean; // New prop to control image position
 }
 
@@ -43,8 +43,13 @@ const TeamMember = ({
         <p className="text-gray-600 mb-4 text-center md:text-left">{role}</p>
         
         {/* Bio text if provided */}
-        {bio && <p className="text-gray-600 mb-4">{bio}</p>}
+        {/* {bio && <p className="text-gray-600 mb-4">{bio}</p>} */}
+        <p className="inline">
+          {bio}
+        </p>
         
+        <br></br>
+
         <div className="flex space-x-4 justify-center md:justify-start">
           <a
             href={linkedinUrl}
