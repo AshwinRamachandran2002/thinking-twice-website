@@ -38,7 +38,7 @@ const MeetingScheduler = () => {
   return (
     <div className="bg-white p-8 rounded-lg shadow-lg">
       <p className="text-gray-600 mb-6">
-        Interested in securing your MCP clients? Let's discuss how Context Fort can help protect your systems from prompt injection attacks and unauthorized access.
+        Interested in securing your MCP clients? Let's discuss how Context Fort can help protect your systems.
       </p>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
