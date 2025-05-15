@@ -1,18 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" href="/assets/favicon-D0gqGUcq.ico" type="image/x-icon" />
-  <link rel="shortcut icon" href="/assets/favicon-D0gqGUcq.ico" type="image/x-icon" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ContextFort</title>
-  <script type="module" crossorigin src="/assets/index-BYSqP1Jn.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-DCSf-23G.css">
+  <meta charset="utf-8">
+  <title>Redirecting...</title>
+  <script>
+    // Check if we're on a custom domain or GitHub Pages
+    const isCustomDomain = !window.location.hostname.includes('github.io');
+    const basePath = isCustomDomain ? '' : '/thinking-twice-website';
+    
+    // Get the current path excluding the base path if necessary
+    const path = isCustomDomain 
+      ? window.location.pathname 
+      : window.location.pathname.replace(new RegExp(`^${basePath}`), '');
+    
+    // Store the path for use after redirect
+    sessionStorage.setItem('redirect', path);
+    
+    // Redirect to the appropriate base URL
+    window.location.href = `${basePath}/`;
+  </script>
 </head>
-
 <body>
-  <div id="root"></div>
+  <h1>Redirecting...</h1>
+  <p>If you are not redirected automatically, <a href="/">click here</a>.</p>
 </body>
-
 </html>
