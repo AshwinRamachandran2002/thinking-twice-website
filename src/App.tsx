@@ -4,14 +4,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-<<<<<<< HEAD
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
-=======
-import NotFound from "./pages/NotFound";
 import GetApiAccess from "./pages/GetApiAccess";
->>>>>>> recover-branch
 import Success from "./pages/Success";
+import ApiDocs from "./pages/ApiDocs";
 
 const queryClient = new QueryClient();
 
@@ -26,12 +23,10 @@ const App = () => (
       <BrowserRouter basename={basename}>
         <Routes>
           <Route path="/" element={<Index />} />
-<<<<<<< HEAD
           <Route path="//contact" element={<Contact />} />
-=======
           <Route path="/get-api-access" element={<GetApiAccess />} />
->>>>>>> recover-branch
           <Route path="/success" element={<Success />} />
+          <Route path="/api-docs" element={<ApiDocs />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

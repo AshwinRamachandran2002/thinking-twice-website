@@ -178,4 +178,22 @@ app.get('/api/filter', validateApiKey, (req: RequestWithUser, res: express.Respo
   res.json({ message: 'This is a protected endpoint', user: req.user });
 });
 
+// Test endpoint for security validation
+app.post('/api/test-security', validateApiKey, (req: RequestWithUser, res: express.Response) => {
+  try {
+    // Simple test response
+    res.json({ 
+      success: true,
+      message: 'Security validation successful',
+      userInfo: {
+        email: req.user?.email,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('Error in security test:', error);
+    res.status(500).json({ error: 'Internal server error during security test' });
+  }
+});
+
 export default app;
