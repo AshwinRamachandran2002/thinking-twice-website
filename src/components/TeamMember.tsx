@@ -1,5 +1,9 @@
 import React from 'react';
+<<<<<<< HEAD
 import { LinkedinIcon, BookOpenIcon, TwitterIcon, GithubIcon, AwardIcon, GraduationCapIcon, BriefcaseIcon } from "lucide-react";
+=======
+import { LinkedinIcon, BookOpenIcon, TwitterIcon, GithubIcon } from "lucide-react";
+>>>>>>> recover-branch
 
 interface TeamMemberProps {
   name: string;
@@ -10,6 +14,7 @@ interface TeamMemberProps {
   twitterUrl: string;
   githubUrl: string;
   bio?: React.ReactNode;
+<<<<<<< HEAD
   achievements?: {icon?: string; text: React.ReactNode}[];
   featuredAchievement?: {
     title: string;
@@ -17,6 +22,9 @@ interface TeamMemberProps {
     imageUrl?: string;
   };
   imageOnRight?: boolean;
+=======
+  imageOnRight?: boolean; // New prop to control image position
+>>>>>>> recover-branch
 }
 
 const TeamMember = ({ 
@@ -28,6 +36,7 @@ const TeamMember = ({
   twitterUrl, 
   githubUrl,
   bio,
+<<<<<<< HEAD
   achievements = [],
   featuredAchievement,
   imageOnRight = false
@@ -50,6 +59,15 @@ const TeamMember = ({
       {/* Show image on left for mobile if it's Earlence, or if imageOnRight is false */}
       {(!imageOnRight || isEarlence) && (
         <div className={`${isEarlence ? 'block md:hidden' : ''} md:w-1/3 flex justify-center`}>
+=======
+  imageOnRight = false // Default to image on left
+}: TeamMemberProps) => {
+  return (
+    <div className="flex flex-col md:flex-row items-center md:items-start gap-8 w-full mb-12">
+      {/* Conditionally render based on imageOnRight prop */}
+      {!imageOnRight && (
+        <div className="md:w-1/3 flex justify-center">
+>>>>>>> recover-branch
           <img
             src={imageUrl}
             alt={name}
@@ -63,6 +81,7 @@ const TeamMember = ({
         <h3 className="text-2xl font-semibold mb-1 text-center md:text-left">{name}</h3>
         <p className="text-gray-600 mb-4 text-center md:text-left">{role}</p>
         
+<<<<<<< HEAD
         {/* Enhanced bio display */}
         {bio && (
           <div className="mb-6 bg-gray-50 rounded-lg p-5 border border-gray-200 shadow-sm">
@@ -111,6 +130,17 @@ const TeamMember = ({
         )}
         
         <div className="flex space-x-4 justify-center md:justify-start mt-4">
+=======
+        {/* Bio text if provided */}
+        {/* {bio && <p className="text-gray-600 mb-4">{bio}</p>} */}
+        <p className="inline">
+          {bio}
+        </p>
+        
+        <br></br>
+
+        <div className="flex space-x-4 justify-center md:justify-start">
+>>>>>>> recover-branch
           <a
             href={linkedinUrl}
             target="_blank"
@@ -150,9 +180,15 @@ const TeamMember = ({
         </div>
       </div>
       
+<<<<<<< HEAD
       {/* Image on right for desktop if specified, except for Earlence */}
       {(imageOnRight || isEarlence) && (
         <div className={`${isEarlence ? 'hidden md:block' : ''} md:w-1/3 flex justify-center`}>
+=======
+      {/* Image on right if specified */}
+      {imageOnRight && (
+        <div className="md:w-1/3 flex justify-center">
+>>>>>>> recover-branch
           <img
             src={imageUrl}
             alt={name}
