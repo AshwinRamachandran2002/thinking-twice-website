@@ -38,14 +38,20 @@ const FlowDot = ({
   bend,
   label,
   type,
-  cloudPosition
+  cloudPosition,
+    cloudSet,
+    delay = 0,
+  
 }: {
   from: any,
   to: any,
   bend: 'up' | 'down',
   label: string,
   type: 'context' | 'action',
-  cloudPosition: 'top' | 'bottom'
+  cloudPosition: 'top' | 'bottom',
+  cloudSet: string[],
+delay: number
+
 }) => {
     const [t, setT] = useState(0);
     const [paused, setPaused] = useState(false);
@@ -56,43 +62,52 @@ const FlowDot = ({
     const speed = 1 / (duration / 16);
     const opacity = t < 0.2 ? t / 0.2 : t > 0.8 ? (1 - t) / 0.2 : 1;
 
-  useEffect(() => {
-    let frameId: number;
+useEffect(() => {
+  let frameId: number;
+  let started = false;
 
-    const loop = () => {
-      if (!paused) {
-        setT(prev => {
-          const nextT = prev + speed;
-          if (Math.abs(nextT - 0.5) < speed / 1.5) {
-            setPaused(true);
-            setShowCloud(true);
-            setTimeout(() => {
-              setShowCloud(false);
-              setTimeout(() => setPaused(false), 100);
-            }, 2000);
-          }
-if (nextT >= 1) {
-  setPaused(true);
-  setTimeout(() => {
-    setColor(getRandomColor());
-    setT(0); // reset to start
-    setPaused(false);
-  }, 1000); // 1s pause before restarting
-  return prev; // hold at end until reset
-}
-
-return nextT;
-        });
-      }
-      frameId = requestAnimationFrame(loop);
-    };
-
+  const loop = () => {
+    if (!started) return;
+    if (!paused) {
+      setT(prev => {
+        const nextT = prev + speed;
+        if (Math.abs(nextT - 0.5) < speed / 1.5) {
+          setPaused(true);
+          setShowCloud(true);
+          setTimeout(() => {
+            setShowCloud(false);
+            setTimeout(() => setPaused(false), 100);
+          }, 2000);
+        }
+        if (nextT >= 1) {
+          setPaused(true);
+          setTimeout(() => {
+            setColor(getRandomColor());
+            setT(0);
+            setPaused(false);
+          }, 1000);
+          return prev;
+        }
+        return nextT;
+      });
+    }
     frameId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(frameId);
-  }, [paused]);
+  };
+
+  const start = () => {
+    started = true;
+    loop();
+  };
+
+  const timeoutId = setTimeout(start, delay);
+  return () => {
+    clearTimeout(timeoutId);
+    cancelAnimationFrame(frameId);
+  };
+}, [paused, delay]);
 
   const { x, y } = getQuadraticBezierPoint(t, from, mid, to);
-  const cloudTexts = getCloudText(color, type);
+const cloudTexts = cloudSet.length ? cloudSet : getCloudText(color, type);
 
   return (
     <>
@@ -130,6 +145,38 @@ return nextT;
 
 const FlowDiagram = () => {
   const dotsPerDirection = 1;
+const dotConfigs = [
+  {
+    key: "context-dot",
+    from: integrationsBoxPos,
+    to: agentPos,
+    bend: "up",
+    label: "Context",
+    type: "context",
+    cloudPosition: "top",
+    delay: 0,
+    cloudSet: [
+      "🟢 Clean Intent",
+      "🟢 Verified Input",
+      "🟢 Context Secure"
+    ],
+  },
+  {
+    key: "action-dot",
+    from: agentPos,
+    to: integrationsBoxPos,
+    bend: "down",
+    label: "Action",
+    type: "action",
+    cloudPosition: "bottom",
+    delay: 1000,
+    cloudSet: [
+      "🟢 Safe Action",
+      "🟢 Logged & Sent",
+      "🟢 Executed Normally"
+    ],
+  }
+];
 
   return (
     <div className="relative w-full h-[300px] bg-slate-900 rounded-xl border border-slate-700 p-8 overflow-hidden">
@@ -157,25 +204,11 @@ const FlowDiagram = () => {
           strokeWidth="2"
         />
       </svg>
-<FlowDot
-  key="context-dot"
-  from={integrationsBoxPos}
-  to={agentPos}
-  bend="up"
-  label="Context"
-  type="context"
-  cloudPosition="top"
-/>
+    {dotConfigs.map((config) => (
+    <FlowDot key={config.key} {...config} />
+    ))}
 
-<FlowDot
-  key="action-dot"
-  from={agentPos}
-  to={integrationsBoxPos}
-  bend="down"
-  label="Action"
-  type="action"
-  cloudPosition="bottom"
-/>
+
 
       {/* Agent */}
       <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col items-center text-center text-slate-300">
