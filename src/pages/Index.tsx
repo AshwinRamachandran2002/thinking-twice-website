@@ -39,9 +39,9 @@ const Index = () => {
       {/* Main Content */}
       <div className="relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 min-h-[calc(100vh-4rem)] items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 min-h-[calc(100vh-4rem)] items-center">
             {/* Left Column - Text Content */}
-            <div className="relative space-y-8 text-left">
+            <div className="relative space-y-8 text-left -ml-4">
               {/* Glowing effect behind the title */}
               <div className="absolute -inset-x-4 -inset-y-4 z-0">
                 <div className="w-full h-full bg-indigo-500/20 rounded-full blur-3xl" />
@@ -50,11 +50,8 @@ const Index = () => {
               {/* Company Name */}
               <div className="relative z-10">
                 <h1 className="text-6xl md:text-7xl font-bold leading-tight">
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-200/90 to-slate-200/60 block">
-                    Context
-                  </span>
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-cyan-400 block">
-                    Fort
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-cyan-400">
+                    ContextFort
                   </span>
                 </h1>
                 
@@ -72,16 +69,13 @@ const Index = () => {
               </div>
             </div>
 
+            
             {/* Right Column - Graphics */}
             <div className="relative hidden md:block">
               {/* Add your graphics here */}
               <div className="aspect-square rounded-full bg-gradient-to-tr from-indigo-500/20 via-cyan-400/20 to-purple-500/20 blur-2xl absolute inset-0" />
               <div className="relative z-10">
-                {/* You can add your actual graphics/illustration here */}
-                {/* <div className="w-full aspect-square rounded-3xl bg-gradient-to-tr from-indigo-500/10 via-cyan-400/10 to-purple-500/10 border border-slate-700/50 backdrop-blur-sm" /> */}
-                <div className="relative z-10">
                 <FlowDiagram />
-              </div>
               </div>
             </div>
           </div>
