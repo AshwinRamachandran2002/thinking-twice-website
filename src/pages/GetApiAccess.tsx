@@ -13,13 +13,16 @@ export default function GetApiAccess() {
       const stripe = await stripePromise;
       if (!stripe) throw new Error('Stripe failed to initialize');
 
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      // Redirect to Stripe Checkout directly
+      const result = await stripe.redirectToCheckout({
+        lineItems: [{
+          price: import.meta.env.VITE_STRIPE_PRICE_ID, // You'll need to add this to your .env
+          quantity: 1,
+        }],
+        mode: 'payment',
+        successUrl: `${window.location.origin}/success`,
+        cancelUrl: `${window.location.origin}/get-api-access`,
       });
-
-      const { sessionId } = await response.json();
-      const result = await stripe.redirectToCheckout({ sessionId });
 
       if (result.error) {
         throw new Error(result.error.message);

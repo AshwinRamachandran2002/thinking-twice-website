@@ -5,27 +5,54 @@ import { Link } from "react-router-dom"
 export default function ApiDocs() {
   const copyScript = () => {
     const script = `
-# Example Python script to test the API
-import requests
+    #!/bin/bash
+set -e
 
-API_KEY = 'your_api_key_here'
-BASE_URL = 'http://localhost:5173'  # Change this to your production URL
+echo "🔍 Detecting platform..."
+PLATFORM="$(uname)"
 
-# Test the security endpoint
-response = requests.post(
-    f'{BASE_URL}/api/test-security',
-    headers={'x-api-key': API_KEY}
-)
+# 1. Ensure mitmproxy certificate is ready
+if [ ! -f ~/.mitmproxy/mitmproxy-ca-cert.pem ]; then
+  echo "🔧 Generating mitmproxy CA certificate..."
+  mitmdump --version >/dev/null 2>&1 || { echo "❌ mitmproxy not installed. Run: pip install mitmproxy"; exit 1; }
+  mitmdump --listen-port 0 & TEMP_PID=$!; sleep 2; kill $TEMP_PID
+fi
 
-print('Security Test Response:', response.json())
+# 2. Trust certificate
+echo "🔐 Installing certificate..."
+if [ "$PLATFORM" == "Darwin" ]; then
+  if ! security find-certificate -c "mitmproxy" /Library/Keychains/System.keychain >/dev/null 2>&1; then
+    sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ~/.mitmproxy/mitmproxy-ca-cert.pem
+  fi
+elif [ "$PLATFORM" == "Linux" ]; then
+  sudo cp ~/.mitmproxy/mitmproxy-ca-cert.pem /usr/local/share/ca-certificates/mitmproxy-ca.crt
+  sudo update-ca-certificates
+else
+  echo "❌ Unsupported platform: $PLATFORM"; exit 1
+fi
 
-# Example of using the filter endpoint
-filter_response = requests.get(
-    f'{BASE_URL}/api/filter',
-    headers={'x-api-key': API_KEY}
-)
+# 3. Start the proxy
+echo "🚦 Starting Copilot proxy..."
+mitmdump -s copilot_proxy.py --listen-port 8080 &
+PROXY_PID=$!
 
-print('Filter Endpoint Response:', filter_response.json())
+trap "echo '🛑 Stopping proxy...'; kill $PROXY_PID; exit" INT TERM
+
+# 4. Launch VS Code with proxy settings
+echo "🚀 Launching VS Code..."
+NODE_EXTRA_CA_CERTS="$HOME/.mitmproxy/mitmproxy-ca-cert.pem" \
+HTTP_PROXY="http://127.0.0.1:8080" \
+HTTPS_PROXY="http://127.0.0.1:8080" \
+NO_PROXY="localhost,127.0.0.1,::1" \
+code .
+
+wait
+
+# 5. Cleanup
+echo "🧼 Cleaning up..."
+kill $PROXY_PID
+unset HTTP_PROXY HTTPS_PROXY NO_PROXY NODE_EXTRA_CA_CERTS
+echo "✅ Done."
 `
     navigator.clipboard.writeText(script)
   }
@@ -38,12 +65,12 @@ print('Filter Endpoint Response:', filter_response.json())
         <Card className="p-6">
           <h2 className="text-2xl font-semibold mb-4">Getting Started</h2>
           <p className="mb-4">
-            To access our proprietary LLM API, you'll need to obtain an API key. Follow these steps:
+            To use our Copilot Filtering Proxy, follow these steps:
           </p>
           <ol className="list-decimal list-inside space-y-2 mb-4">
-            <li>Visit our API access page</li>
-            <li>Complete the payment process</li>
-            <li>Receive your API key via email</li>
+            <li>Purchase access from the <Link to="/get-api-access" className="underline text-blue-600">API Access Page</Link></li>
+            <li>Receive your API key via email or the success page</li>
+            <li>Run the proxy script with your API key to start filtering</li>
           </ol>
           <Link to="/get-api-access">
             <Button className="mt-2">Get API Access</Button>
@@ -51,41 +78,36 @@ print('Filter Endpoint Response:', filter_response.json())
         </Card>
 
         <Card className="p-6">
-          <h2 className="text-2xl font-semibold mb-4">Test Your API Key</h2>
+          <h2 className="text-2xl font-semibold mb-4">Start the Filtering Proxy</h2>
           <p className="mb-4">
-            Once you have your API key, you can use this sample script to test the security layer:
+            Use the following script to launch the Copilot Filtering Proxy:
           </p>
           <div className="bg-gray-800 text-gray-200 p-4 rounded-lg mb-4">
-            <pre className="whitespace-pre-wrap">
-              {`import requests
-
-API_KEY = 'your_api_key_here'
-BASE_URL = 'http://localhost:5173'  # Change this to your production URL
-
-response = requests.post(
-    f'{BASE_URL}/api/test-security',
-    headers={'x-api-key': API_KEY}
-)
-
-print('Response:', response.json())`}
+            <pre className="whitespace-pre-wrap text-sm">
+              {`# Set your API key and start the proxy
+export API_KEY="your_api_key_here"
+./start_copilot_proxy.sh`}
             </pre>
           </div>
-          <Button onClick={copyScript}>Copy Test Script</Button>
+          <Button onClick={copyScript}>Copy Launch Script</Button>
         </Card>
 
         <Card className="p-6">
-          <h2 className="text-2xl font-semibold mb-4">API Endpoints</h2>
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-xl font-medium mb-2">Security Test</h3>
-              <p className="text-gray-600">POST /api/test-security</p>
-              <p className="mt-2">Validates your API key and returns user information.</p>
-            </div>
-            <div>
-              <h3 className="text-xl font-medium mb-2">Filter Endpoint</h3>
-              <p className="text-gray-600">GET /api/filter</p>
-              <p className="mt-2">Example protected endpoint that requires API key authentication.</p>
-            </div>
+          <h2 className="text-2xl font-semibold mb-4">How It Works</h2>
+          <ul className="list-disc list-inside space-y-2">
+            <li>The script launches <code>mitmdump</code> with our custom filter logic</li>
+            <li>Intercepts and inspects GitHub Copilot API calls</li>
+            <li>Sends them to our hosted API for validation</li>
+            <li>Blocks or allows based on AI model output</li>
+          </ul>
+        </Card>
+
+        <Card className="p-6">
+          <h2 className="text-2xl font-semibold mb-4">API Endpoint (For Advanced Users)</h2>
+          <div className="space-y-2">
+            <p><strong>POST</strong> <code>/filter</code></p>
+            <p>Used internally by the proxy to validate Copilot traffic. Accepts request metadata and returns <code>{"{ action: 'allow' | 'block' }"}</code>.</p>
+            <p>You must include a valid <code>X-API-Key</code> header.</p>
           </div>
         </Card>
       </div>

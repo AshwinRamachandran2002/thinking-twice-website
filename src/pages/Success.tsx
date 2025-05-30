@@ -13,9 +13,9 @@ const Success = () => {
             </svg>
           </div>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Thank You!</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Payment Successful!</h1>
           <p className="text-xl text-gray-600 mb-8">
-            Your message has been successfully sent. Our founders will personally review and respond within 24-48 hours.
+            Thank you for your purchase. You will receive your API key via email shortly.
           </p>
 
           <div className="space-y-6">

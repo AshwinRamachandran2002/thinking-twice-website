@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import GetApiAccess from "./pages/GetApiAccess";
 import Success from "./pages/Success";
 import ApiDocs from "./pages/ApiDocs";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/get-api-access" element={<GetApiAccess />} />
           <Route path="/success" element={<Success />} />
           <Route path="/api-docs" element={<ApiDocs />} />
+          <Route path="/about" element={<About />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
