@@ -73,10 +73,10 @@ const Index = () => {
             {/* Right Column - Graphics */}
             <div className="relative hidden md:block">
               {/* Add your graphics here */}
-              <div className="aspect-square rounded-full bg-gradient-to-tr from-indigo-500/20 via-cyan-400/20 to-purple-500/20 blur-2xl absolute inset-0" />
-              <div className="relative z-10">
+              <div className="aspect-square max-w-screen-xl mx-auto rounded-full bg-gradient-to-tr from-indigo-500/20 via-cyan-400/20 to-purple-500/20 blur-2xl absolute inset-0" />
+              {/* <div className="relative z-20"> */}
                 <FlowDiagram />
-              </div>
+              {/* </div> */}
             </div>
           </div>
         </div>
