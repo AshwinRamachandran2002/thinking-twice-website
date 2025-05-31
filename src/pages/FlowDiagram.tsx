@@ -72,7 +72,7 @@ const FlowDot = ({
           left: x,
           top: y - 16,
           transform: 'translate(-50%, -50%)',
-          colour,
+          color: colour,
         }}
       >
         {label}
@@ -253,7 +253,7 @@ const FlowDiagram = () => {
 
   /***** JSX *****/
   return (
-    <div className="relative mx-auto h-[460px] w-full max-w-[1040px] overflow-visible rounded-3xl border border-slate-700 bg-gradient-to-b from-slate-900/60 via-slate-800/60 to-slate-900/60 p-6 shadow-xl">
+    <div className="relative mx-auto h-[490px] w-full max-w-[870px] overflow-visible rounded-3xl border border-slate-700 bg-gradient-to-b from-slate-900/60 via-slate-800/60 to-slate-900/60 p-6 shadow-xl">
       {/* Ambient glow */}
       <div className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-gradient-to-tr from-indigo-600/10 via-cyan-500/10 to-purple-500/10 blur-xl" />
 

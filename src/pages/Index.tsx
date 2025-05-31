@@ -130,7 +130,7 @@ const Index = () => {
             variants={item}
             className="max-w-xl text-lg leading-relaxed text-slate-400 md:text-xl"
           >
-            ContextFort helps you build, monitor, and secure AI agents with confidence. Instantly gain visibility and control over every tool call.
+            ContextFort helps you monitor and secure AI agents with confidence. Instantly gain visibility and control over every tool call.
           </motion.p>
         </motion.section>
 
@@ -139,7 +139,8 @@ const Index = () => {
           variants={container}
           initial="hidden"
           animate="show"
-          className="relative hidden w-full max-w-[760px] md:flex"
+          className="relative hidden md:flex h-full min-h-[400px] flex-shrink-0 min-w-[1040px] overflow-visible"
+
         >
           <motion.div
             variants={item}
@@ -150,9 +151,9 @@ const Index = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
-            className="relative flex w-full items-center justify-center"
+            className="absolute inset-0 flex items-center justify-center"
           >
-            <FlowDiagram />
+            <FlowDiagram className="w-full h-full" />
           </motion.div>
         </motion.section>
       </main>
