@@ -39,7 +39,7 @@ const FlowDot = ({
   const mid = getMidpoint(from, to, bend);
   const { x, y } = getQuadraticBezierPoint(t, from, mid, to);
   const opacity = t < 0.25 ? t / 0.25 : t > 0.75 ? (1 - t) / 0.25 : 1;
-/* choose colour based on “normal” vs “advarsarial” set */
+/* choose colour based on “normal” vs “advarsial” set */
   const colour =
     label === 'Context' || label === 'Action'
       ? (flowConsts.cloudTypeSets[setIdx] === 'advarsarial'
@@ -205,11 +205,20 @@ const FlowDiagram = () => {
   const [t, setT] = useState(0);
   const [showCloud, setShowCloud] = useState(false);
   const [cloudSetIdx, setCloudSetIdx] = useState(0);
+  const [lockedType, setLockedType] = useState(null);  // null → auto
   const pausedRef = useRef(false);
   const hasPausedThisCycleRef = useRef(false);
   const frameRef = useRef<number | undefined>();
   const cloudTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>();
-
+  const nextAllowedSetIdx = (current) => {
+    let next = current;
+    do {
+      next = (next + 1) % flowConsts.cloudTextSets.length;
+    } while (
+      lockedType && flowConsts.cloudTypeSets[next] !== lockedType
+    );
+    return next;
+  };
   useEffect(() => {
     const loop = () => {
       frameRef.current = requestAnimationFrame(loop);
@@ -223,12 +232,12 @@ const FlowDiagram = () => {
           cloudTimeoutRef.current = setTimeout(() => {
             setShowCloud(false);
             pausedRef.current = false;
-          }, 1600);
+          }, 4000);
         }
 
         if (nextT >= 1) {
           setTimeout(() => {
-            setCloudSetIdx((idx) => (idx + 1) % flowConsts.cloudTextSets.length);
+            setCloudSetIdx((idx) => nextAllowedSetIdx(idx));
             setT(0);
             setShowCloud(false);
             pausedRef.current = false;
@@ -244,7 +253,43 @@ const FlowDiagram = () => {
       cancelAnimationFrame(frameRef.current);
       clearTimeout(cloudTimeoutRef.current);
     };
-  }, [speed]);
+  }, [speed, lockedType]);
+
+  /*************************************************************************
+   * Binary slider UI
+   *************************************************************************/
+  const effectiveType = lockedType || flowConsts.cloudTypeSets[cloudSetIdx];
+  const isAdversarial = effectiveType === 'advarsarial';
+
+  const handleToggle = () => {
+    if (lockedType === null) {
+      // first click → lock to whatever is showing now
+      setLockedType(effectiveType);
+    } else {
+      // already locked → flip side
+      setLockedType(lockedType === 'normal' ? 'advarsarial' : 'normal');
+    }
+  };
+
+  const toggleLabel =
+    lockedType === null
+      ? 'Auto'
+      : lockedType === 'normal'
+      ? 'Safe only'
+      : 'Adversarial only';
+
+  const toggleColorClass =
+    lockedType === null
+      ? 'bg-slate-500'
+      : lockedType === 'normal'
+      ? 'bg-emerald-500'
+      : 'bg-red-500';
+
+  // Toggle button sizing (easy to adjust globally)
+  const TOGGLE_WIDTH = 140; // px, wider for 'Adversarial'
+  const TOGGLE_HEIGHT = 38; // px, slightly taller
+  const TOGGLE_CIRCLE = 28; // px, circle diameter
+  const TOGGLE_CIRCLE_SHIFT = TOGGLE_WIDTH - TOGGLE_CIRCLE - 8; // px, for translateX
 
   /***** Visual helpers *****/
   const colorForIdx = (i) =>
@@ -255,6 +300,36 @@ const FlowDiagram = () => {
   /***** JSX *****/
   return (
     <div className="relative mx-auto h-[490px] w-full max-w-[840px] overflow-visible rounded-3xl border border-slate-700 bg-gradient-to-b from-slate-900/60 via-slate-800/60 to-slate-900/60 p-6 shadow-xl">
+      {/* Slider */}
+      <div className="absolute right-6 top-6 z-50 flex items-center">
+        <div
+          onClick={handleToggle}
+          className={`relative flex items-center justify-between px-1 rounded-full cursor-pointer transition-colors duration-200 border-2 border-slate-600 shadow-lg select-none ${isAdversarial ? 'bg-red-600/70' : 'bg-emerald-600/70'}`}
+          style={{ width: TOGGLE_WIDTH, height: TOGGLE_HEIGHT }}
+        >
+          {/* Centered label on left or right depending on toggle */}
+          <span
+            className={`absolute top-1/2 -translate-y-1/2 w-[80px] text-center text-sm font-semibold transition-all duration-200 text-slate-100`}
+            style={{
+              left: isAdversarial ? '0.5rem' : 'auto',
+              right: isAdversarial ? 'auto' : '0.5rem',
+              textAlign: 'center',
+              pointerEvents: 'none',
+            }}
+          >
+            {isAdversarial ? 'Adversarial' : 'Safe'}
+          </span>
+          <div
+            className="rounded-full bg-white shadow-md transition-transform duration-300"
+            style={{
+              width: TOGGLE_CIRCLE,
+              height: TOGGLE_CIRCLE,
+              transform: `translateX(${isAdversarial ? TOGGLE_CIRCLE_SHIFT : 0}px)`
+            }}
+          />
+        </div>
+      </div>
+
       {/* Ambient glow */}
       <div className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-gradient-to-tr from-indigo-600/10 via-cyan-500/10 to-purple-500/10 blur-xl" />
 
@@ -264,11 +339,11 @@ const FlowDiagram = () => {
       {/* Entity boxes/images */}
       {[ // Use images for Integration A/B, blocks for others
         { title: 'Integration A', pos: flowConsts.integrationAPos, imgIdx: 0 },
-        { title: 'Integration B', pos: flowConsts.integrationBPos, imgIdx: 1 },
+        { title: 'Integration B', pos: flowConsts.integrationBPos, imgIdx: 1, hide: !flowConsts.cloudTextSets[cloudSetIdx][1] },
         { title: 'Agent', pos: flowConsts.agentPos, big: true },
         { title: 'LLM', pos: flowConsts.llmPos },
         { title: 'User', pos: flowConsts.userPos, circle: true },
-      ].map(({ title, pos, big, circle, imgIdx }) => (
+      ].filter(({ hide }) => !hide).map(({ title, pos, big, circle, imgIdx }) => (
         <div
           key={title}
           className={
@@ -347,6 +422,7 @@ const FlowDiagram = () => {
             bend: 'down',
             label: 'Action',
             cloudIdx: 1,
+            hide: !flowConsts.cloudTextSets[cloudSetIdx][1],
           },
           // Agent -> LLM (Context)
           {
@@ -360,7 +436,7 @@ const FlowDiagram = () => {
             ),
             bend: 'up',
             label: 'Context',
-            cloudIdx: 2,
+            cloudIdx: 3,
           },
           // LLM -> Agent (Action)
           {
@@ -374,7 +450,8 @@ const FlowDiagram = () => {
             ),
             bend: 'down',
             label: 'Action',
-            cloudIdx: 3,
+            cloudIdx: 4,
+            hide: !flowConsts.cloudTextSets[cloudSetIdx][3],
           },
           // User -> Agent
           {
@@ -388,9 +465,9 @@ const FlowDiagram = () => {
             ),
             bend: 'up',
             label: 'User',
-            cloudIdx: 4,
+            cloudIdx: 2,
           },
-        ].map(({ from, to, bend, label, cloudIdx }, idx) => {
+        ].filter(({ hide }) => !hide).map(({ from, to, bend, label, cloudIdx }, idx) => {
           // Only draw Action arrows if cloudText is not empty
           if (label === 'Action' && !flowConsts.cloudTextSets[cloudSetIdx][cloudIdx]) {
             return null;
@@ -414,7 +491,20 @@ const FlowDiagram = () => {
       </svg>
 
       {/* Moving dots + speech clouds */}
-      {dotOrder.map((dotIdx) => (
+      {dotOrder.filter((dotIdx) => {
+        // Hide dot if cloudText is empty for Action dots (Integration B and LLM Action)
+        if (
+          (dotIdx === 1 && !flowConsts.cloudTextSets[cloudSetIdx][1]) || // Integration B Action
+          (dotIdx === 3) || // User dot always shown
+          (dotIdx === 0) || // Context dot always shown
+          (dotIdx === 2) || // User->Agent dot always shown
+          (dotIdx === 4 && !flowConsts.cloudTextSets[cloudSetIdx][4]) // LLM Action
+        ) {
+          // Only show if not an Action dot with empty cloudText
+          return !((dotIdx === 1 && !flowConsts.cloudTextSets[cloudSetIdx][1]) || (dotIdx === 4 && !flowConsts.cloudTextSets[cloudSetIdx][4]));
+        }
+        return true;
+      }).map((dotIdx) => (
         <FlowDot
           key={dotConfigs[dotIdx].key}
           {...dotConfigs[dotIdx]}

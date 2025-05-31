@@ -49,7 +49,7 @@ const Index = () => {
 
   return (
     <div
-      className="relative min-h-screen overflow-hidden font-sans text-slate-100 selection:bg-cyan-500/30 selection:text-white"
+      className="relative min-h-screen overflow-visible font-sans text-slate-100 selection:bg-cyan-500/30 selection:text-white"
       style={{ fontFamily: 'Inter, sans-serif' }}
     >
       {/* Base gradient backdrop */}
@@ -152,20 +152,34 @@ const Index = () => {
           {/* New Main Title */}
           <motion.h1
             variants={item}
-            className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-purple-400 bg-clip-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight text-transparent drop-shadow-lg"
-          >
+   className="relative inline-block text-4xl sm:text-5xl md:text-6xl lg:text-7xl
+             font-extrabold leading-[1.5]">
+  <span
+    className="drop-shadow-lg
+               bg-gradient-to-r from-indigo-400 via-cyan-400 to-purple-400
+               bg-clip-text text-transparent">
             Security & Observability for
             <br />
             <span className="whitespace-nowrap">Tool-Calling Agents</span>
+          </span>
           </motion.h1>
 
           {/* Subtitle/Description */}
-          <motion.p
-            variants={item}
-            className="max-w-xl text-lg leading-relaxed text-slate-400 md:text-xl"
-          >
-            ContextFort helps you monitor and secure AI agents with confidence. Instantly gain visibility and control over every tool call.
-          </motion.p>
+
+<motion.p
+   variants={item}
+   className="max-w-xl text-lg md:text-xl leading-relaxed tracking-wide text-slate-200"
+ >
+   <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent font-semibold">
+     Monitor&nbsp;and&nbsp;secure
+   </span>
+   &nbsp;AI agents&nbsp;with&nbsp;confidence.<br />
+   Instantly gain&nbsp;
+   <span className="bg-gradient-to-r from-cyan-400 via-sky-400 to-purple-400 bg-clip-text text-transparent font-semibold">
+     visibility&nbsp;and&nbsp;control
+   </span>
+   &nbsp;over every tool&nbsp;call.
+ </motion.p>
 
           {/* Call to Actions */}
           <motion.div
