@@ -300,35 +300,37 @@ const FlowDiagram = () => {
   /***** JSX *****/
   return (
     <div className="relative mx-auto h-[490px] w-full max-w-[840px] overflow-visible rounded-3xl border border-slate-700 bg-gradient-to-b from-slate-900/60 via-slate-800/60 to-slate-900/60 p-6 shadow-xl">
-      {/* Slider */}
-      <div className="absolute right-6 top-6 z-50 flex items-center">
-        <div
-          onClick={handleToggle}
-          className={`relative flex items-center justify-between px-1 rounded-full cursor-pointer transition-colors duration-200 border-2 border-slate-600 shadow-lg select-none ${isAdversarial ? 'bg-red-600/70' : 'bg-emerald-600/70'}`}
-          style={{ width: TOGGLE_WIDTH, height: TOGGLE_HEIGHT }}
-        >
-          {/* Centered label on left or right depending on toggle */}
-          <span
-            className={`absolute top-1/2 -translate-y-1/2 w-[80px] text-center text-sm font-semibold transition-all duration-200 text-slate-100`}
-            style={{
-              left: isAdversarial ? '0.5rem' : 'auto',
-              right: isAdversarial ? 'auto' : '0.5rem',
-              textAlign: 'center',
-              pointerEvents: 'none',
-            }}
+      {/* === Toggle ===================================================== */}
+      <motion.button
+        onClick={handleToggle}
+        className="absolute right-6 top-6 z-50 flex items-center rounded-full px-2 py-1
+                  border-2 border-slate-600 shadow-lg select-none"
+        initial={false}
+        animate={{
+          backgroundColor: isAdversarial ? 'rgba(220,38,38,0.7)' : 'rgba(16,185,129,0.7)',
+        }}
+        transition={{ type: 'spring', stiffness: 170, damping: 20 }}
+      >
+        {/* knob */}
+        <motion.div
+          className="h-6 w-6 rounded-full bg-white shadow-md"
+          layout
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+        />
+
+        {/* static label – we just fade text */}
+        <span className="mx-3 w-24 text-center text-sm font-semibold text-slate-100">
+          <motion.span
+            key={isAdversarial ? 'adv' : 'safe'}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15 }}
           >
             {isAdversarial ? 'Adversarial' : 'Safe'}
-          </span>
-          <div
-            className="rounded-full bg-white shadow-md transition-transform duration-300"
-            style={{
-              width: TOGGLE_CIRCLE,
-              height: TOGGLE_CIRCLE,
-              transform: `translateX(${isAdversarial ? TOGGLE_CIRCLE_SHIFT : 0}px)`
-            }}
-          />
-        </div>
-      </div>
+          </motion.span>
+        </span>
+      </motion.button>
 
       {/* Ambient glow */}
       <div className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-gradient-to-tr from-indigo-600/10 via-cyan-500/10 to-purple-500/10 blur-xl" />
@@ -341,7 +343,7 @@ const FlowDiagram = () => {
         { title: 'Integration A', pos: flowConsts.integrationAPos, imgIdx: 0 },
         { title: 'Integration B', pos: flowConsts.integrationBPos, imgIdx: 1, hide: !flowConsts.cloudTextSets[cloudSetIdx][1] },
         { title: 'Agent', pos: flowConsts.agentPos, big: true },
-        { title: 'LLM', pos: flowConsts.llmPos },
+        { title: 'LLM', pos: flowConsts.llmPos, imgIdx: 2 }, // Use image for LLM
         { title: 'User', pos: flowConsts.userPos, circle: true },
       ].filter(({ hide }) => !hide).map(({ title, pos, big, circle, imgIdx }) => (
         <div
