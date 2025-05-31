@@ -65,14 +65,12 @@ const FlowDot = ({
       {/* Text label */}
       <motion.span
         className="absolute text-[10px] font-semibold tracking-wide uppercase"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.3 }}
         style={{
           left: x,
           top: y - 16,
           transform: 'translate(-50%, -50%)',
           color: colour,
+          opacity: opacity // match dot fade exactly
         }}
       >
         {label}
@@ -131,7 +129,8 @@ const FlowDiagram = () => {
       bend: 'up',
       label: 'Context',
       cloudPosition: 'top',
-      cloudTranslateY: 30,
+      cloudTranslateY: -30,
+      cloudTranslateX: -100,
     },
     {
       key: 'action-dot',
@@ -146,7 +145,8 @@ const FlowDiagram = () => {
       bend: 'down',
       label: 'Action',
       cloudPosition: 'bottom',
-      cloudTranslateY: 20,
+      cloudTranslateY: 30,
+      cloudTranslateX: -100,
     },
     {
       key: 'user-query-dot',
@@ -161,7 +161,8 @@ const FlowDiagram = () => {
       bend: 'up',
       label: 'User',
       cloudPosition: 'right',
-      cloudTranslateX: 42,
+      cloudTranslateX: 20,
+      cloudTranslateY: -50,
     },
     {
       key: 'context-dot-llm',
@@ -206,8 +207,8 @@ const FlowDiagram = () => {
   const [cloudSetIdx, setCloudSetIdx] = useState(0);
   const pausedRef = useRef(false);
   const hasPausedThisCycleRef = useRef(false);
-  const frameRef = useRef();
-  const cloudTimeoutRef = useRef();
+  const frameRef = useRef<number | undefined>();
+  const cloudTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>();
 
   useEffect(() => {
     const loop = () => {
@@ -232,7 +233,7 @@ const FlowDiagram = () => {
             setShowCloud(false);
             pausedRef.current = false;
             hasPausedThisCycleRef.current = false;
-          }, 500);
+          }, 3600);
           return 1;
         }
         return nextT;
@@ -253,21 +254,21 @@ const FlowDiagram = () => {
 
   /***** JSX *****/
   return (
-    <div className="relative mx-auto h-[490px] w-full max-w-[870px] overflow-visible rounded-3xl border border-slate-700 bg-gradient-to-b from-slate-900/60 via-slate-800/60 to-slate-900/60 p-6 shadow-xl">
+    <div className="relative mx-auto h-[490px] w-full max-w-[840px] overflow-visible rounded-3xl border border-slate-700 bg-gradient-to-b from-slate-900/60 via-slate-800/60 to-slate-900/60 p-6 shadow-xl">
       {/* Ambient glow */}
       <div className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-gradient-to-tr from-indigo-600/10 via-cyan-500/10 to-purple-500/10 blur-xl" />
 
       {/* Decorative grid */}
       <div className="pointer-events-none absolute inset-0 -z-20 bg-[url('/grid.svg')] bg-[length:120px_120px] opacity-[0.03]" />
 
-      {/* Entity boxes */}
-      {[
-        { title: 'Integration A', pos: flowConsts.integrationAPos },
-        { title: 'Integration B', pos: flowConsts.integrationBPos },
+      {/* Entity boxes/images */}
+      {[ // Use images for Integration A/B, blocks for others
+        { title: 'Integration A', pos: flowConsts.integrationAPos, imgIdx: 0 },
+        { title: 'Integration B', pos: flowConsts.integrationBPos, imgIdx: 1 },
         { title: 'Agent', pos: flowConsts.agentPos, big: true },
         { title: 'LLM', pos: flowConsts.llmPos },
         { title: 'User', pos: flowConsts.userPos, circle: true },
-      ].map(({ title, pos, big, circle }) => (
+      ].map(({ title, pos, big, circle, imgIdx }) => (
         <div
           key={title}
           className={
@@ -275,19 +276,29 @@ const FlowDiagram = () => {
               ? 'absolute -translate-x-1/2 -translate-y-1/2 text-center'
               : 'absolute flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-center'
           }
-          style={{ left: pos.x, top: pos.y, zIndex: ENTITY_Z }}   // ★ NEW
-          >
-          <div
-            className={
-              circle
-                ? 'flex h-12 w-12 items-center justify-center rounded-full bg-pink-500 text-xl shadow-lg'
-                : big
-                ? 'flex h-20 w-40 items-center justify-center rounded-2xl bg-slate-700/80 backdrop-blur text-slate-100 shadow-lg'
-                : 'flex h-16 w-28 items-center justify-center rounded-xl bg-slate-800/80 backdrop-blur text-slate-200 shadow-lg'
-            }
-          >
-            {circle ? '🧑' : title}
-          </div>
+          style={{ left: pos.x, top: pos.y, zIndex: ENTITY_Z }}
+        >
+          {/* Render image for Integration A/B, block for others */}
+          {typeof imgIdx === 'number' ? (
+            <img
+              src={flowConsts.integrationUrlSet[cloudSetIdx][imgIdx * 2]}
+              alt={title}
+              className="h-16 w-16 rounded-xl shadow-lg bg-white object-contain border border-slate-300"
+              style={{ background: '#fff' }}
+            />
+          ) : (
+            <div
+              className={
+                circle
+                  ? 'flex h-12 w-12 items-center justify-center rounded-full bg-pink-500 text-xl shadow-lg'
+                  : big
+                  ? 'flex h-20 w-40 items-center justify-center rounded-2xl bg-slate-700/80 backdrop-blur text-slate-100 shadow-lg'
+                  : 'flex h-16 w-28 items-center justify-center rounded-xl bg-slate-800/80 backdrop-blur text-slate-200 shadow-lg'
+              }
+            >
+              {circle ? '🧑' : title}
+            </div>
+          )}
         </div>
       ))}
 
@@ -307,6 +318,7 @@ const FlowDiagram = () => {
           </filter>
         </defs>
 
+        {/* Only draw arrows for action if cloudText is not empty */}
         {[
           // Context A -> Agent
           {
@@ -319,8 +331,10 @@ const FlowDiagram = () => {
               flowConsts.agentPos.y + flowConsts.shiftAgent.y,
             ),
             bend: 'up',
+            label: 'Context',
+            cloudIdx: 0,
           },
-          // Agent -> Integration B
+          // Agent -> Integration B (Action)
           {
             from: new Vector2(
               flowConsts.agentPos.x + flowConsts.shiftAgent.x,
@@ -331,8 +345,10 @@ const FlowDiagram = () => {
               flowConsts.integrationBPos.y + flowConsts.shiftIntegrationB.y,
             ),
             bend: 'down',
+            label: 'Action',
+            cloudIdx: 1,
           },
-          // Agent -> LLM (context)
+          // Agent -> LLM (Context)
           {
             from: new Vector2(
               flowConsts.agentPos.x + flowConsts.shiftAgent.x,
@@ -343,8 +359,10 @@ const FlowDiagram = () => {
               flowConsts.llmPos.y + flowConsts.shiftLLM.y,
             ),
             bend: 'up',
+            label: 'Context',
+            cloudIdx: 2,
           },
-          // LLM -> Agent (action)
+          // LLM -> Agent (Action)
           {
             from: new Vector2(
               flowConsts.llmPos.x + flowConsts.shiftLLM.x,
@@ -355,6 +373,8 @@ const FlowDiagram = () => {
               flowConsts.agentPos.y + flowConsts.shiftAgent.y,
             ),
             bend: 'down',
+            label: 'Action',
+            cloudIdx: 3,
           },
           // User -> Agent
           {
@@ -367,8 +387,14 @@ const FlowDiagram = () => {
               flowConsts.agentPos.y + flowConsts.shiftAgent.y,
             ),
             bend: 'up',
+            label: 'User',
+            cloudIdx: 4,
           },
-        ].map(({ from, to, bend }, idx) => {
+        ].map(({ from, to, bend, label, cloudIdx }, idx) => {
+          // Only draw Action arrows if cloudText is not empty
+          if (label === 'Action' && !flowConsts.cloudTextSets[cloudSetIdx][cloudIdx]) {
+            return null;
+          }
           const mid = getMidpoint(from, to, bend);
           return (
             <motion.path
