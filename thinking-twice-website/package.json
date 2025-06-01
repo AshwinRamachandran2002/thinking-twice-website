@@ -1,0 +1,30 @@
+{
+  "name": "thinking-twice-website",
+  "version": "1.0.0",
+  "description": "A website for Thinking Twice, showcasing team members, blog posts, and a contact form.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "nextjs",
+    "react",
+    "website"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "next": "^11.0.1",
+    "lucide-react": "^0.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-next": "^11.0.1",
+    "typescript": "^4.4.3"
+  }
+}

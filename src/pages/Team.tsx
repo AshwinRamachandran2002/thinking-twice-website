@@ -11,10 +11,7 @@ const team = [
 		twitterUrl: "https://twitter.com/ashwinrao",
 		githubUrl: "https://github.com/ashwinrao",
 		bio: (
-			<>
-				Ashwin is a security researcher and entrepreneur passionate about
-				building safe AI systems. Previously at Microsoft Research and Google AI.
-			</>
+			<>Ashwin is a security researcher and entrepreneur passionate about building safe AI systems. Previously at Microsoft Research and Google AI.</>
 		),
 		achievements: [
 			{ icon: "award", text: "Best Paper Award, IEEE S&P" },
@@ -22,10 +19,8 @@ const team = [
 		],
 		featuredAchievement: {
 			title: "AI Security Pioneer",
-			description:
-				"Ashwin's work on LLM security has influenced industry best practices.",
-			imageUrl:
-				"https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=400&q=80"
+			description: "Ashwin's work on LLM security has influenced industry best practices.",
+			imageUrl: "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=400&q=80"
 		}
 	},
 	{
@@ -37,10 +32,7 @@ const team = [
 		twitterUrl: "https://twitter.com/earlence",
 		githubUrl: "https://github.com/earlence",
 		bio: (
-			<>
-				Earlence is a professor and security expert, leading research in AI and
-				systems security. Formerly at University of Wisconsin–Madison.
-			</>
+			<>Earlence is a professor and security expert, leading research in AI and systems security. Formerly at University of Wisconsin–Madison.</>
 		),
 		achievements: [
 			{ icon: "award", text: "NSF CAREER Award" },
@@ -48,21 +40,17 @@ const team = [
 		],
 		featuredAchievement: {
 			title: "Academic Leader",
-			description:
-				"Earlence's research has shaped the field of agent security.",
-			imageUrl:
-				"https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=400&q=80"
+			description: "Earlence's research has shaped the field of agent security.",
+			imageUrl: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=400&q=80"
 		},
 		imageOnRight: true
 	}
 ];
 
-const About = () => (
+const Team = () => (
 	<div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800 py-20 px-4 font-sans text-slate-100">
 		<div className="max-w-4xl mx-auto">
-			<h1 className="text-5xl font-extrabold text-center mb-12 bg-gradient-to-r from-cyan-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-lg">
-				Meet the Team
-			</h1>
+			<h1 className="text-5xl font-extrabold text-center mb-12 bg-gradient-to-r from-cyan-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-lg">Meet the Team</h1>
 			{team.map((member, idx) => (
 				<TeamMember key={member.name} {...member} />
 			))}
@@ -70,4 +58,4 @@ const About = () => (
 	</div>
 );
 
-export default About;
+export default Team;

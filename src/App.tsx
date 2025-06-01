@@ -10,6 +10,8 @@ import GetApiAccess from "./pages/GetApiAccess";
 import Success from "./pages/Success";
 import ApiDocs from "./pages/ApiDocs";
 import About from "./pages/About";
+import Blog from "./pages/Blog";
+import Team from "./pages/Team";
 
 const queryClient = new QueryClient();
 
@@ -24,11 +26,13 @@ const App = () => (
       <BrowserRouter basename={basename}>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="//contact" element={<Contact />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/get-api-access" element={<GetApiAccess />} />
           <Route path="/success" element={<Success />} />
           <Route path="/api-docs" element={<ApiDocs />} />
           <Route path="/about" element={<About />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/team" element={<Team />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
