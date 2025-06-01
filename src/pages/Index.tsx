@@ -64,7 +64,31 @@ const LandingPageHero = () => {
           </motion.button>
         </motion.section>
 
-        <FlowDiagram />
+        <div className="w-full flex justify-center items-center px-0 sm:px-4 md:px-8" style={{maxWidth:'100vw'}}>
+          <FlowDiagram />
+        </div>
+
+        {/* Product Section */}
+        <section className="relative z-10 mt-20 w-full max-w-4xl rounded-3xl bg-gradient-to-br from-slate-900/80 via-slate-800/80 to-slate-900/60 shadow-2xl border border-cyan-900/30 px-8 py-12 flex flex-col items-center text-center backdrop-blur-xl">
+          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent mb-4 drop-shadow-lg">Our Product</h2>
+          <p className="text-lg md:text-xl text-slate-200 max-w-2xl mb-8">
+            some randomdescription
+          </p>
+          <div className="flex flex-col md:flex-row gap-8 w-full justify-center">
+            <div className="flex-1 bg-slate-800/70 rounded-2xl p-6 shadow-lg border border-cyan-800/20">
+              <h3 className="text-xl font-semibold text-cyan-300 mb-2">Real-time Monitoring</h3>
+              <p className="text-slate-300">Track every tool call and agent action as it happens, with instant alerts and deep analytics.</p>
+            </div>
+            <div className="flex-1 bg-slate-800/70 rounded-2xl p-6 shadow-lg border border-purple-800/20">
+              <h3 className="text-xl font-semibold text-purple-300 mb-2">Security Controls</h3>
+              <p className="text-slate-300">Enforce granular permissions, audit trails, and policy-based access for all your AI agents.</p>
+            </div>
+            <div className="flex-1 bg-slate-800/70 rounded-2xl p-6 shadow-lg border border-indigo-800/20">
+              <h3 className="text-xl font-semibold text-indigo-300 mb-2">Seamless Integration</h3>
+              <p className="text-slate-300">Plug ContextFort into your stack with minimal effort—SDKs, APIs, and no-code options available.</p>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
