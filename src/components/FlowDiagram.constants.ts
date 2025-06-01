@@ -96,21 +96,12 @@ export const INTEGRATION_RADIUS = 0.0139; // as fraction of WIDTH (bottom layer)
 export const INTEGRATION_IMG_SIZE = 0.025; // as fraction of WIDTH (bottom layer)
 export const INTEGRATION_TOP_RADIUS = 0.02; // as fraction of WIDTH (top layer)
 export const INTEGRATION_TOP_IMG_SIZE = 0.02; // as fraction of WIDTH (top layer)
-export const INTEGRATION_SPACING = 0.15; // as fraction of HEIGHT (vertical spacing between images)
-
-// === Arrow offset globals ===
-export const AGENT_TO_FORT_ARROW_OFFSET = -0.001; // as fraction of WIDTH (default 0.089)
-export const FORT_TO_RIGHT_ARROW_OFFSET = 240; // in px (default 40)
+export const INTEGRATION_SPACING = 0.18; // as fraction of HEIGHT (vertical spacing between images)
 
 // === Agent to Fort arrow endpoints (now as fractions of width) ===
 export const AGENT_TO_FORT_ARROW_START_X_FRAC = 0.42; // ~750/1800
 export const AGENT_TO_FORT_ARROW_END_X_FRAC = 0.58;   // ~1050/1800
 
-// === Global arrow endpoint controls ===
-export const LEFT_TO_AGENT_ARROW_END_X = 0.0; // as fraction of WIDTH, set in FlowDiagram.tsx for agent.x
-export const LEFT_TO_AGENT_ARROW_END_Y = 0.4; // as fraction of HEIGHT, set in FlowDiagram.tsx for agent.y
-export const RIGHT_TO_FORT_ARROW_START_X = 0.0; // as fraction of WIDTH, set in FlowDiagram.tsx for fort.x
-export const RIGHT_TO_FORT_ARROW_START_Y = 0.4; // as fraction of HEIGHT, set in FlowDiagram.tsx for fort.y
 export const DEVIL_DROP_OFFSET_Y = 120; // px, vertical drop offset for devillish drop
 export const DEVIL_DROP_X = 0.67; // as fraction of WIDTH, set in FlowDiagram.tsx for devil icon x
 

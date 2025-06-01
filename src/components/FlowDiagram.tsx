@@ -14,27 +14,16 @@ import {
   rightArrowStartXFrac,
   AGENT_TO_FORT_ARROW_START_X_FRAC,
   AGENT_TO_FORT_ARROW_END_X_FRAC,
-  diagramWidth,
-  diagramHeight,
   diagramX,
   diagramY,
   DEVIL_IMG,
   movingTexts,
-  TEXT_FONT,
   TEXT_SPEED,
   INTEGRATION_RADIUS,
   INTEGRATION_IMG_SIZE,
   INTEGRATION_TOP_RADIUS,
   INTEGRATION_TOP_IMG_SIZE,
   INTEGRATION_SPACING,
-  AGENT_TO_FORT_ARROW_OFFSET,
-  FORT_TO_RIGHT_ARROW_OFFSET,
-  AGENT_TO_FORT_ARROW_START_X,
-  AGENT_TO_FORT_ARROW_END_X,
-  LEFT_TO_AGENT_ARROW_END_X,
-  LEFT_TO_AGENT_ARROW_END_Y,
-  RIGHT_TO_FORT_ARROW_START_X,
-  RIGHT_TO_FORT_ARROW_START_Y,
   DEVIL_DROP_OFFSET_Y,
   CONTEXTFORT_BOX_WIDTH,
   CONTEXTFORT_BOX_HEIGHT,
@@ -173,8 +162,8 @@ export const FlowDiagram = () => {
       const { width: WIDTH, height: HEIGHT } = canvas;
       const layout = getLayout(WIDTH / dpr, HEIGHT / dpr);
       const centreX = WIDTH / (2 * dpr);
-      const agent = { x: centreX + layout.agentXOffset, y: HEIGHT / dpr / 2 - 0.19 * HEIGHT / dpr };
-      const fort = { x: centreX + layout.fortXOffset, y: HEIGHT / dpr / 2 - 0.19 * HEIGHT / dpr };
+      const agent = { x: centreX + layout.agentXOffset, y: HEIGHT / dpr / 2 - 0.09 * HEIGHT / dpr };
+      const fort = { x: centreX + layout.fortXOffset, y: HEIGHT / dpr / 2 - 0.09 * HEIGHT / dpr };
 
       /* ------------------------------ spawn --------------------------- */
       const now = Date.now();
@@ -378,7 +367,7 @@ export const FlowDiagram = () => {
       layout.rightY.forEach((yy) => {
         // Use fractional start X for responsiveness
         const rightArrowStartX = rightArrowStartXFrac * WIDTH / dpr;
-        const fortBoxPadR = fortBoxW * 0.52;
+        const fortBoxPadR = fortBoxW * 0.78;
         const startX = fort.x + fortBoxPadR;
         const startY = fort.y;
         const arrowCurve = layout.isMobile ? 0.22 : 0.13;
@@ -388,109 +377,126 @@ export const FlowDiagram = () => {
         curve(p0, p1, p2, "#ea580c", "#f97316"); // orange
       });
       /* ---------------------- moving texts through all stages ------------------------- */
+      // Strictly limit to 3 running texts at a time, with 1s delay between starts
+      let runningCount = 0;
+      let lastStartedAt = 0;
+      // Find the last started time among running texts
+      textStates.current.forEach((state) => {
+        if (state.running && state.lastStart > lastStartedAt) {
+          lastStartedAt = state.lastStart;
+        }
+        if (state.running) runningCount++;
+      });
+      // Only start new ones if under the limit, and 1s after the last started
       textStates.current.forEach((state, i) => {
+        if (!state.running && runningCount < 3) {
+          const now = Date.now();
+          const conf = movingTexts[i];
+          // Enforce 1s (1000ms) delay between starts
+          if (now - lastStartedAt >= 1000 && now - state.lastStart >= (conf.delay || 0)) {
+            state.running = true;
+            state.lastStart = now;
+            runningCount++;
+            lastStartedAt = now;
+          }
+        }
+      });
+      textStates.current.forEach((state, i) => {
+        if (!state.running) return;
         const now = Date.now();
         const conf = movingTexts[i];
-        if (!state.running && now - state.lastStart >= (conf.delay || 0)) {
-          state.running = true;
-        }
-        if (state.running) {
-          state.t += TEXT_SPEED * (16 + Math.random() * 8); // ~60fps, add jitter for natural feel
-          if (state.t > 1) {
-            state.t = 0;
-            state.stage++;
-            if (conf.devillish && state.stage === 3) {
-              // devillish drop
-              // let it drop, then reset
-            } else if ((!conf.devillish && state.stage > 2) || (conf.devillish && state.stage > 3)) {
-              state.stage = 0;
-              state.running = false;
-              state.lastStart = now;
-            }
+        state.t += TEXT_SPEED * (16 + Math.random() * 8); // ~60fps, add jitter for natural feel
+        if (state.t > 1) {
+          state.t = 0;
+          state.stage++;
+          if (conf.devillish && state.stage === 3) {
+            // devillish drop
+            // let it drop, then reset
+          } else if ((!conf.devillish && state.stage > 2) || (conf.devillish && state.stage > 3)) {
+            state.stage = 0;
+            state.running = false;
+            state.lastStart = now;
           }
         }
-        if (state.running) {
-          let p0, p1, p2, x, y;
-          if (state.stage === 0) {
-            // Left arrow: integration to agent
-            const leftArrowStartX = leftArrowStartXFrac * WIDTH / dpr;
-            const arrowCurve = layout.isMobile ? 0.22 : 0.13;
-            p0 = { x: leftArrowStartX, y: layout.leftY[state.lane] };
-            p1 = { x: agent.x - (layout.isMobile ? 40 : 70) * layout.scale, y: layout.leftY[state.lane] - arrowCurve * HEIGHT / dpr };
-            p2 = { x: agent.x, y: agent.y };
-            ({ x, y } = bezierPt(state.t, p0, p1, p2));
-          } else if (state.stage === 1) {
-            // Middle arrow: agent to ContextFort (use fractional X)
-            const agentToFortStartX = AGENT_TO_FORT_ARROW_START_X_FRAC * WIDTH / dpr;
-            const agentToFortEndX = AGENT_TO_FORT_ARROW_END_X_FRAC * WIDTH / dpr;
-            const start = { x: agentToFortStartX, y: agent.y };
-            const end = { x: agentToFortEndX, y: fort.y };
-            const midControlX = (start.x + end.x) / 2;
-            const midControlY = Math.min(agent.y, fort.y) - (layout.isMobile ? 0.19 : 0.11) * HEIGHT / dpr;
-            p0 = start;
-            p1 = { x: midControlX, y: midControlY };
-            p2 = end;
-            ({ x, y } = bezierPt(state.t, p0, p1, p2));
-          } else if (state.stage === 2 && !conf.devillish) {
-            // Right arrow: ContextFort to right integration (use fractional X)
-            const rightArrowStartX = rightArrowStartXFrac * WIDTH / dpr;
-            const fortBoxW = CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * (layout.isMobile ? 0.85 : 1);
-            const fortBoxPadR = fortBoxW * 0.52;
-            const startX = fort.x + fortBoxPadR;
-            const startY = fort.y;
-            const arrowCurve = layout.isMobile ? 0.22 : 0.13;
-            p0 = { x: startX, y: startY };
-            p1 = { x: rightArrowStartX - (layout.isMobile ? 40 : 70) * layout.scale, y: layout.rightY[state.lane] - arrowCurve * HEIGHT / dpr };
-            p2 = { x: rightArrowStartX, y: layout.rightY[state.lane] };
-            ({ x, y } = bezierPt(state.t, p0, p1, p2));
-          } else if (state.stage === 2 && conf.devillish) {
-            x = (DEVIL_DROP_X > 0 ? DEVIL_DROP_X * WIDTH / dpr : fort.x + 60 * layout.scale);
-            y = fort.y + (typeof DEVIL_DROP_OFFSET_Y === 'number' ? state.t * DEVIL_DROP_OFFSET_Y * layout.scale : state.t * 120 * layout.scale);
-          } else if (state.stage === 3 && conf.devillish) {
-            x = (DEVIL_DROP_X > 0 ? DEVIL_DROP_X * WIDTH / dpr : fort.x + 60 * layout.scale);
-            y = fort.y + (typeof DEVIL_DROP_OFFSET_Y === 'number' ? DEVIL_DROP_OFFSET_Y * layout.scale : 120 * layout.scale) + state.t * 40 * layout.scale;
+        let p0, p1, p2, x, y;
+        if (state.stage === 0) {
+          // Left arrow: integration to agent
+          const leftArrowStartX = leftArrowStartXFrac * WIDTH / dpr;
+          const arrowCurve = layout.isMobile ? 0.22 : 0.13;
+          p0 = { x: leftArrowStartX, y: layout.leftY[state.lane] };
+          p1 = { x: agent.x - (layout.isMobile ? 40 : 70) * layout.scale, y: layout.leftY[state.lane] - arrowCurve * HEIGHT / dpr };
+          p2 = { x: agent.x, y: agent.y };
+          ({ x, y } = bezierPt(state.t, p0, p1, p2));
+        } else if (state.stage === 1) {
+          // Middle arrow: agent to ContextFort (use fractional X)
+          const agentToFortStartX = AGENT_TO_FORT_ARROW_START_X_FRAC * WIDTH / dpr;
+          const agentToFortEndX = AGENT_TO_FORT_ARROW_END_X_FRAC * WIDTH / dpr;
+          const start = { x: agentToFortStartX, y: agent.y };
+          const end = { x: agentToFortEndX, y: fort.y };
+          const midControlX = (start.x + end.x) / 2;
+          const midControlY = Math.min(agent.y, fort.y) - (layout.isMobile ? 0.19 : 0.11) * HEIGHT / dpr;
+          p0 = start;
+          p1 = { x: midControlX, y: midControlY };
+          p2 = end;
+          ({ x, y } = bezierPt(state.t, p0, p1, p2));
+        } else if (state.stage === 2 && !conf.devillish) {
+          // Right arrow: ContextFort to right integration (use fractional X)
+          const rightArrowStartX = rightArrowStartXFrac * WIDTH / dpr;
+          const fortBoxW = CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * (layout.isMobile ? 0.85 : 1);
+          const fortBoxPadR = fortBoxW * 0.52;
+          const startX = fort.x + fortBoxPadR;
+          const startY = fort.y;
+          const arrowCurve = layout.isMobile ? 0.22 : 0.13;
+          p0 = { x: startX, y: startY };
+          p1 = { x: rightArrowStartX - (layout.isMobile ? 40 : 70) * layout.scale, y: layout.rightY[state.lane] - arrowCurve * HEIGHT / dpr };
+          p2 = { x: rightArrowStartX, y: layout.rightY[state.lane] };
+          ({ x, y } = bezierPt(state.t, p0, p1, p2));
+        } else if (state.stage === 2 && conf.devillish) {
+          x = (DEVIL_DROP_X > 0 ? DEVIL_DROP_X * WIDTH / dpr : fort.x + 60 * layout.scale);
+          y = fort.y + (typeof DEVIL_DROP_OFFSET_Y === 'number' ? state.t * DEVIL_DROP_OFFSET_Y * layout.scale : state.t * 120 * layout.scale);
+        } else if (state.stage === 3 && conf.devillish) {
+          x = (DEVIL_DROP_X > 0 ? DEVIL_DROP_X * WIDTH / dpr : fort.x + 60 * layout.scale);
+          y = fort.y + (typeof DEVIL_DROP_OFFSET_Y === 'number' ? DEVIL_DROP_OFFSET_Y * layout.scale : 120 * layout.scale) + state.t * 40 * layout.scale;
+        }
+        if (typeof x === 'number' && typeof y === 'number') {
+          ctx.save();
+          ctx.font = `${Math.max(layout.isMobile ? 10 : 11, Math.round((layout.isMobile ? 12 : 14) * layout.scale))}px Inter, sans-serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+
+          if (conf.devillish) {
+              ctx.globalAlpha = state.stage === 3 ? 1 - state.t : 1;
+              const img = imageCache[DEVIL_IMG];
+              if (img && img.complete) {
+              const iconOffsetX = (layout.isMobile ? 80 : 115) * layout.scale;
+              const iconSize = (layout.isMobile ? 20 : 28) * layout.scale;
+              const iconCenterX = x - iconOffsetX;
+              const iconCenterY = y;
+
+              if (state.stage >= 2) {
+                  ctx.save();
+                  ctx.translate(iconCenterX, iconCenterY); // move origin to icon center
+                  ctx.rotate(state.t * 0.8);               // spin around its center
+                  ctx.drawImage(img, -iconSize / 2, -iconSize / 2, iconSize, iconSize);
+                  ctx.restore();
+              } else {
+                  ctx.drawImage(img, iconCenterX - iconSize / 2, iconCenterY - iconSize / 2, iconSize, iconSize);
+              }
+              }
           }
-          if (state.running && typeof x === 'number' && typeof y === 'number') {
-            ctx.save();
-            ctx.font = `${Math.max(layout.isMobile ? 10 : 11, Math.round((layout.isMobile ? 12 : 14) * layout.scale))}px Inter, sans-serif`;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
 
-            if (conf.devillish) {
-                ctx.globalAlpha = state.stage === 3 ? 1 - state.t : 1;
-                const img = imageCache[DEVIL_IMG];
-                if (img && img.complete) {
-                const iconOffsetX = (layout.isMobile ? 80 : 115) * layout.scale;
-                const iconSize = (layout.isMobile ? 20 : 28) * layout.scale;
-                const iconCenterX = x - iconOffsetX;
-                const iconCenterY = y;
+          ctx.fillStyle = conf.color;
+          ctx.shadowColor = conf.color;
+          ctx.shadowBlur = 6 * layout.scale;
 
-                if (state.stage >= 2) {
-                    ctx.save();
-                    ctx.translate(iconCenterX, iconCenterY); // move origin to icon center
-                    ctx.rotate(state.t * 0.8);               // spin around its center
-                    ctx.drawImage(img, -iconSize / 2, -iconSize / 2, iconSize, iconSize);
-                    ctx.restore();
-                } else {
-                    ctx.drawImage(img, iconCenterX - iconSize / 2, iconCenterY - iconSize / 2, iconSize, iconSize);
-                }
-                }
-            }
+          let displayText = conf.textLeft;
+          if (state.stage === 1) displayText = conf.textAgent;
+          else if (state.stage === 2 || state.stage === 3) displayText = conf.textRight;
 
-            ctx.fillStyle = conf.color;
-            ctx.shadowColor = conf.color;
-            ctx.shadowBlur = 6 * layout.scale;
-
-            let displayText = conf.textLeft;
-            if (state.stage === 1) displayText = conf.textAgent;
-            else if (state.stage === 2 || state.stage === 3) displayText = conf.textRight;
-
-            ctx.fillText(displayText, x, y);
-            ctx.shadowBlur = 0;
-            ctx.globalAlpha = 1;
-            ctx.restore();
-            }
-
+          ctx.fillText(displayText, x, y);
+          ctx.shadowBlur = 0;
+          ctx.globalAlpha = 1;
+          ctx.restore();
         }
       });
 
