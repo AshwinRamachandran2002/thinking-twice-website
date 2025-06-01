@@ -10,8 +10,10 @@ import {
   leftIntegrationImagesTop,
   rightIntegrationImages,
   rightIntegrationImagesTop,
-  leftArrowStartX,
-  rightArrowStartX,
+  leftArrowStartXFrac,
+  rightArrowStartXFrac,
+  AGENT_TO_FORT_ARROW_START_X_FRAC,
+  AGENT_TO_FORT_ARROW_END_X_FRAC,
   diagramWidth,
   diagramHeight,
   diagramX,
@@ -70,33 +72,39 @@ export const FlowDiagram = () => {
 
   // Responsive layout helpers
   const getScale = (w, h) => {
-    return Math.min(w / BASE_WIDTH, h / BASE_HEIGHT);
+    // Use a minimum scale for mobile, but allow up to 1 for desktop
+    return Math.min(w / BASE_WIDTH, h / BASE_HEIGHT, 1);
   };
 
   // Responsive positions (all as fractions of width/height)
   const getLayout = (w, h) => {
     const scale = getScale(w, h);
-    // Calculate base Y for each stack, then space by INTEGRATION_SPACING
-    const leftBaseY = 0.14 * h;
-    const rightBaseY = 0.14 * h;
-    const lefttopBaseY = 0.31 * h;
-    const righttopBaseY = 0.31 * h;
+    // Mobile-specific tweaks
+    const isMobile = w < 600;
+    // Adjust Y positions and spacing for mobile
+    const leftBaseY = isMobile ? 0.18 * h : 0.14 * h;
+    const rightBaseY = isMobile ? 0.18 * h : 0.14 * h;
+    const lefttopBaseY = isMobile ? 0.36 * h : 0.31 * h;
+    const righttopBaseY = isMobile ? 0.36 * h : 0.31 * h;
+    // More spacing between lanes on mobile
+    const spacing = isMobile ? INTEGRATION_SPACING * 1.25 : INTEGRATION_SPACING;
     return {
       leftCenter: { x: 0.055 * w, y: 0.28 * h },
       leftTopCenter: { x: 0.07 * w, y: 0.31 * h },
       rightCenter: { x: 0.945 * w, y: 0.28 * h },
       rightTopCenter: { x: 0.93 * w, y: 0.31 * h },
-      leftY: Array.from({length: 5}, (_, i) => leftBaseY + i * INTEGRATION_SPACING * h),
-      leftYTop: Array.from({length: 3}, (_, i) => lefttopBaseY + i * INTEGRATION_SPACING * h),
-      rightY: Array.from({length: 5}, (_, i) => rightBaseY + i * INTEGRATION_SPACING * h),
-      rightYTop: Array.from({length: 3}, (_, i) => righttopBaseY + i * INTEGRATION_SPACING * h),
+      leftY: Array.from({length: 5}, (_, i) => leftBaseY + i * spacing * h),
+      leftYTop: Array.from({length: 3}, (_, i) => lefttopBaseY + i * spacing * h),
+      rightY: Array.from({length: 5}, (_, i) => rightBaseY + i * spacing * h),
+      rightYTop: Array.from({length: 3}, (_, i) => righttopBaseY + i * spacing * h),
       rightXTop: 0.93 * w,
-      leftX: 0.045 * w,
-      leftXTop: 0.08 * w,
-      rightX: 0.965 * w,
-      agentXOffset: -0.21 * w,
-      fortXOffset: 0.08 * w,
+      leftX: isMobile ? 0.07 * w : 0.045 * w,
+      leftXTop: isMobile ? 0.11 * w : 0.08 * w,
+      rightX: isMobile ? 0.93 * w : 0.965 * w,
+      agentXOffset: isMobile ? -0.18 * w : -0.21 * w,
+      fortXOffset: isMobile ? 0.13 * w : 0.08 * w,
       scale,
+      isMobile,
     };
   };
 
@@ -113,13 +121,17 @@ export const FlowDiagram = () => {
 
   /* ------------------------- layout constants ------------------------ */
 
+  // Responsive resize with devicePixelRatio for crispness
   const resize = () => {
     const w = wrapperRef.current.clientWidth;
     // Use min/max for mobile friendliness
-    const h = Math.max(180, Math.min(w / CANVAS_RATIO, 400));
+    const h = Math.max(140, Math.min(w / CANVAS_RATIO, 320));
     const c = canvasRef.current;
-    c.width = w;
-    c.height = h;
+    const dpr = window.devicePixelRatio || 1;
+    c.width = w * dpr;
+    c.height = h * dpr;
+    c.style.width = w + 'px';
+    c.style.height = h + 'px';
   };
 
   useLayoutEffect(() => {
@@ -131,7 +143,11 @@ export const FlowDiagram = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    ctx.font = "bold 11px Inter, sans-serif";
+    // Use devicePixelRatio for crispness
+    const dpr = window.devicePixelRatio || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // Font sizes scale with width for mobile
+    ctx.font = `bold ${Math.max(11, Math.round(canvas.width / (80 * dpr)))}px Inter, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.lineCap = "round";
@@ -155,10 +171,10 @@ export const FlowDiagram = () => {
 
     const loop = () => {
       const { width: WIDTH, height: HEIGHT } = canvas;
-      const layout = getLayout(WIDTH, HEIGHT);
-      const centreX = WIDTH / 2;
-      const agent = { x: centreX + layout.agentXOffset, y: HEIGHT / 2 - 0.19 * HEIGHT };
-      const fort = { x: centreX + layout.fortXOffset, y: HEIGHT / 2 - 0.19 * HEIGHT };
+      const layout = getLayout(WIDTH / dpr, HEIGHT / dpr);
+      const centreX = WIDTH / (2 * dpr);
+      const agent = { x: centreX + layout.agentXOffset, y: HEIGHT / dpr / 2 - 0.19 * HEIGHT / dpr };
+      const fort = { x: centreX + layout.fortXOffset, y: HEIGHT / dpr / 2 - 0.19 * HEIGHT / dpr };
 
       /* ------------------------------ spawn --------------------------- */
       const now = Date.now();
@@ -187,14 +203,14 @@ export const FlowDiagram = () => {
 
         ctx.globalAlpha = 0.85;
         ctx.shadowColor = "rgba(255, 255, 255, 0.25)";
-        ctx.shadowBlur = 18;
+        ctx.shadowBlur = 12 * layout.scale; // scale shadow for mobile
 
         ctx.beginPath();
-        ctx.roundRect(x, y, w, h, 12);
+        ctx.roundRect(x, y, w, h, 12 * layout.scale);
         ctx.fill();
         ctx.globalAlpha = 1;
         ctx.fillStyle = textColor;
-        ctx.font = "bold 18px Inter, sans-serif";
+        ctx.font = `bold ${Math.max(14, Math.round(18 * layout.scale))}px Inter, sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(label, x + w / 2, y + h / 2);
@@ -206,11 +222,11 @@ export const FlowDiagram = () => {
         ctx.translate(x, y);
         ctx.rotate(Math.atan2(dir.y, dir.x));
         ctx.strokeStyle = colour;
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.5 * layout.scale;
         ctx.beginPath();
-        ctx.moveTo(-8, 4);
+        ctx.moveTo(-8 * layout.scale, 4 * layout.scale);
         ctx.lineTo(0, 0);
-        ctx.lineTo(-8, -4);
+        ctx.lineTo(-8 * layout.scale, -4 * layout.scale);
         ctx.stroke();
         ctx.restore();
       };
@@ -221,9 +237,9 @@ export const FlowDiagram = () => {
         grad.addColorStop(0, c0);
         grad.addColorStop(1, c1);
         ctx.strokeStyle = grad;
-        ctx.lineWidth = width;
+        ctx.lineWidth = width * layout.scale;
         ctx.shadowColor = c1;
-        ctx.shadowBlur = 12; // reduced blur for performance
+        ctx.shadowBlur = 8 * layout.scale; // reduced blur for performance
         ctx.beginPath();
         ctx.moveTo(p0.x, p0.y);
         ctx.quadraticCurveTo(p1.x, p1.y, p2.x, p2.y);
@@ -239,12 +255,12 @@ export const FlowDiagram = () => {
         const img = imageCache[leftIntegrationImages[i]];
         ctx.save();
         ctx.beginPath();
-        ctx.arc(layout.leftX, yy, INTEGRATION_RADIUS * WIDTH, 0, 2 * Math.PI);
+        ctx.arc(layout.leftX, yy, INTEGRATION_RADIUS * WIDTH / dpr, 0, 2 * Math.PI); // restore / dpr
         ctx.closePath();
         ctx.clip();
         if (img && img.complete) {
           // Center and cover the image in the circle
-          const size = INTEGRATION_IMG_SIZE * WIDTH;
+          const size = INTEGRATION_IMG_SIZE * WIDTH / dpr;
           const cx = layout.leftX;
           const cy = yy;
           ctx.drawImage(
@@ -262,11 +278,11 @@ export const FlowDiagram = () => {
         const img = imageCache[leftIntegrationImagesTop[i]];
         ctx.save();
         ctx.beginPath();
-        ctx.arc(layout.leftXTop, yy, INTEGRATION_TOP_RADIUS * WIDTH, 0, 2 * Math.PI);
+        ctx.arc(layout.leftXTop, yy, INTEGRATION_TOP_RADIUS * WIDTH / dpr, 0, 2 * Math.PI); // restore / dpr
         ctx.closePath();
         ctx.clip();
         if (img && img.complete) {
-          const size = INTEGRATION_TOP_IMG_SIZE * WIDTH;
+          const size = INTEGRATION_TOP_IMG_SIZE * WIDTH / dpr;
           const cx = layout.leftXTop;
           const cy = yy;
           ctx.drawImage(
@@ -284,11 +300,11 @@ export const FlowDiagram = () => {
         const img = imageCache[rightIntegrationImages[i]];
         ctx.save();
         ctx.beginPath();
-        ctx.arc(layout.rightX, yy, INTEGRATION_RADIUS * WIDTH, 0, 2 * Math.PI);
+        ctx.arc(layout.rightX, yy, INTEGRATION_RADIUS * WIDTH / dpr, 0, 2 * Math.PI); // restore / dpr
         ctx.closePath();
         ctx.clip();
         if (img && img.complete) {
-          const size = INTEGRATION_IMG_SIZE * WIDTH;
+          const size = INTEGRATION_IMG_SIZE * WIDTH / dpr;
           const cx = layout.rightX;
           const cy = yy;
           ctx.drawImage(
@@ -306,11 +322,11 @@ export const FlowDiagram = () => {
         const img = imageCache[rightIntegrationImagesTop[i]];
         ctx.save();
         ctx.beginPath();
-        ctx.arc(layout.rightXTop, yy, INTEGRATION_TOP_RADIUS * WIDTH, 0, 2 * Math.PI);
+        ctx.arc(layout.rightXTop, yy, INTEGRATION_TOP_RADIUS * WIDTH / dpr, 0, 2 * Math.PI); // restore / dpr
         ctx.closePath();
         ctx.clip();
         if (img && img.complete) {
-          const size = INTEGRATION_TOP_IMG_SIZE * WIDTH;
+          const size = INTEGRATION_TOP_IMG_SIZE * WIDTH / dpr;
           const cx = layout.rightXTop;
           const cy = yy;
           ctx.drawImage(
@@ -327,36 +343,47 @@ export const FlowDiagram = () => {
       // ------------------------ pipes ------------------------------- //
       // Left (bottom) layer arrows
       layout.leftY.forEach((yy) => {
+        // Use fractional start X for responsiveness
+        const leftArrowStartX = leftArrowStartXFrac * WIDTH / dpr;
         const p0 = new Vector2(leftArrowStartX, yy);
         const p1 = new Vector2(
-          (LEFT_TO_AGENT_ARROW_END_X > 0 ? LEFT_TO_AGENT_ARROW_END_X * WIDTH : agent.x - 70),
-          (LEFT_TO_AGENT_ARROW_END_Y > 0 ? LEFT_TO_AGENT_ARROW_END_Y * HEIGHT : yy)
+          agent.x - (layout.isMobile ? 40 : 70) * layout.scale,
+          yy - (layout.isMobile ? 0.22 : 0.13) * HEIGHT / dpr
         );
         const p2 = new Vector2(
-          (LEFT_TO_AGENT_ARROW_END_X > 0 ? LEFT_TO_AGENT_ARROW_END_X * WIDTH : agent.x),
-          (LEFT_TO_AGENT_ARROW_END_Y > 0 ? LEFT_TO_AGENT_ARROW_END_Y * HEIGHT : agent.y)
+          agent.x,
+          agent.y
         );
         curve(p0, p1, p2, "#0891b2", "#06b6d4"); // cyan
       });
       // Middle arrow (agent to fort) with global endpoint control
-      const midControlX = (AGENT_TO_FORT_ARROW_START_X + AGENT_TO_FORT_ARROW_END_X) / 2;
-      const midControlY = Math.min(agent.y, fort.y) - 0.083 * HEIGHT; // 70px above the higher box
+      // Use fractional X for start/end
+      const agentToFortStartX = AGENT_TO_FORT_ARROW_START_X_FRAC * WIDTH / dpr;
+      const agentToFortEndX = AGENT_TO_FORT_ARROW_END_X_FRAC * WIDTH / dpr;
+      const agentToFortStart = { x: agentToFortStartX, y: agent.y };
+      const agentToFortEnd = { x: agentToFortEndX, y: fort.y };
+      const midControlX = (agentToFortStart.x + agentToFortEnd.x) / 2;
+      const midControlY = Math.min(agent.y, fort.y) - (layout.isMobile ? 0.19 : 0.11) * HEIGHT / dpr;
+      // Define fortBoxW here for use in right arrows
+      const fortBoxW = CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * (layout.isMobile ? 0.85 : 1);
       curve(
-        new Vector2(AGENT_TO_FORT_ARROW_START_X, agent.y),
+        new Vector2(agentToFortStart.x, agentToFortStart.y),
         new Vector2(midControlX, midControlY),
-        new Vector2(AGENT_TO_FORT_ARROW_END_X, fort.y),
+        new Vector2(agentToFortEnd.x, agentToFortEnd.y),
         "#7c3aed",
         "#8b5cf6",
-        2.5,
+        layout.isMobile ? 2.2 : 2.7,
       );
-
-      // Right (bottom) layer arrows
+      // Right (bottom) layer arrows (ContextFort to right integrations)
       layout.rightY.forEach((yy) => {
-        const p0 = new Vector2(
-          (RIGHT_TO_FORT_ARROW_START_X > 0 ? RIGHT_TO_FORT_ARROW_START_X * WIDTH : fort.x + FORT_TO_RIGHT_ARROW_OFFSET),
-          (RIGHT_TO_FORT_ARROW_START_Y > 0 ? RIGHT_TO_FORT_ARROW_START_Y * HEIGHT : fort.y)
-        );
-        const p1 = new Vector2(rightArrowStartX - 70, yy);
+        // Use fractional start X for responsiveness
+        const rightArrowStartX = rightArrowStartXFrac * WIDTH / dpr;
+        const fortBoxPadR = fortBoxW * 0.52;
+        const startX = fort.x + fortBoxPadR;
+        const startY = fort.y;
+        const arrowCurve = layout.isMobile ? 0.22 : 0.13;
+        const p0 = new Vector2(startX, startY);
+        const p1 = new Vector2(rightArrowStartX - (layout.isMobile ? 40 : 70) * layout.scale, yy - arrowCurve * HEIGHT / dpr);
         const p2 = new Vector2(rightArrowStartX, yy);
         curve(p0, p1, p2, "#ea580c", "#f97316"); // orange
       });
@@ -386,36 +413,46 @@ export const FlowDiagram = () => {
           let p0, p1, p2, x, y;
           if (state.stage === 0) {
             // Left arrow: integration to agent
+            const leftArrowStartX = leftArrowStartXFrac * WIDTH / dpr;
+            const arrowCurve = layout.isMobile ? 0.22 : 0.13;
             p0 = { x: leftArrowStartX, y: layout.leftY[state.lane] };
-            p1 = { x: agent.x - 70, y: layout.leftY[state.lane] };
+            p1 = { x: agent.x - (layout.isMobile ? 40 : 70) * layout.scale, y: layout.leftY[state.lane] - arrowCurve * HEIGHT / dpr };
             p2 = { x: agent.x, y: agent.y };
             ({ x, y } = bezierPt(state.t, p0, p1, p2));
           } else if (state.stage === 1) {
-            // Middle arrow: agent to ContextFort
-            const midControlX = (agent.x + fort.x) / 2;
-            const midControlY = Math.min(agent.y, fort.y) - 70;
-            p0 = { x: agent.x + 80, y: agent.y };
+            // Middle arrow: agent to ContextFort (use fractional X)
+            const agentToFortStartX = AGENT_TO_FORT_ARROW_START_X_FRAC * WIDTH / dpr;
+            const agentToFortEndX = AGENT_TO_FORT_ARROW_END_X_FRAC * WIDTH / dpr;
+            const start = { x: agentToFortStartX, y: agent.y };
+            const end = { x: agentToFortEndX, y: fort.y };
+            const midControlX = (start.x + end.x) / 2;
+            const midControlY = Math.min(agent.y, fort.y) - (layout.isMobile ? 0.19 : 0.11) * HEIGHT / dpr;
+            p0 = start;
             p1 = { x: midControlX, y: midControlY };
-            p2 = { x: fort.x - 80, y: fort.y };
+            p2 = end;
             ({ x, y } = bezierPt(state.t, p0, p1, p2));
           } else if (state.stage === 2 && !conf.devillish) {
-            // Right arrow: ContextFort to right integration (same lane)
-            p0 = { x: fort.x + 40, y: fort.y };
-            p1 = { x: rightArrowStartX - 70, y: layout.rightY[state.lane] };
+            // Right arrow: ContextFort to right integration (use fractional X)
+            const rightArrowStartX = rightArrowStartXFrac * WIDTH / dpr;
+            const fortBoxW = CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * (layout.isMobile ? 0.85 : 1);
+            const fortBoxPadR = fortBoxW * 0.52;
+            const startX = fort.x + fortBoxPadR;
+            const startY = fort.y;
+            const arrowCurve = layout.isMobile ? 0.22 : 0.13;
+            p0 = { x: startX, y: startY };
+            p1 = { x: rightArrowStartX - (layout.isMobile ? 40 : 70) * layout.scale, y: layout.rightY[state.lane] - arrowCurve * HEIGHT / dpr };
             p2 = { x: rightArrowStartX, y: layout.rightY[state.lane] };
             ({ x, y } = bezierPt(state.t, p0, p1, p2));
           } else if (state.stage === 2 && conf.devillish) {
-            // devillish drop from ContextFort
-            x = (DEVIL_DROP_X > 0 ? DEVIL_DROP_X * WIDTH : fort.x + 60);
-            y = fort.y + (typeof DEVIL_DROP_OFFSET_Y === 'number' ? state.t * DEVIL_DROP_OFFSET_Y : state.t * 120);
+            x = (DEVIL_DROP_X > 0 ? DEVIL_DROP_X * WIDTH / dpr : fort.x + 60 * layout.scale);
+            y = fort.y + (typeof DEVIL_DROP_OFFSET_Y === 'number' ? state.t * DEVIL_DROP_OFFSET_Y * layout.scale : state.t * 120 * layout.scale);
           } else if (state.stage === 3 && conf.devillish) {
-            // fade out after drop
-            x = (DEVIL_DROP_X > 0 ? DEVIL_DROP_X * WIDTH : fort.x + 60);
-            y = fort.y + (typeof DEVIL_DROP_OFFSET_Y === 'number' ? DEVIL_DROP_OFFSET_Y : 120) + state.t * 40;
+            x = (DEVIL_DROP_X > 0 ? DEVIL_DROP_X * WIDTH / dpr : fort.x + 60 * layout.scale);
+            y = fort.y + (typeof DEVIL_DROP_OFFSET_Y === 'number' ? DEVIL_DROP_OFFSET_Y * layout.scale : 120 * layout.scale) + state.t * 40 * layout.scale;
           }
           if (state.running && typeof x === 'number' && typeof y === 'number') {
             ctx.save();
-            ctx.font = TEXT_FONT;
+            ctx.font = `${Math.max(layout.isMobile ? 10 : 11, Math.round((layout.isMobile ? 12 : 14) * layout.scale))}px Inter, sans-serif`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
@@ -423,8 +460,8 @@ export const FlowDiagram = () => {
                 ctx.globalAlpha = state.stage === 3 ? 1 - state.t : 1;
                 const img = imageCache[DEVIL_IMG];
                 if (img && img.complete) {
-                const iconOffsetX = 115;
-                const iconSize = 28;
+                const iconOffsetX = (layout.isMobile ? 80 : 115) * layout.scale;
+                const iconSize = (layout.isMobile ? 20 : 28) * layout.scale;
                 const iconCenterX = x - iconOffsetX;
                 const iconCenterY = y;
 
@@ -442,7 +479,7 @@ export const FlowDiagram = () => {
 
             ctx.fillStyle = conf.color;
             ctx.shadowColor = conf.color;
-            ctx.shadowBlur = 8;
+            ctx.shadowBlur = 6 * layout.scale;
 
             let displayText = conf.textLeft;
             if (state.stage === 1) displayText = conf.textAgent;
@@ -461,24 +498,34 @@ export const FlowDiagram = () => {
       // Use website-matching color for the boxes (e.g. #f8fafc for bg, #0f172a for text)
       const AGENT_BOX_COLOR = "#f8fafc"; // light background
       const AGENT_TEXT_COLOR = "#0f172a"; // dark text
-      drawSolidBox(agent.x, agent.y - 0.055 * HEIGHT, CONTEXTFORT_BOX_WIDTH * WIDTH, CONTEXTFORT_BOX_HEIGHT * HEIGHT, "Agent", AGENT_BOX_COLOR, AGENT_TEXT_COLOR);
-      drawSolidBox(fort.x, fort.y - 0.055 * HEIGHT, CONTEXTFORT_BOX_WIDTH * WIDTH, CONTEXTFORT_BOX_HEIGHT * HEIGHT, "ContextFort", AGENT_BOX_COLOR, AGENT_TEXT_COLOR);
-      // Draw box labels on top of everything
+      drawSolidBox(
+        agent.x,
+        agent.y - 0.055 * HEIGHT / dpr,
+        CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * (layout.isMobile ? 0.85 : 1),
+        CONTEXTFORT_BOX_HEIGHT * HEIGHT / dpr * (layout.isMobile ? 0.85 : 1),
+        "Agent",
+        AGENT_BOX_COLOR,
+        AGENT_TEXT_COLOR
+      );
+      drawSolidBox(
+        fort.x,
+        fort.y - 0.055 * HEIGHT / dpr,
+        CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * (layout.isMobile ? 0.85 : 1),
+        CONTEXTFORT_BOX_HEIGHT * HEIGHT / dpr * (layout.isMobile ? 0.85 : 1),
+        "ContextFort",
+        AGENT_BOX_COLOR,
+        AGENT_TEXT_COLOR
+      );
       ctx.save();
-      ctx.font = "bold 18px Inter, sans-serif";
+      ctx.font = `bold ${Math.max(layout.isMobile ? 12 : 14, Math.round((layout.isMobile ? 14 : 18) * layout.scale))}px Inter, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillStyle = AGENT_TEXT_COLOR;
       ctx.shadowColor = "#000";
-      ctx.shadowBlur = 6;
-    //   ctx.fillText("Agent", agent.x + 0.133 * WIDTH / 2, agent.y - 0.055 * HEIGHT + 0.13 * HEIGHT / 2);
-      // Draw ContextFort label higher up in the box
-      const contextFortLabelY = fort.y - 0.055 * HEIGHT + 0.09 * HEIGHT;
-    //   ctx.fillText("ContextFort", fort.x + CONTEXTFORT_BOX_WIDTH * WIDTH / 2, contextFortLabelY);
+      ctx.shadowBlur = 2 * layout.scale;
       ctx.shadowBlur = 0;
       ctx.restore();
 
-      // --- Removed global StackBlur for performance ---
       raf.current = requestAnimationFrame(loop);
     };
     raf.current = requestAnimationFrame(loop);
@@ -490,15 +537,17 @@ export const FlowDiagram = () => {
       ref={wrapperRef}
       className="w-full max-w-full aspect-[900/320] sm:aspect-[900/320]"
       style={{
-        minHeight: 180,
-        maxHeight: 400,
+        minHeight: 140,
+        maxHeight: 320,
         width: '100%',
         left: diagramX,
         top: diagramY,
         position: 'relative',
+        touchAction: 'manipulation', // improve mobile touch
+        overflow: 'hidden', // prevent scrollbars on mobile
       }}
     >
-      <canvas ref={canvasRef} className="rounded-xl shadow-2xl w-full h-full" style={{ background: 'transparent', width: '100%', height: '100%' }} />
+      <canvas ref={canvasRef} className="rounded-xl shadow-2xl w-full h-full" style={{ background: 'transparent', width: '100%', height: '100%', display: 'block', touchAction: 'manipulation' }} />
     </div>
   );
 };

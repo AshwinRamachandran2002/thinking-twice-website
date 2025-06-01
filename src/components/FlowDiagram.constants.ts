@@ -34,9 +34,9 @@ export const rightIntegrationImagesTop = [
 ]; // Mirror
 
 // === Global control variables ===
-// Arrow start X positions
-export const leftArrowStartX = 170; // Change this to control all left arrows
-export const rightArrowStartX = 1630; // Change this to control all right arrows
+// Arrow start X positions (now as fractions of width for responsiveness)
+export const leftArrowStartXFrac = 0.09; // ~170/1900
+export const rightArrowStartXFrac = 0.91; // ~1630/1800
 // FlowDiagram wrapper controls
 export const diagramWidth = '100%'; // e.g. '900px' or '100%'
 export const diagramHeight = '80px'; // e.g. '320px', 'auto', or '100%'
@@ -102,9 +102,9 @@ export const INTEGRATION_SPACING = 0.15; // as fraction of HEIGHT (vertical spac
 export const AGENT_TO_FORT_ARROW_OFFSET = -0.001; // as fraction of WIDTH (default 0.089)
 export const FORT_TO_RIGHT_ARROW_OFFSET = 240; // in px (default 40)
 
-// === Agent to Fort arrow endpoints (global control) ===
-export const AGENT_TO_FORT_ARROW_START_X = 750; // px, adjust as needed
-export const AGENT_TO_FORT_ARROW_END_X = 1050; // px, adjust as needed
+// === Agent to Fort arrow endpoints (now as fractions of width) ===
+export const AGENT_TO_FORT_ARROW_START_X_FRAC = 0.42; // ~750/1800
+export const AGENT_TO_FORT_ARROW_END_X_FRAC = 0.58;   // ~1050/1800
 
 // === Global arrow endpoint controls ===
 export const LEFT_TO_AGENT_ARROW_END_X = 0.0; // as fraction of WIDTH, set in FlowDiagram.tsx for agent.x
