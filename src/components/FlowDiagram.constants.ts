@@ -1,0 +1,119 @@
+// Constants for FlowDiagram
+
+export const MAX_CONCURRENT = 2;
+export const SPAWN_MIN = 3000;
+export const SPAWN_MAX = 7000;
+export const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+export const CANVAS_RATIO = 900 / 320; // maintain original aspect
+
+// List of integration image URLs (update as needed)
+export const leftIntegrationImages = [
+  '/src/assets/slack.svg',
+  '/src/assets/calendar.svg',
+  '/src/assets/github.svg',
+  '/src/assets/airtable.svg',
+  '/src/assets/jira.svg',
+];
+export const leftIntegrationImagesTop = [
+  '/src/assets/notion.svg',
+  '/src/assets/sheets.svg',
+  '/src/assets/salesforce.svg'
+];
+export const rightIntegrationImages = [
+    '/src/assets/datadog.svg', // Mirror
+    '/src/assets/drive.svg', // Mirror
+    '/src/assets/hubspot.svg', // Mirror
+    '/src/assets/sap.svg', // Mirror
+    '/src/assets/jira.svg', // Mirror
+]; // Mirror
+export const rightIntegrationImagesTop = [
+    '/src/assets/sharepoint.svg', // Mirror
+    '/src/assets/workday.svg', // Mirror
+    '/src/assets/zendesk.svg', // Mirror
+]; // Mirror
+
+// === Global control variables ===
+// Arrow start X positions
+export const leftArrowStartX = 170; // Change this to control all left arrows
+export const rightArrowStartX = 1630; // Change this to control all right arrows
+// FlowDiagram wrapper controls
+export const diagramWidth = '100%'; // e.g. '900px' or '100%'
+export const diagramHeight = '80px'; // e.g. '320px', 'auto', or '100%'
+export const diagramX = 0; // px offset from left
+export const diagramY = -50; // px offset from top
+
+// === Moving texts config ===
+export const DEVIL_IMG = '/src/assets/devil.svg'; // Replace with actual devil image path if available
+
+export const movingTexts = [
+  {
+    textLeft: "Jira Issue Details",
+    textAgent: "Mark Jira Complete",
+    textRight: "Mark Jira Complete",
+    color: "#60a5fa",
+    delay: 0,
+    devillish: false
+  },
+  {
+    textLeft: "Leak Slack Messages",
+    textAgent: "Leak Slack Message",
+    textRight: "Leak Thwarted",
+    color: "#fbbf24",
+    delay: 800,
+    devillish: true
+  },
+  {                 
+    textLeft: "Notion Document",
+    textAgent: "Write to Notion Page",
+    textRight: "Write to Notion Page",
+    color: "#34d399",
+    delay: 1600,
+    devillish: false
+  },
+  {
+    textLeft: "Leak Google Calendar",
+    textAgent: "Leak Google Calendar",
+    textRight: "Leak Thwarted",
+    color: "#a78bfa",
+    delay: 2400,
+    devillish: true
+  },
+  {
+    textLeft: "Gmail Thread",
+    textAgent: "Send Gmail",
+    textRight: "Send Gmail",
+    color: "#f87171",
+    delay: 3200,
+    devillish: false
+  },
+];
+export const TEXT_FONT = "bold 18px Inter, sans-serif";
+export const TEXT_SPEED = 0.003; // progress per ms
+
+// === Integration image size multipliers (global, easy to tweak) ===
+export const INTEGRATION_RADIUS = 0.0139; // as fraction of WIDTH (bottom layer)
+export const INTEGRATION_IMG_SIZE = 0.025; // as fraction of WIDTH (bottom layer)
+export const INTEGRATION_TOP_RADIUS = 0.02; // as fraction of WIDTH (top layer)
+export const INTEGRATION_TOP_IMG_SIZE = 0.02; // as fraction of WIDTH (top layer)
+export const INTEGRATION_SPACING = 0.15; // as fraction of HEIGHT (vertical spacing between images)
+
+// === Arrow offset globals ===
+export const AGENT_TO_FORT_ARROW_OFFSET = -0.001; // as fraction of WIDTH (default 0.089)
+export const FORT_TO_RIGHT_ARROW_OFFSET = 240; // in px (default 40)
+
+// === Agent to Fort arrow endpoints (global control) ===
+export const AGENT_TO_FORT_ARROW_START_X = 750; // px, adjust as needed
+export const AGENT_TO_FORT_ARROW_END_X = 1050; // px, adjust as needed
+
+// === Global arrow endpoint controls ===
+export const LEFT_TO_AGENT_ARROW_END_X = 0.0; // as fraction of WIDTH, set in FlowDiagram.tsx for agent.x
+export const LEFT_TO_AGENT_ARROW_END_Y = 0.4; // as fraction of HEIGHT, set in FlowDiagram.tsx for agent.y
+export const RIGHT_TO_FORT_ARROW_START_X = 0.0; // as fraction of WIDTH, set in FlowDiagram.tsx for fort.x
+export const RIGHT_TO_FORT_ARROW_START_Y = 0.4; // as fraction of HEIGHT, set in FlowDiagram.tsx for fort.y
+export const DEVIL_DROP_OFFSET_Y = 120; // px, vertical drop offset for devillish drop
+export const DEVIL_DROP_X = 0.67; // as fraction of WIDTH, set in FlowDiagram.tsx for devil icon x
+
+// === ContextFort box size globals ===
+export const CONTEXTFORT_BOX_WIDTH = 0.145; // as fraction of WIDTH (default 0.133)
+export const CONTEXTFORT_BOX_HEIGHT = 0.3; // increased height for more space

@@ -46,10 +46,10 @@ const LandingPageHero = () => {
       </header>
 
       <main className="relative z-20 flex min-h-screen flex-col items-center justify-center px-4 pt-32 md:pt-40">
-        <motion.section variants={container} initial="hidden" animate="show" className="flex flex-col items-center space-y-8 text-center mb-14">
+        <motion.section variants={container} initial="hidden" animate="show" className="flex flex-col items-center space-y-5 text-center mb-14">
           <motion.div variants={item} className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/15 px-5 py-2 backdrop-blur-md">
-            <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" className="text-orange-400"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <span className="text-sm font-semibold text-orange-300">Backed by Y Combinator</span>
+            <span className="text-sm font-semibold text-orange-300">Backed by</span>
+            <img decoding="async" src="https://framerusercontent.com/images/O703WMlgsx2KJikRoCbLUwT5hk.png" alt="" style={{display:'block',width:'110px',height:'23px',borderRadius:'inherit',objectPosition:'center',objectFit:'fill'}} />
           </motion.div>
           <motion.h1 variants={item} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight drop-shadow-lg">
             <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">Security & Observability</span><br />

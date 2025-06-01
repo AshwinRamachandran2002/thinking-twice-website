@@ -1,5 +1,43 @@
 import React, { useRef, useLayoutEffect, useEffect } from "react";
 import { Vector2 } from "three";
+import {
+  MAX_CONCURRENT,
+  SPAWN_MIN,
+  SPAWN_MAX,
+  rand,
+  CANVAS_RATIO,
+  leftIntegrationImages,
+  leftIntegrationImagesTop,
+  rightIntegrationImages,
+  rightIntegrationImagesTop,
+  leftArrowStartX,
+  rightArrowStartX,
+  diagramWidth,
+  diagramHeight,
+  diagramX,
+  diagramY,
+  DEVIL_IMG,
+  movingTexts,
+  TEXT_FONT,
+  TEXT_SPEED,
+  INTEGRATION_RADIUS,
+  INTEGRATION_IMG_SIZE,
+  INTEGRATION_TOP_RADIUS,
+  INTEGRATION_TOP_IMG_SIZE,
+  INTEGRATION_SPACING,
+  AGENT_TO_FORT_ARROW_OFFSET,
+  FORT_TO_RIGHT_ARROW_OFFSET,
+  AGENT_TO_FORT_ARROW_START_X,
+  AGENT_TO_FORT_ARROW_END_X,
+  LEFT_TO_AGENT_ARROW_END_X,
+  LEFT_TO_AGENT_ARROW_END_Y,
+  RIGHT_TO_FORT_ARROW_START_X,
+  RIGHT_TO_FORT_ARROW_START_Y,
+  DEVIL_DROP_OFFSET_Y,
+  CONTEXTFORT_BOX_WIDTH,
+  CONTEXTFORT_BOX_HEIGHT,
+  DEVIL_DROP_X,
+} from './FlowDiagram.constants';
 
 /**************************************************************************
  *  Shared maths helpers (geometry unchanged) + new tangent helper
@@ -19,98 +57,6 @@ const bezierTangent = (t, p0, p1, p2) => {
 /**************************************************************************
  *  FlowDiagram – redesigned visuals per user request
  **************************************************************************/
-const MAX_CONCURRENT = 2;
-const SPAWN_MIN = 3000;
-const SPAWN_MAX = 7000;
-const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
-const CANVAS_RATIO = 900 / 320; // maintain original aspect
-
-// List of integration image URLs (update as needed)
-const leftIntegrationImages = [
-  '/src/assets/slack.svg',
-  '/src/assets/slack.svg',
-  '/src/assets/slack.svg',
-  '/src/assets/slack.svg',
-  '/src/assets/slack.svg',
-];
-const leftIntegrationImagesTop = [
-  '/src/assets/slack.svg',
-  '/src/assets/slack.svg',
-  '/src/assets/slack.svg',
-];
-const rightIntegrationImages = [...leftIntegrationImages]; // Mirror
-const rightIntegrationImagesTop = [...leftIntegrationImagesTop]; // Mirror
-
-// === Global control variables ===
-// Arrow start X positions
-export const leftArrowStartX = 170; // Change this to control all left arrows
-export const rightArrowStartX = 1630; // Change this to control all right arrows
-// FlowDiagram wrapper controls
-export const diagramWidth = '100%'; // e.g. '900px' or '100%'
-export const diagramHeight = '190px'; // e.g. '320px', 'auto', or '100%'
-export const diagramX = 0; // px offset from left
-export const diagramY = -50; // px offset from top
-
-// === Moving texts config ===
-const DEVIL_IMG = '/src/assets/slack.svg'; // Replace with actual devil image path if available
-
-const movingTexts = [
-  {
-    textLeft: "Jira Issue Details",
-    textAgent: "Mark Jira Complete",
-    textRight: "Mark Jira Complete",
-    color: "#60a5fa",
-    delay: 0,
-    devillish: false
-  },
-  {
-    textLeft: "Leak Slack Messages",
-    textAgent: "Leak Slack Message",
-    textRight: "Leak Thwarted",
-    color: "#fbbf24",
-    delay: 800,
-    devillish: true
-  },
-  {                 
-    textLeft: "Notion Document",
-    textAgent: "Write to Notion Page",
-    textRight: "Write to Notion Page",
-    color: "#34d399",
-    delay: 1600,
-    devillish: false
-  },
-  {
-    textLeft: "Leak Google Calendar",
-    textAgent: "Leak Google Calendar",
-    textRight: "Leak Thwarted",
-    color: "#a78bfa",
-    delay: 2400,
-    devillish: true
-  },
-  {
-    textLeft: "Gmail Thread",
-    textAgent: "Send Gmail",
-    textRight: "Send Gmail",
-    color: "#f87171",
-    delay: 3200,
-    devillish: false
-  },
-];
-const TEXT_FONT = "bold 18px Inter, sans-serif";
-const TEXT_SPEED = 0.003; // progress per ms
-
-// === Integration image size multipliers (global, easy to tweak) ===
-const INTEGRATION_RADIUS = 0.02; // as fraction of WIDTH (bottom layer)
-const INTEGRATION_IMG_SIZE = 0.025; // as fraction of WIDTH (bottom layer)
-const INTEGRATION_TOP_RADIUS = 0.02; // as fraction of WIDTH (top layer)
-const INTEGRATION_TOP_IMG_SIZE = 0.02; // as fraction of WIDTH (top layer)
-const INTEGRATION_SPACING = 0.15; // as fraction of HEIGHT (vertical spacing between images)
-
-// === Arrow offset globals ===
-export const AGENT_TO_FORT_ARROW_OFFSET = -0.001; // as fraction of WIDTH (default 0.089)
-export const FORT_TO_RIGHT_ARROW_OFFSET = 240; // in px (default 40)
-
 export const FlowDiagram = () => {
   // Responsive base dimensions
   const BASE_WIDTH = 900;
@@ -211,8 +157,8 @@ export const FlowDiagram = () => {
       const { width: WIDTH, height: HEIGHT } = canvas;
       const layout = getLayout(WIDTH, HEIGHT);
       const centreX = WIDTH / 2;
-      const agent = { x: centreX + layout.agentXOffset, y: HEIGHT / 2 - 0.13 * HEIGHT };
-      const fort = { x: centreX + layout.fortXOffset, y: HEIGHT / 2 - 0.13 * HEIGHT };
+      const agent = { x: centreX + layout.agentXOffset, y: HEIGHT / 2 - 0.19 * HEIGHT };
+      const fort = { x: centreX + layout.fortXOffset, y: HEIGHT / 2 - 0.19 * HEIGHT };
 
       /* ------------------------------ spawn --------------------------- */
       const now = Date.now();
@@ -234,8 +180,15 @@ export const FlowDiagram = () => {
       // Helper to draw a solid rounded rectangle (no glass effect)
       const drawSolidBox = (x, y, w, h, label, boxColor = "#fff", textColor = "#222") => {
         ctx.save();
-        ctx.fillStyle = boxColor;
-        ctx.globalAlpha = 0.97;
+        const grad = ctx.createLinearGradient(x, y, x + w, y + h);
+        grad.addColorStop(0, "#e0f2fe"); // light blue
+        grad.addColorStop(1, "#bae6fd"); // slightly deeper blue
+        ctx.fillStyle = grad;
+
+        ctx.globalAlpha = 0.85;
+        ctx.shadowColor = "rgba(255, 255, 255, 0.25)";
+        ctx.shadowBlur = 18;
+
         ctx.beginPath();
         ctx.roundRect(x, y, w, h, 12);
         ctx.fill();
@@ -253,7 +206,7 @@ export const FlowDiagram = () => {
         ctx.translate(x, y);
         ctx.rotate(Math.atan2(dir.y, dir.x));
         ctx.strokeStyle = colour;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.moveTo(-8, 4);
         ctx.lineTo(0, 0);
@@ -284,131 +237,114 @@ export const FlowDiagram = () => {
       // Draw integration images (left, bottom layer)
       layout.leftY.forEach((yy, i) => {
         const img = imageCache[leftIntegrationImages[i]];
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(layout.leftX, yy, INTEGRATION_RADIUS * WIDTH, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.clip();
         if (img && img.complete) {
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(layout.leftX, yy, INTEGRATION_RADIUS * WIDTH, 0, 2 * Math.PI);
-          ctx.closePath();
-          ctx.clip();
+          // Center and cover the image in the circle
+          const size = INTEGRATION_IMG_SIZE * WIDTH;
+          const cx = layout.leftX;
+          const cy = yy;
           ctx.drawImage(
             img,
-            layout.leftX - INTEGRATION_RADIUS * WIDTH,
-            yy - INTEGRATION_RADIUS * WIDTH,
-            INTEGRATION_IMG_SIZE * WIDTH,
-            INTEGRATION_IMG_SIZE * WIDTH
+            cx - size / 2,
+            cy - size / 2,
+            size,
+            size
           );
-          ctx.restore();
-        } else {
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(layout.leftX, yy, INTEGRATION_RADIUS * WIDTH, 0, 2 * Math.PI);
-          ctx.fillStyle = '#e0e7ef';
-          ctx.fill();
-          ctx.restore();
         }
+        ctx.restore();
       });
       // Draw integration images (left, top layer, offset)
       layout.leftYTop.forEach((yy, i) => {
         const img = imageCache[leftIntegrationImagesTop[i]];
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(layout.leftXTop, yy, INTEGRATION_TOP_RADIUS * WIDTH, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.clip();
         if (img && img.complete) {
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(layout.leftXTop, yy, INTEGRATION_TOP_RADIUS * WIDTH, 0, 2 * Math.PI);
-          ctx.closePath();
-          ctx.clip();
+          const size = INTEGRATION_TOP_IMG_SIZE * WIDTH;
+          const cx = layout.leftXTop;
+          const cy = yy;
           ctx.drawImage(
             img,
-            layout.leftXTop - INTEGRATION_TOP_RADIUS * WIDTH,
-            yy - INTEGRATION_TOP_RADIUS * WIDTH,
-            INTEGRATION_TOP_IMG_SIZE * WIDTH,
-            INTEGRATION_TOP_IMG_SIZE * WIDTH
+            cx - size / 2,
+            cy - size / 2,
+            size,
+            size
           );
-          ctx.restore();
-        } else {
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(layout.leftXTop, yy, INTEGRATION_TOP_RADIUS * WIDTH, 0, 2 * Math.PI);
-          ctx.fillStyle = '#e0e7ef';
-          ctx.fill();
-          ctx.restore();
         }
+        ctx.restore();
       });
       // Draw integration images (right, bottom layer)
       layout.rightY.forEach((yy, i) => {
         const img = imageCache[rightIntegrationImages[i]];
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(layout.rightX, yy, INTEGRATION_RADIUS * WIDTH, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.clip();
         if (img && img.complete) {
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(layout.rightX, yy, INTEGRATION_RADIUS * WIDTH, 0, 2 * Math.PI);
-          ctx.closePath();
-          ctx.clip();
+          const size = INTEGRATION_IMG_SIZE * WIDTH;
+          const cx = layout.rightX;
+          const cy = yy;
           ctx.drawImage(
             img,
-            layout.rightX - INTEGRATION_RADIUS * WIDTH,
-            yy - INTEGRATION_RADIUS * WIDTH,
-            INTEGRATION_IMG_SIZE * WIDTH,
-            INTEGRATION_IMG_SIZE * WIDTH
+            cx - size / 2,
+            cy - size / 2,
+            size,
+            size
           );
-          ctx.restore();
-        } else {
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(layout.rightX, yy, INTEGRATION_RADIUS * WIDTH, 0, 2 * Math.PI);
-          ctx.fillStyle = '#e0e7ef';
-          ctx.fill();
-          ctx.restore();
         }
+        ctx.restore();
       });
       // Draw integration images (right, top layer, offset)
       layout.rightYTop.forEach((yy, i) => {
         const img = imageCache[rightIntegrationImagesTop[i]];
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(layout.rightXTop, yy, INTEGRATION_TOP_RADIUS * WIDTH, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.clip();
         if (img && img.complete) {
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(layout.rightXTop, yy, INTEGRATION_TOP_RADIUS * WIDTH, 0, 2 * Math.PI);
-          ctx.closePath();
-          ctx.clip();
+          const size = INTEGRATION_TOP_IMG_SIZE * WIDTH;
+          const cx = layout.rightXTop;
+          const cy = yy;
           ctx.drawImage(
             img,
-            layout.rightXTop - INTEGRATION_TOP_RADIUS * WIDTH,
-            yy - INTEGRATION_TOP_RADIUS * WIDTH,
-            INTEGRATION_TOP_IMG_SIZE * WIDTH,
-            INTEGRATION_TOP_IMG_SIZE * WIDTH
+            cx - size / 2,
+            cy - size / 2,
+            size,
+            size
           );
-          ctx.restore();
-        } else {
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(layout.rightXTop, yy, INTEGRATION_TOP_RADIUS * WIDTH, 0, 2 * Math.PI);
-          ctx.fillStyle = '#e0e7ef';
-          ctx.fill();
-          ctx.restore();
         }
+        ctx.restore();
       });
 
       // ------------------------ pipes ------------------------------- //
       // Left (bottom) layer arrows
       layout.leftY.forEach((yy) => {
         const p0 = new Vector2(leftArrowStartX, yy);
-        const p1 = new Vector2(agent.x - 70, yy);
-        const p2 = new Vector2(agent.x, agent.y);
+        const p1 = new Vector2(
+          (LEFT_TO_AGENT_ARROW_END_X > 0 ? LEFT_TO_AGENT_ARROW_END_X * WIDTH : agent.x - 70),
+          (LEFT_TO_AGENT_ARROW_END_Y > 0 ? LEFT_TO_AGENT_ARROW_END_Y * HEIGHT : yy)
+        );
+        const p2 = new Vector2(
+          (LEFT_TO_AGENT_ARROW_END_X > 0 ? LEFT_TO_AGENT_ARROW_END_X * WIDTH : agent.x),
+          (LEFT_TO_AGENT_ARROW_END_Y > 0 ? LEFT_TO_AGENT_ARROW_END_Y * HEIGHT : agent.y)
+        );
         curve(p0, p1, p2, "#0891b2", "#06b6d4"); // cyan
       });
-      // Left (top) layer arrows (optional, uncomment if needed)
-      // leftYTop.forEach((yy) => {
-      //   const p0 = new Vector2(leftXTop, yy);
-      //   const p1 = new Vector2(agent.x - 50, yy);
-      //   const p2 = new Vector2(agent.x, agent.y);
-      //   curve(p0, p1, p2, "#0891b2", "#06b6d4");
-      // });
-
-      // Middle arrow (agent to fort) with dynamic control point
-      const midControlX = (agent.x + fort.x) / 2;
+      // Middle arrow (agent to fort) with global endpoint control
+      const midControlX = (AGENT_TO_FORT_ARROW_START_X + AGENT_TO_FORT_ARROW_END_X) / 2;
       const midControlY = Math.min(agent.y, fort.y) - 0.083 * HEIGHT; // 70px above the higher box
       curve(
-        new Vector2(agent.x + AGENT_TO_FORT_ARROW_OFFSET * WIDTH, agent.y),
+        new Vector2(AGENT_TO_FORT_ARROW_START_X, agent.y),
         new Vector2(midControlX, midControlY),
-        new Vector2(fort.x - AGENT_TO_FORT_ARROW_OFFSET * WIDTH, fort.y),
+        new Vector2(AGENT_TO_FORT_ARROW_END_X, fort.y),
         "#7c3aed",
         "#8b5cf6",
         2.5,
@@ -416,19 +352,14 @@ export const FlowDiagram = () => {
 
       // Right (bottom) layer arrows
       layout.rightY.forEach((yy) => {
-        const p0 = new Vector2(fort.x + FORT_TO_RIGHT_ARROW_OFFSET, fort.y);
+        const p0 = new Vector2(
+          (RIGHT_TO_FORT_ARROW_START_X > 0 ? RIGHT_TO_FORT_ARROW_START_X * WIDTH : fort.x + FORT_TO_RIGHT_ARROW_OFFSET),
+          (RIGHT_TO_FORT_ARROW_START_Y > 0 ? RIGHT_TO_FORT_ARROW_START_Y * HEIGHT : fort.y)
+        );
         const p1 = new Vector2(rightArrowStartX - 70, yy);
         const p2 = new Vector2(rightArrowStartX, yy);
         curve(p0, p1, p2, "#ea580c", "#f97316"); // orange
       });
-      // Right (top) layer arrows (optional, uncomment if needed)
-      // rightYTop.forEach((yy) => {
-      //   const p0 = new Vector2(fort.x + 40, fort.y);
-      //   const p1 = new Vector2(rightXTop - 50, yy);
-      //   const p2 = new Vector2(rightXTop, yy);
-      //   curve(p0, p1, p2, "#ea580c", "#f97316");
-      // });
-
       /* ---------------------- moving texts through all stages ------------------------- */
       textStates.current.forEach((state, i) => {
         const now = Date.now();
@@ -475,37 +406,54 @@ export const FlowDiagram = () => {
             ({ x, y } = bezierPt(state.t, p0, p1, p2));
           } else if (state.stage === 2 && conf.devillish) {
             // devillish drop from ContextFort
-            x = fort.x + 60;
-            y = fort.y + state.t * 120;
+            x = (DEVIL_DROP_X > 0 ? DEVIL_DROP_X * WIDTH : fort.x + 60);
+            y = fort.y + (typeof DEVIL_DROP_OFFSET_Y === 'number' ? state.t * DEVIL_DROP_OFFSET_Y : state.t * 120);
           } else if (state.stage === 3 && conf.devillish) {
             // fade out after drop
-            x = fort.x + 60;
-            y = fort.y + 120 + state.t * 40;
+            x = (DEVIL_DROP_X > 0 ? DEVIL_DROP_X * WIDTH : fort.x + 60);
+            y = fort.y + (typeof DEVIL_DROP_OFFSET_Y === 'number' ? DEVIL_DROP_OFFSET_Y : 120) + state.t * 40;
           }
           if (state.running && typeof x === 'number' && typeof y === 'number') {
             ctx.save();
             ctx.font = TEXT_FONT;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
+
             if (conf.devillish) {
-              ctx.globalAlpha = state.stage === 3 ? 1 - state.t : 1;
-              // Draw devil image left of text
-              const img = imageCache[DEVIL_IMG];
-              if (img && img.complete) {
-                ctx.drawImage(img, x - 38, y - 16, 28, 28);
-              }
+                ctx.globalAlpha = state.stage === 3 ? 1 - state.t : 1;
+                const img = imageCache[DEVIL_IMG];
+                if (img && img.complete) {
+                const iconOffsetX = 115;
+                const iconSize = 28;
+                const iconCenterX = x - iconOffsetX;
+                const iconCenterY = y;
+
+                if (state.stage >= 2) {
+                    ctx.save();
+                    ctx.translate(iconCenterX, iconCenterY); // move origin to icon center
+                    ctx.rotate(state.t * 0.8);               // spin around its center
+                    ctx.drawImage(img, -iconSize / 2, -iconSize / 2, iconSize, iconSize);
+                    ctx.restore();
+                } else {
+                    ctx.drawImage(img, iconCenterX - iconSize / 2, iconCenterY - iconSize / 2, iconSize, iconSize);
+                }
+                }
             }
+
             ctx.fillStyle = conf.color;
             ctx.shadowColor = conf.color;
             ctx.shadowBlur = 8;
+
             let displayText = conf.textLeft;
             if (state.stage === 1) displayText = conf.textAgent;
             else if (state.stage === 2 || state.stage === 3) displayText = conf.textRight;
+
             ctx.fillText(displayText, x, y);
             ctx.shadowBlur = 0;
             ctx.globalAlpha = 1;
             ctx.restore();
-          }
+            }
+
         }
       });
 
@@ -513,8 +461,8 @@ export const FlowDiagram = () => {
       // Use website-matching color for the boxes (e.g. #f8fafc for bg, #0f172a for text)
       const AGENT_BOX_COLOR = "#f8fafc"; // light background
       const AGENT_TEXT_COLOR = "#0f172a"; // dark text
-      drawSolidBox(agent.x, agent.y - 0.055 * HEIGHT, 0.133 * WIDTH, 0.13 * HEIGHT, "Agent", AGENT_BOX_COLOR, AGENT_TEXT_COLOR);
-      drawSolidBox(fort.x, fort.y - 0.055 * HEIGHT, 0.133 * WIDTH, 0.13 * HEIGHT, "ContextFort", AGENT_BOX_COLOR, AGENT_TEXT_COLOR);
+      drawSolidBox(agent.x, agent.y - 0.055 * HEIGHT, CONTEXTFORT_BOX_WIDTH * WIDTH, CONTEXTFORT_BOX_HEIGHT * HEIGHT, "Agent", AGENT_BOX_COLOR, AGENT_TEXT_COLOR);
+      drawSolidBox(fort.x, fort.y - 0.055 * HEIGHT, CONTEXTFORT_BOX_WIDTH * WIDTH, CONTEXTFORT_BOX_HEIGHT * HEIGHT, "ContextFort", AGENT_BOX_COLOR, AGENT_TEXT_COLOR);
       // Draw box labels on top of everything
       ctx.save();
       ctx.font = "bold 18px Inter, sans-serif";
@@ -523,8 +471,10 @@ export const FlowDiagram = () => {
       ctx.fillStyle = AGENT_TEXT_COLOR;
       ctx.shadowColor = "#000";
       ctx.shadowBlur = 6;
-      ctx.fillText("Agent", agent.x + 0.133 * WIDTH / 2, agent.y - 0.055 * HEIGHT + 0.13 * HEIGHT / 2);
-      ctx.fillText("ContextFort", fort.x + 0.133 * WIDTH / 2, fort.y - 0.055 * HEIGHT + 0.13 * HEIGHT / 2);
+    //   ctx.fillText("Agent", agent.x + 0.133 * WIDTH / 2, agent.y - 0.055 * HEIGHT + 0.13 * HEIGHT / 2);
+      // Draw ContextFort label higher up in the box
+      const contextFortLabelY = fort.y - 0.055 * HEIGHT + 0.09 * HEIGHT;
+    //   ctx.fillText("ContextFort", fort.x + CONTEXTFORT_BOX_WIDTH * WIDTH / 2, contextFortLabelY);
       ctx.shadowBlur = 0;
       ctx.restore();
 
