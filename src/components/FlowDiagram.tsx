@@ -10,6 +10,7 @@ import {
   leftIntegrationImagesTop,
   rightIntegrationImages,
   rightIntegrationImagesTop,
+    agentImages,
   leftArrowStartXFrac,
   rightArrowStartXFrac,
   AGENT_TO_FORT_ARROW_START_X_FRAC,
@@ -148,6 +149,7 @@ export const FlowDiagram = () => {
       ...leftIntegrationImagesTop,
       ...rightIntegrationImages,
       ...rightIntegrationImagesTop,
+        ...agentImages,
       DEVIL_IMG,
     ];
     allImages.forEach((url) => {
@@ -504,15 +506,19 @@ export const FlowDiagram = () => {
       // Use website-matching color for the boxes (e.g. #f8fafc for bg, #0f172a for text)
       const AGENT_BOX_COLOR = "#f8fafc"; // light background
       const AGENT_TEXT_COLOR = "#0f172a"; // dark text
+      const agentBoxW = CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * (layout.isMobile ? 0.85 : 1);
+      const agentBoxH = CONTEXTFORT_BOX_HEIGHT * HEIGHT / dpr * (layout.isMobile ? 0.85 : 1);
+      // Draw Agent box
       drawSolidBox(
         agent.x,
         agent.y - 0.055 * HEIGHT / dpr,
-        CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * (layout.isMobile ? 0.85 : 1),
-        CONTEXTFORT_BOX_HEIGHT * HEIGHT / dpr * (layout.isMobile ? 0.85 : 1),
+        agentBoxW,
+        agentBoxH,
         "Agent",
         AGENT_BOX_COLOR,
         AGENT_TEXT_COLOR
       );
+      // Draw Fort box (ContextFort)
       drawSolidBox(
         fort.x,
         fort.y - 0.055 * HEIGHT / dpr,
@@ -522,15 +528,81 @@ export const FlowDiagram = () => {
         AGENT_BOX_COLOR,
         AGENT_TEXT_COLOR
       );
+      // Draw 'Retrieve Context' (top left inside Agent box)
       ctx.save();
-      ctx.font = `bold ${Math.max(layout.isMobile ? 12 : 14, Math.round((layout.isMobile ? 14 : 18) * layout.scale))}px Inter, sans-serif`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
+      ctx.font = `bold ${Math.max(layout.isMobile ? 9 : 10, Math.round((layout.isMobile ? 10 : 12) * layout.scale))}px Inter, sans-serif`;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
       ctx.fillStyle = AGENT_TEXT_COLOR;
-      ctx.shadowColor = "#000";
-      ctx.shadowBlur = 2 * layout.scale;
-      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 0.85;
+      ctx.fillText("Retrieve Context", agent.x + 10 * layout.scale, agent.y - 0.055 * HEIGHT / dpr + 8 * layout.scale);
       ctx.restore();
+      // Draw 'Perform Actions' (bottom right inside Agent box)
+      ctx.save();
+      ctx.font = `bold ${Math.max(layout.isMobile ? 9 : 10, Math.round((layout.isMobile ? 10 : 12) * layout.scale))}px Inter, sans-serif`;
+      ctx.textAlign = "right";
+      ctx.textBaseline = "bottom";
+      ctx.fillStyle = AGENT_TEXT_COLOR;
+      ctx.globalAlpha = 0.85;
+      ctx.fillText("Perform Actions", agent.x + agentBoxW - 10 * layout.scale, agent.y - 0.055 * HEIGHT / dpr + agentBoxH - 8 * layout.scale);
+      ctx.restore();
+      // Draw VSCode, windsurf, and Cursor logos below Agent box (horizontal)
+      const logoY = agent.y - 0.055 * HEIGHT / dpr + agentBoxH + 18 * layout.scale;
+      const logoSize = 28 * layout.scale;
+      const logoGap = 18 * layout.scale;
+      const logoStartX = agent.x + agentBoxW / 2 - 1.5 * logoSize - logoGap;
+
+      // Get images from agentImages
+      const [vscodeImg, cursorImg, windsurfImg] = [
+        imageCache[agentImages[0]],
+        imageCache[agentImages[1]],
+        imageCache[agentImages[2]],
+      ];
+
+      // Helper to draw an image as a circle (for avatars/logos)
+      function drawCircleImage(img, x, y, size) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x + size / 2, y + size / 2, size / 2, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img, x, y, size, size);
+        ctx.restore();
+      }
+
+      // VSCode
+      if (vscodeImg && vscodeImg.complete && vscodeImg.naturalWidth > 0) {
+        drawCircleImage(vscodeImg, logoStartX, logoY, logoSize);
+      } else {
+        ctx.save();
+        ctx.fillStyle = "#0078D4";
+        ctx.beginPath();
+        ctx.arc(logoStartX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.restore();
+      }
+      // Windsurf
+      if (windsurfImg && windsurfImg.complete && windsurfImg.naturalWidth > 0) {
+        drawCircleImage(windsurfImg, logoStartX + logoSize + logoGap, logoY, logoSize);
+      } else {
+        ctx.save();
+        ctx.fillStyle = "#38bdf8";
+        ctx.beginPath();
+        ctx.arc(logoStartX + logoSize + logoGap + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.restore();
+      }
+      // Cursor
+      if (cursorImg && cursorImg.complete && cursorImg.naturalWidth > 0) {
+        drawCircleImage(cursorImg, logoStartX + 2 * (logoSize + logoGap), logoY, logoSize);
+      } else {
+        ctx.save();
+        ctx.fillStyle = "#888";
+        ctx.beginPath();
+        ctx.arc(logoStartX + 2 * (logoSize + logoGap) + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.restore();
+      }
 
       raf.current = requestAnimationFrame(loop);
     };

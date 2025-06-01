@@ -33,6 +33,13 @@ export const rightIntegrationImagesTop = [
     '/src/assets/zendesk.svg', // Mirror
 ]; // Mirror
 
+
+export const agentImages = [
+    '/src/assets/code.svg',
+    '/src/assets/cursor.jpeg',
+    '/src/assets/windsurf.jpeg',
+]
+
 // === Global control variables ===
 // Arrow start X positions (now as fractions of width for responsiveness)
 export const leftArrowStartXFrac = 0.09; // ~170/1900
