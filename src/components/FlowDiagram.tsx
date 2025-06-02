@@ -10,7 +10,7 @@ import {
   leftIntegrationImagesTop,
   rightIntegrationImages,
   rightIntegrationImagesTop,
-    agentImages,
+  agentImages,
   leftArrowStartXFrac,
   rightArrowStartXFrac,
   AGENT_TO_FORT_ARROW_START_X_FRAC,
@@ -56,18 +56,16 @@ export const FlowDiagram = () => {
 
   const canvasRef = useRef(null);
   const wrapperRef = useRef(null);
-  const tokens = useRef([]);
-  const nextSpawn = useRef(Date.now() + rand(SPAWN_MIN, SPAWN_MAX));
   const raf = useRef<number | undefined>(undefined);
 
   // Responsive layout helpers
-  const getScale = (w, h) => {
-    // Use a minimum scale for mobile, but allow up to 1 for desktop
-    return Math.min(w / BASE_WIDTH, h / BASE_HEIGHT, 1);
+  const getScale = (w: number, h: number) => {
+    // Allow scale to go below 1 for mobile, but not below 0.5
+    return Math.max(0.5, Math.min(w / BASE_WIDTH, h / BASE_HEIGHT));
   };
 
   // Responsive positions (all as fractions of width/height)
-  const getLayout = (w, h) => {
+  const getLayout = React.useCallback((w: number, h: number) => {
     const scale = getScale(w, h);
     // Mobile-specific tweaks
     const isMobile = w < 600;
@@ -96,26 +94,113 @@ export const FlowDiagram = () => {
       scale,
       isMobile,
     };
-  };
+  }, []);
 
-  // Track state for each moving text
-  const textStates = useRef(
-    movingTexts.map((t, i) => ({
-      t: 0,
-      stage: 0, // 0: left, 1: middle, 2: right, 3: devillish drop
-      lastStart: Date.now() + (t.delay || 0),
-      running: false,
-      lane: i % 5, // distribute across lanes
-    }))
-  );
+  // FlowObject definition with placement and rendering logic
+  type FlowArrow = 'left' | 'middle' | 'right' | 'down';
+
+  interface FlowObjectConfig {
+    label: string;
+    color: string;
+    icon: string; // URL to logo/icon
+    arrow: FlowArrow;
+    t: number; // 0 to 1, how far along the arrow
+    devilish?: boolean;
+  }
+
+  // Dummy objects for demo
+  const flowObjects = React.useMemo(() => {
+    class LocalFlowObject {
+      label: string;
+      color: string;
+      icon: string;
+      arrow: FlowArrow;
+      t: number;
+      devilish: boolean;
+      constructor(cfg: FlowObjectConfig) {
+        this.label = cfg.label;
+        this.color = cfg.color;
+        this.icon = cfg.icon;
+        this.arrow = cfg.arrow;
+        this.t = cfg.t;
+        this.devilish = !!cfg.devilish;
+      }
+    }
+    return [
+      new LocalFlowObject({
+        label: 'Messages',
+        color: '#f59e42',
+        icon: leftIntegrationImages[0],
+        arrow: 'left',
+        t: 0.5,
+      }),
+      new LocalFlowObject({
+        label: 'Events',
+        color: '#36c5f0',
+        icon: leftIntegrationImages[1],
+        arrow: 'left',
+        t: 0.2,
+      }),
+      new LocalFlowObject({
+        label: 'Leak Calendar',
+        color: '#ef4444',
+        icon: rightIntegrationImages[2],
+        arrow: 'left',
+        t: 0.5,
+        devilish: true,
+      }),
+      new LocalFlowObject({
+        label: 'Issues',
+        color: 'black',
+        icon: leftIntegrationImages[2],
+        arrow: 'left',
+        t: 0.2,
+      }),
+      new LocalFlowObject({
+        label: 'Any Tool Call',
+        color: '#a78bfa',
+        icon: agentImages[0],
+        arrow: 'middle',
+        t: 0.5,
+      }),
+      new LocalFlowObject({
+        label: 'New Metric Post',
+        color: 'purple',
+        icon: rightIntegrationImages[0],
+        arrow: 'right',
+        t: 0.2,
+      }),
+      new LocalFlowObject({
+        label: 'Create Doc',
+        color: '#000',
+        icon: rightIntegrationImages[1],
+        arrow: 'right',
+        t: 0.7,
+      }),
+      new LocalFlowObject({
+        label: 'Close Ticket',
+        color: 'darkblue',
+        icon: rightIntegrationImages[4],
+        arrow: 'right',
+        t: 0.55,
+      }),
+      new LocalFlowObject({
+        label: 'Blocked Tool Call',
+        color: '#ef4444',
+        icon: DEVIL_IMG,
+        arrow: 'down',
+        t: 0.5,
+        devilish: true,
+      }),
+    ];
+  }, []);
 
   /* ------------------------- layout constants ------------------------ */
 
   // Responsive resize with devicePixelRatio for crispness
   const resize = () => {
     const w = wrapperRef.current.clientWidth;
-    // Use min/max for mobile friendliness
-    const h = Math.max(140, Math.min(w / CANVAS_RATIO, 320));
+    const h = wrapperRef.current.clientHeight; // Use actual wrapper height
     const c = canvasRef.current;
     const dpr = window.devicePixelRatio || 1;
     c.width = w * dpr;
@@ -149,7 +234,7 @@ export const FlowDiagram = () => {
       ...leftIntegrationImagesTop,
       ...rightIntegrationImages,
       ...rightIntegrationImagesTop,
-        ...agentImages,
+      ...agentImages,
       DEVIL_IMG,
     ];
     allImages.forEach((url) => {
@@ -159,26 +244,12 @@ export const FlowDiagram = () => {
         imageCache[url] = img;
       }
     });
-
     const loop = () => {
       const { width: WIDTH, height: HEIGHT } = canvas;
       const layout = getLayout(WIDTH / dpr, HEIGHT / dpr);
       const centreX = WIDTH / (2 * dpr);
       const agent = { x: centreX + layout.agentXOffset, y: HEIGHT / dpr / 2 - 0.09 * HEIGHT / dpr };
       const fort = { x: centreX + layout.fortXOffset, y: HEIGHT / dpr / 2 - 0.09 * HEIGHT / dpr };
-
-      /* ------------------------------ spawn --------------------------- */
-      const now = Date.now();
-      if (now >= nextSpawn.current && tokens.current.length < MAX_CONCURRENT) {
-        nextSpawn.current = now + rand(SPAWN_MIN, SPAWN_MAX);
-        tokens.current.push({
-          t: 0,
-          stage: 0,
-          devil: Math.random() < 0.4,
-          label: Math.random() < 0.5 ? "Jira" : "Slack",
-          lane: rand(0, layout.leftY.length - 1),
-        });
-      }
 
       /* ------------------------------ clear --------------------------- */
       ctx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -333,7 +404,7 @@ export const FlowDiagram = () => {
 
       // ------------------------ pipes ------------------------------- //
       // Left (bottom) layer arrows
-      layout.leftY.forEach((yy) => {
+      layout.leftY.forEach((yy, i) => {
         // Use fractional start X for responsiveness
         const leftArrowStartX = leftArrowStartXFrac * WIDTH / dpr;
         const p0 = new Vector2(leftArrowStartX, yy);
@@ -341,9 +412,12 @@ export const FlowDiagram = () => {
           agent.x - (layout.isMobile ? 40 : 70) * layout.scale,
           yy - (layout.isMobile ? 0.22 : 0.13) * HEIGHT / dpr
         );
+        // Stagger the right endpoint vertically so arrowheads don't overlap
+        const arrowCount = layout.leftY.length;
+        const ySpread = 12 * layout.scale;
         const p2 = new Vector2(
-          agent.x,
-          agent.y
+          agent.x - 16 * layout.scale, // half the previous x offset
+          agent.y + ((i - (arrowCount - 1) / 2) * ySpread)
         );
         curve(p0, p1, p2, "#0891b2", "#06b6d4"); // cyan
       });
@@ -378,128 +452,163 @@ export const FlowDiagram = () => {
         const p2 = new Vector2(rightArrowStartX, yy);
         curve(p0, p1, p2, "#ea580c", "#f97316"); // orange
       });
-      /* ---------------------- moving texts through all stages ------------------------- */
-      // Strictly limit to 3 running texts at a time, with 1s delay between starts
-      let runningCount = 0;
-      let lastStartedAt = 0;
-      // Find the last started time among running texts
-      textStates.current.forEach((state) => {
-        if (state.running && state.lastStart > lastStartedAt) {
-          lastStartedAt = state.lastStart;
+
+      // Draw static objects on arrows
+      // Helper to draw a static object (circle with label)
+      function drawFlowObject(obj, x, y, size) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, size / 2, 0, 2 * Math.PI);
+        ctx.fillStyle = obj.color;
+        ctx.globalAlpha = 0.92;
+        ctx.shadowColor = obj.color;
+        ctx.shadowBlur = 8 * layout.scale;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = "#fff";
+        ctx.font = `bold ${Math.max(11, Math.round(13 * layout.scale))}px Inter, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(obj.label, x, y);
+        ctx.restore();
+      }
+      // Helper to draw a rectangular flow object with logo partially out
+      function drawFlowObjectRect(
+        obj: {
+          label: string;
+          color: string;
+          icon: string;
+          arrow: string;
+          t: number;
+          devilish?: boolean;
+        },
+        x: number,
+        y: number,        
+        w: number,
+        h: number,
+        iconImg: HTMLImageElement | undefined
+      ) {
+        ctx.save();
+        // Reduce font and icon size for flow objects
+        const fontSize = layout.isMobile ? Math.max(7, Math.round(8.5 * layout.scale)) : Math.max(9, Math.round(11 * layout.scale));
+        ctx.font = `bold ${fontSize}px Inter, sans-serif`;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        const textWidth = ctx.measureText(obj.label).width;
+        const minTextPad = h * (layout.isMobile ? 0.45 : 0.6) + (layout.isMobile ? 6 : 10) * layout.scale;
+        const neededW = textWidth + minTextPad;
+        if (neededW > w) {
+          w = neededW;
         }
-        if (state.running) runningCount++;
-      });
-      // Only start new ones if under the limit, and 1s after the last started
-      textStates.current.forEach((state, i) => {
-        if (!state.running && runningCount < 3) {
-          const now = Date.now();
-          const conf = movingTexts[i];
-          // Enforce 1s (1000ms) delay between starts
-          if (now - lastStartedAt >= 1000 && now - state.lastStart >= (conf.delay || 0)) {
-            state.running = true;
-            state.lastStart = now;
-            runningCount++;
-            lastStartedAt = now;
-          }
+        // Draw red glow for devilish
+        if (obj.devilish) {
+          ctx.save();
+          ctx.shadowColor = '#ff1a1a';
+          ctx.shadowBlur = 24 * layout.scale;
+          ctx.globalAlpha = 0.7;
+          ctx.beginPath();
+          const radius = 6 * layout.scale;
+          ctx.moveTo(x + radius, y);
+          ctx.lineTo(x + w - radius, y);
+          ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+          ctx.lineTo(x + w, y + h - radius);
+          ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+          ctx.lineTo(x + radius, y + h);
+          ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+          ctx.lineTo(x, y + radius);
+          ctx.quadraticCurveTo(x, y, x + radius, y);
+          ctx.closePath();
+          ctx.fillStyle = obj.color;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          ctx.shadowBlur = 0;
+          ctx.restore();
         }
-      });
-      textStates.current.forEach((state, i) => {
-        if (!state.running) return;
-        const now = Date.now();
-        const conf = movingTexts[i];
-        state.t += TEXT_SPEED * (16 + Math.random() * 8); // ~60fps, add jitter for natural feel
-        if (state.t > 1) {
-          state.t = 0;
-          state.stage++;
-          if (conf.devillish && state.stage === 3) {
-            // devillish drop
-            // let it drop, then reset
-          } else if ((!conf.devillish && state.stage > 2) || (conf.devillish && state.stage > 3)) {
-            state.stage = 0;
-            state.running = false;
-            state.lastStart = now;
-          }
+        // Draw rounded rectangle
+        ctx.beginPath();
+        const radius = 6 * layout.scale;
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + w - radius, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+        ctx.lineTo(x + w, y + h - radius);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+        ctx.lineTo(x + radius, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+        ctx.fillStyle = obj.color;
+        ctx.globalAlpha = 0.96;
+        ctx.shadowColor = obj.color;
+        ctx.shadowBlur = 6 * layout.scale;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+        // Draw icon as a full circle, mostly outside top left
+        if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
+          const iconSize = h * 0.7;
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(x - iconSize * 0.35, y - iconSize * 0.35, iconSize * 0.5, 0, 2 * Math.PI);
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(iconImg, x - iconSize * 0.85, y - iconSize * 0.85, iconSize, iconSize);
+          ctx.restore();
         }
-        let p0, p1, p2, x, y;
-        if (state.stage === 0) {
-          // Left arrow: integration to agent
+        // Draw label text
+        ctx.fillStyle = '#fff';
+        ctx.font = `bold ${fontSize}px Inter, sans-serif`;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(obj.label, x + h * 0.6, y + h / 2);
+        ctx.restore();
+      }
+
+      // Draw all flow objects based on their arrow and t
+      flowObjects.forEach((obj) => {
+        let pt;
+        // Reduce box and font size for flow objects
+        const w = 68 * layout.scale, h = 26 * layout.scale;
+        const iconImg = imageCache[obj.icon];
+        if (obj.arrow === 'left') {
+          const i = flowObjects.filter(o => o.arrow === 'left').indexOf(obj);
           const leftArrowStartX = leftArrowStartXFrac * WIDTH / dpr;
-          const arrowCurve = layout.isMobile ? 0.22 : 0.13;
-          p0 = { x: leftArrowStartX, y: layout.leftY[state.lane] };
-          p1 = { x: agent.x - (layout.isMobile ? 40 : 70) * layout.scale, y: layout.leftY[state.lane] - arrowCurve * HEIGHT / dpr };
-          p2 = { x: agent.x, y: agent.y };
-          ({ x, y } = bezierPt(state.t, p0, p1, p2));
-        } else if (state.stage === 1) {
-          // Middle arrow: agent to ContextFort (use fractional X)
+          const p0 = { x: leftArrowStartX, y: layout.leftY[i] };
+          const p1 = { x: agent.x - 70 * layout.scale, y: layout.leftY[i] - 0.13 * HEIGHT / dpr };
+          // Stagger the right endpoint vertically to match the arrow
+          const arrowCount = layout.leftY.length;
+          const ySpread = 12 * layout.scale;
+          const p2 = { x: agent.x - 16 * layout.scale, y: agent.y + ((i - (arrowCount - 1) / 2) * ySpread) };
+          pt = bezierPt(obj.t, p0, p1, p2);
+        } else if (obj.arrow === 'middle') {
           const agentToFortStartX = AGENT_TO_FORT_ARROW_START_X_FRAC * WIDTH / dpr;
           const agentToFortEndX = AGENT_TO_FORT_ARROW_END_X_FRAC * WIDTH / dpr;
           const start = { x: agentToFortStartX, y: agent.y };
           const end = { x: agentToFortEndX, y: fort.y };
           const midControlX = (start.x + end.x) / 2;
-          const midControlY = Math.min(agent.y, fort.y) - (layout.isMobile ? 0.19 : 0.11) * HEIGHT / dpr;
-          p0 = start;
-          p1 = { x: midControlX, y: midControlY };
-          p2 = end;
-          ({ x, y } = bezierPt(state.t, p0, p1, p2));
-        } else if (state.stage === 2 && !conf.devillish) {
-          // Right arrow: ContextFort to right integration (use fractional X)
+          const midControlY = Math.min(agent.y, fort.y) - 0.11 * HEIGHT / dpr;
+          pt = bezierPt(obj.t, start, { x: midControlX, y: midControlY }, end);
+        } else if (obj.arrow === 'right') {
+          const i = flowObjects.filter(o => o.arrow === 'right').indexOf(obj);
           const rightArrowStartX = rightArrowStartXFrac * WIDTH / dpr;
           const fortBoxW = CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * (layout.isMobile ? 0.85 : 1);
           const fortBoxPadR = fortBoxW * 0.52;
           const startX = fort.x + fortBoxPadR;
           const startY = fort.y;
-          const arrowCurve = layout.isMobile ? 0.22 : 0.13;
-          p0 = { x: startX, y: startY };
-          p1 = { x: rightArrowStartX - (layout.isMobile ? 40 : 70) * layout.scale, y: layout.rightY[state.lane] - arrowCurve * HEIGHT / dpr };
-          p2 = { x: rightArrowStartX, y: layout.rightY[state.lane] };
-          ({ x, y } = bezierPt(state.t, p0, p1, p2));
-        } else if (state.stage === 2 && conf.devillish) {
-          x = (DEVIL_DROP_X > 0 ? DEVIL_DROP_X * WIDTH / dpr : fort.x + 60 * layout.scale);
-          y = fort.y + (typeof DEVIL_DROP_OFFSET_Y === 'number' ? state.t * DEVIL_DROP_OFFSET_Y * layout.scale : state.t * 120 * layout.scale);
-        } else if (state.stage === 3 && conf.devillish) {
-          x = (DEVIL_DROP_X > 0 ? DEVIL_DROP_X * WIDTH / dpr : fort.x + 60 * layout.scale);
-          y = fort.y + (typeof DEVIL_DROP_OFFSET_Y === 'number' ? DEVIL_DROP_OFFSET_Y * layout.scale : 120 * layout.scale) + state.t * 40 * layout.scale;
+          const p0 = { x: startX, y: startY };
+          const p1 = { x: rightArrowStartX - 70 * layout.scale, y: layout.rightY[i] - 0.13 * HEIGHT / dpr };
+          const p2 = { x: rightArrowStartX, y: layout.rightY[i] };
+          pt = bezierPt(obj.t, p0, p1, p2);
+        } else if (obj.arrow === 'down') {
+          const downStart = { x: fort.x + CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * 0.5, y: fort.y + CONTEXTFORT_BOX_HEIGHT * HEIGHT / dpr };
+          const downEnd = { x: downStart.x, y: downStart.y + 60 * layout.scale };
+          pt = {
+            x: downStart.x * (1 - obj.t) + downEnd.x * obj.t,
+            y: downStart.y * (1 - obj.t) + downEnd.y * obj.t,
+          };
         }
-        if (typeof x === 'number' && typeof y === 'number') {
-          ctx.save();
-          ctx.font = `${Math.max(layout.isMobile ? 10 : 11, Math.round((layout.isMobile ? 12 : 14) * layout.scale))}px Inter, sans-serif`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-
-          if (conf.devillish) {
-              ctx.globalAlpha = state.stage === 3 ? 1 - state.t : 1;
-              const img = imageCache[DEVIL_IMG];
-              if (img && img.complete) {
-              const iconOffsetX = (layout.isMobile ? 80 : 115) * layout.scale;
-              const iconSize = (layout.isMobile ? 20 : 28) * layout.scale;
-              const iconCenterX = x - iconOffsetX;
-              const iconCenterY = y;
-
-              if (state.stage >= 2) {
-                  ctx.save();
-                  ctx.translate(iconCenterX, iconCenterY); // move origin to icon center
-                  ctx.rotate(state.t * 0.8);               // spin around its center
-                  ctx.drawImage(img, -iconSize / 2, -iconSize / 2, iconSize, iconSize);
-                  ctx.restore();
-              } else {
-                  ctx.drawImage(img, iconCenterX - iconSize / 2, iconCenterY - iconSize / 2, iconSize, iconSize);
-              }
-              }
-          }
-
-          ctx.fillStyle = conf.color;
-          ctx.shadowColor = conf.color;
-          ctx.shadowBlur = 6 * layout.scale;
-
-          let displayText = conf.textLeft;
-          if (state.stage === 1) displayText = conf.textAgent;
-          else if (state.stage === 2 || state.stage === 3) displayText = conf.textRight;
-
-          ctx.fillText(displayText, x, y);
-          ctx.shadowBlur = 0;
-          ctx.globalAlpha = 1;
-          ctx.restore();
-        }
+        if (pt) drawFlowObjectRect(obj, pt.x - w / 2, pt.y - h / 2, w, h, iconImg);
       });
 
       // === Draw agent and fort boxes last so they are always on top ===
@@ -608,7 +717,7 @@ export const FlowDiagram = () => {
     };
     raf.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf.current);
-  });
+  }, [getLayout, flowObjects]);
 
   return (
     <div
@@ -618,8 +727,8 @@ export const FlowDiagram = () => {
         minHeight: 140,
         maxHeight: 320,
         width: '100%',
-        left: diagramX,
-        top: diagramY,
+        // left: diagramX, // Remove left
+        // top: diagramY,  // Remove top
         position: 'relative',
         touchAction: 'manipulation', // improve mobile touch
         overflow: 'hidden', // prevent scrollbars on mobile

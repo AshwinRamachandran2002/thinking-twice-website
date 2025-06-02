@@ -1,3 +1,24 @@
+// Import all images from src/assets for use in FlowDiagram
+import slackLogo from '../assets/slack.svg';
+import calendarLogo from '../assets/calendar.svg';
+import githubLogo from '../assets/github.svg';
+import airtableLogo from '../assets/airtable.svg';
+import jiraLogo from '../assets/jira.svg';
+import notionLogo from '../assets/notion.svg';
+import sheetsLogo from '../assets/sheets.svg';
+import salesforceLogo from '../assets/salesforce.svg';
+import datadogLogo from '../assets/datadog.svg';
+import driveLogo from '../assets/drive.svg';
+import hubspotLogo from '../assets/hubspot.svg';
+import sapLogo from '../assets/sap.svg';
+import sharepointLogo from '../assets/sharepoint.svg';
+import workdayLogo from '../assets/workday.svg';
+import zendeskLogo from '../assets/zendesk.svg';
+import codeLogo from '../assets/code.svg';
+import cursorImg from '../assets/cursor.jpeg';
+import windsurfImg from '../assets/windsurf.jpeg';
+import devilImg from '../assets/devil.svg';
+
 // Constants for FlowDiagram
 
 export const MAX_CONCURRENT = 2;
@@ -9,35 +30,35 @@ export const CANVAS_RATIO = 900 / 320; // maintain original aspect
 
 // List of integration image URLs (update as needed)
 export const leftIntegrationImages = [
-  '/src/assets/slack.svg',
-  '/src/assets/calendar.svg',
-  '/src/assets/github.svg',
-  '/src/assets/airtable.svg',
-  '/src/assets/jira.svg',
+  slackLogo,
+  calendarLogo,
+  githubLogo,
+  airtableLogo,
+  jiraLogo,
 ];
 export const leftIntegrationImagesTop = [
-  '/src/assets/notion.svg',
-  '/src/assets/sheets.svg',
-  '/src/assets/salesforce.svg'
+  notionLogo,
+  sheetsLogo,
+  salesforceLogo,
 ];
 export const rightIntegrationImages = [
-    '/src/assets/datadog.svg', // Mirror
-    '/src/assets/drive.svg', // Mirror
-    '/src/assets/hubspot.svg', // Mirror
-    '/src/assets/sap.svg', // Mirror
-    '/src/assets/jira.svg', // Mirror
+  datadogLogo, // Mirror
+  driveLogo, // Mirror
+  hubspotLogo, // Mirror
+  sapLogo, // Mirror
+  jiraLogo, // Mirror
 ]; // Mirror
 export const rightIntegrationImagesTop = [
-    '/src/assets/sharepoint.svg', // Mirror
-    '/src/assets/workday.svg', // Mirror
-    '/src/assets/zendesk.svg', // Mirror
+  sharepointLogo, // Mirror
+  workdayLogo, // Mirror
+  zendeskLogo, // Mirror
 ]; // Mirror
 
 
 export const agentImages = [
-    '/src/assets/code.svg',
-    '/src/assets/cursor.jpeg',
-    '/src/assets/windsurf.jpeg',
+  codeLogo,
+  cursorImg,
+  windsurfImg,
 ]
 
 // === Global control variables ===
@@ -51,7 +72,7 @@ export const diagramX = 0; // px offset from left
 export const diagramY = -50; // px offset from top
 
 // === Moving texts config ===
-export const DEVIL_IMG = '/src/assets/devil.svg'; // Replace with actual devil image path if available
+export const DEVIL_IMG = devilImg; // Replace with actual devil image path if available
 
 export const movingTexts = [
   {

@@ -50,7 +50,7 @@ const LandingPageHero = () => {
             <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">for Tool-Calling Agents</span>
           </motion.h1>
           <motion.p variants={item} className="max-w-xl text-lg md:text-xl leading-relaxed text-slate-200">
-            <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent font-semibold">Monitor and secure</span>&nbsp;AI agents with confidence. <br/>Instantly gain&nbsp;
+            <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent font-semibold">Secure</span>&nbsp;AI agents against Data Exfiltration Attacks. <br/>Instantly gain&nbsp;
             <span className="bg-gradient-to-r from-cyan-400 via-sky-400 to-purple-400 bg-clip-text text-transparent font-semibold">visibility and control</span>&nbsp;over every tool call.
           </motion.p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
@@ -58,7 +58,7 @@ const LandingPageHero = () => {
               Get a Demo
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
             </Link>
-            <a href="#solutions" className="flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-lg font-semibold text-cyan-600 shadow-lg hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-cyan-400 border border-cyan-100 sm:ml-4 sm:self-auto self-stretch sm:w-auto w-full">
+            <a href="#solutions" className="flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-lg font-semibold text-cyan-600 shadow-lg hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-cyan-400 border border-cyan-100 sm:ml-4 sm:self-auto">
               Explore Product
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
             </a>
