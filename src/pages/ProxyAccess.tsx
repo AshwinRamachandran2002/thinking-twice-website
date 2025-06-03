@@ -11,29 +11,57 @@ export default function ProxyAccess() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [initialCheckDone, setInitialCheckDone] = useState(false);
   const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   
   useEffect(() => {
+    let mounted = true;
+
     // Check if user is already logged in
     const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        toast({
-          title: "Already logged in",
-          description: "Redirecting to your dashboard...",
-          variant: "default",
-        });
-        navigate('/dashboard');
+      if (!mounted || initialCheckDone) return;
+      
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        
+        if (!mounted) return;
+        
+        if (error) {
+          console.error('Session check error:', error);
+          return;
+        }
+
+        if (data?.session) {
+          toast({
+            title: "Already logged in",
+            description: "Redirecting to your dashboard...",
+            variant: "default",
+          });
+          navigate('/dashboard');
+        }
+      } catch (err) {
+        console.error('Session check failed:', err);
+      } finally {
+        if (mounted) {
+          setInitialCheckDone(true);
+        }
       }
     };
     
     checkSession();
-  }, [navigate, toast]);
+
+    return () => {
+      mounted = false;
+    };
+  }, [navigate, toast, initialCheckDone]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (loading) return;
+    
     setLoading(true);
     setMessage(null);
     
@@ -45,25 +73,31 @@ export default function ProxyAccess() {
       
       if (error) throw error;
       
+      // Wait a moment for session to be established
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Session not established');
+      }
+      
       toast({
         title: "Login successful!",
         description: "Redirecting you to your dashboard...",
         variant: "default",
       });
       
-      // Redirect after a short delay
+      // Navigate after a short delay to allow toast to be seen
       setTimeout(() => {
         navigate('/dashboard');
-      }, 1500);
+      }, 1000);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign in';
-      
       toast({
         title: "Login failed",
         description: errorMessage,
         variant: "destructive",
       });
-      
       setMessage({ type: 'error', text: errorMessage });
     } finally {
       setLoading(false);
