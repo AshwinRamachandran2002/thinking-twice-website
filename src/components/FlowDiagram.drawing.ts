@@ -5,11 +5,11 @@ import { bezierTangent } from './FlowDiagram.helpers';
 export function drawSolidBox(ctx, x, y, w, h, label, boxColor = "#fff", textColor = "#222", layout) {
   ctx.save();
   const grad = ctx.createLinearGradient(x, y, x + w, y + h);
-  grad.addColorStop(0, "#e0f2fe");
-  grad.addColorStop(1, "#bae6fd");
+  grad.addColorStop(0, "#f0fdfa"); // teal-50
+  grad.addColorStop(1, "#ccfbf1"); // teal-100
   ctx.fillStyle = grad;
-  ctx.globalAlpha = 0.85;
-  ctx.shadowColor = "rgba(255, 255, 255, 0.25)";
+  ctx.globalAlpha = 0.95;
+  ctx.shadowColor = "rgba(45, 212, 191, 0.15)"; // teal-400 with opacity
   ctx.shadowBlur = 12 * layout.scale;
   ctx.beginPath();
   ctx.roundRect(x, y, w, h, 12 * layout.scale);

@@ -92,7 +92,7 @@ export const FlowDiagram = () => {
       }),
       new FlowObject({
         label: 'Leak Calendar',
-        color: '#ef4444',
+        color: '#f59e0b', // amber-500
         icon: rightIntegrationImages[2],
         arrow: 'left',
         t: 0.5,
@@ -346,7 +346,7 @@ export const FlowDiagram = () => {
           agent.x - 16 * layout.scale, // half the previous x offset
           agent.y + ((i - (arrowCount - 1) / 2) * ySpread)
         );
-        curve(ctx, p0, p1, p2, "#0891b2", "#06b6d4", layout); // cyan
+        curve(ctx, p0, p1, p2, "#0d9488", "#14b8a6", layout); // teal-600 to teal-500
       });
       // Middle arrow (agent to fort) with global endpoint control
       // Use fractional X for start/end
@@ -363,8 +363,8 @@ export const FlowDiagram = () => {
         new Vector2(agentToFortStart.x, agentToFortStart.y),
         new Vector2(midControlX, midControlY),
         new Vector2(agentToFortEnd.x, agentToFortEnd.y),
-        "#7c3aed",
-        "#8b5cf6",
+        "#0f766e",
+        "#0d9488",
         layout,
         layout.isMobile ? 2.2 : 2.7,
       );
@@ -379,7 +379,7 @@ export const FlowDiagram = () => {
         const p0 = new Vector2(startX, startY);
         const p1 = new Vector2(rightArrowStartX - (layout.isMobile ? 40 : 70) * layout.scale, yy - arrowCurve * HEIGHT / dpr);
         const p2 = new Vector2(rightArrowStartX, yy);
-        curve(ctx, p0, p1, p2, "#ea580c", "#f97316", layout); // orange
+        curve(ctx, p0, p1, p2, "#475569", "#64748b", layout); // slate-600 to slate-500
       });
 
       // Draw all flow objects based on their arrow and t
@@ -431,7 +431,7 @@ export const FlowDiagram = () => {
       // === Draw agent and fort boxes last so they are always on top ===
       // Use website-matching color for the boxes (e.g. #f8fafc for bg, #0f172a for text)
       const AGENT_BOX_COLOR = "#f8fafc"; // light background
-      const AGENT_TEXT_COLOR = "#0f172a"; // dark text
+      const AGENT_TEXT_COLOR = "#334155"; // slate-700 text
       const agentBoxW = CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * (layout.isMobile ? 0.85 : 1);
       const agentBoxH = CONTEXTFORT_BOX_HEIGHT * HEIGHT / dpr * (layout.isMobile ? 0.85 : 1);
       // Draw Agent box
@@ -529,7 +529,7 @@ export const FlowDiagram = () => {
         overflow: 'hidden',
       }}
     >
-      <canvas ref={canvasRef} className="rounded-xl shadow-2xl w-full h-full" style={{ background: 'transparent', width: '100%', height: '100%', display: 'block', touchAction: 'manipulation' }} />
+      <canvas ref={canvasRef} className="rounded-xl shadow-md w-full h-full" style={{ background: 'transparent', width: '100%', height: '100%', display: 'block', touchAction: 'manipulation' }} />
     </div>
   );
 };
