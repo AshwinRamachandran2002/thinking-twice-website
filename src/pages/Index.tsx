@@ -58,20 +58,21 @@ const LandingPageHero = () => {
             <span className="bg-gradient-to-r from-slate-600 via-teal-500 to-slate-700 bg-clip-text text-transparent font-semibold">visibility and control</span>&nbsp;over every tool call.
           </motion.p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
-            <Link to="/contact" className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-teal-500 to-slate-600 px-6 py-3 text-lg font-semibold text-white shadow-md hover:from-teal-600 hover:to-slate-700 focus-visible:ring-2 focus-visible:ring-teal-400 transform transition-all duration-300 hover:scale-105">
-              Get a Demo
+            <Link to="/proxy" className="flex items-center gap-2 rounded-lg bg-white/80 backdrop-blur-sm border border-teal-200 px-6 py-3 text-lg font-semibold text-slate-600 shadow-md hover:bg-teal-50 focus-visible:ring-2 focus-visible:ring-teal-400 transform transition-all duration-300 hover:scale-105">
+              Try our Proxy
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
             </Link>
-            <a href="#solutions" className="flex items-center gap-2 rounded-lg bg-white/80 backdrop-blur-sm border border-teal-200 px-6 py-3 text-lg font-semibold text-slate-600 shadow-md hover:bg-teal-50 focus-visible:ring-2 focus-visible:ring-teal-400 sm:ml-4 sm:self-auto transform transition-all duration-300 hover:scale-105">
-              Explore Product
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
-            </a>
-          </div>
+          <Link to="/contact" className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-teal-500 to-slate-600 px-6 py-3 text-lg font-semibold text-white shadow-md hover:from-teal-600 hover:to-slate-700 focus-visible:ring-2 focus-visible:ring-teal-400 transform transition-all duration-300 hover:scale-105">
+            Get a Demo
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
+          </Link>
+        </div>
         </motion.section>
 
         <div className="w-full flex justify-center items-center px-0 sm:px-4 md:px-8" style={{maxWidth:'100vw'}}>
           <FlowDiagram />
         </div>
+
 
         {/* Problem Section – Agent Attack Flow */}
         <section className="relative z-10 mt-20 w-full max-w-5xl rounded-3xl bg-white shadow-lg border border-gray-200 px-4 py-12 flex flex-col items-center text-center backdrop-blur-xl mb-10">

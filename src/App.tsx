@@ -12,6 +12,11 @@ import ApiDocs from "./pages/ApiDocs";
 import About from "./pages/About";
 import Blog from "./pages/Blog";
 import Team from "./pages/Team";
+import ProxyAccess from "./pages/ProxyAccess";
+import Dashboard from "./pages/Dashboard";
+import AuthCallback from "./pages/AuthCallback";
+import ResetPassword from "./pages/ResetPassword";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +38,15 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/team" element={<Team />} />
+          <Route path="/proxy" element={<ProxyAccess />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

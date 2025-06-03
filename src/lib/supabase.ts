@@ -1,13 +1,26 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error('Missing Supabase environment variables');
+if (!supabaseUrl) {
+  throw new Error('Missing Supabase URL environment variable');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseServiceKey);
+// Client-side authentication should use the anon key
+export const supabase = createClient(supabaseUrl, supabaseAnonKey || supabaseServiceKey);
+
+// Admin operations (like managing users) should use the service role key
+// CAUTION: Only use this on the server side, never expose this client to the browser
+export const supabaseAdmin = supabaseServiceKey 
+  ? createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
+  : supabase;
 
 export type ApiKey = {
   id: string;
