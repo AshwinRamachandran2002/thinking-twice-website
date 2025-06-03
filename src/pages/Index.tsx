@@ -33,7 +33,7 @@ const LandingPageHero = () => {
         <span className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-indigo-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent tracking-tight drop-shadow-lg select-none">ContextFort</span>
         <nav className="flex items-center gap-2 md:gap-4 text-sm font-medium">
           <Link to="/" className="rounded-lg px-4 py-2 transition-colors hover:bg-slate-700/40 focus-visible:ring-2 focus-visible:ring-cyan-400">Problem</Link>
-          <Link to="/blog" className="rounded-lg px-4 py-2 transition-colors hover:bg-slate-700/40 focus-visible:ring-2 focus-visible:ring-cyan-400">Blog</Link>
+          {/* <Link to="/blog" className="rounded-lg px-4 py-2 transition-colors hover:bg-slate-700/40 focus-visible:ring-2 focus-visible:ring-cyan-400">Blog</Link> */}
           <Link to="/team" className="rounded-lg px-4 py-2 transition-colors hover:bg-slate-700/40 focus-visible:ring-2 focus-visible:ring-cyan-400">Team</Link>
           <Link to="/contact" className="rounded-lg bg-white px-6 py-3 text-cyan-600 font-semibold shadow-lg hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-cyan-400 border border-cyan-100">Schedule Demo</Link>
         </nav>

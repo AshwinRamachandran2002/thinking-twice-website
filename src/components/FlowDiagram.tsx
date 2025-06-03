@@ -1,11 +1,6 @@
 import React, { useRef, useLayoutEffect, useEffect } from "react";
 import { Vector2 } from "three";
 import {
-  MAX_CONCURRENT,
-  SPAWN_MIN,
-  SPAWN_MAX,
-  rand,
-  CANVAS_RATIO,
   leftIntegrationImages,
   leftIntegrationImagesTop,
   rightIntegrationImages,
@@ -15,36 +10,18 @@ import {
   rightArrowStartXFrac,
   AGENT_TO_FORT_ARROW_START_X_FRAC,
   AGENT_TO_FORT_ARROW_END_X_FRAC,
-  diagramX,
-  diagramY,
   DEVIL_IMG,
-  movingTexts,
-  TEXT_SPEED,
   INTEGRATION_RADIUS,
   INTEGRATION_IMG_SIZE,
   INTEGRATION_TOP_RADIUS,
   INTEGRATION_TOP_IMG_SIZE,
   INTEGRATION_SPACING,
-  DEVIL_DROP_OFFSET_Y,
   CONTEXTFORT_BOX_WIDTH,
   CONTEXTFORT_BOX_HEIGHT,
-  DEVIL_DROP_X,
 } from './FlowDiagram.constants';
-
-/**************************************************************************
- *  Shared maths helpers (geometry unchanged) + new tangent helper
- **************************************************************************/
-const bezierPt = (t, p0, p1, p2) => ({
-  x: (1 - t) ** 2 * p0.x + 2 * (1 - t) * t * p1.x + t ** 2 * p2.x,
-  y: (1 - t) ** 2 * p0.y + 2 * (1 - t) * t * p1.y + t ** 2 * p2.y,
-});
-
-const bezierTangent = (t, p0, p1, p2) => {
-  const dx = 2 * (1 - t) * (p1.x - p0.x) + 2 * t * (p2.x - p1.x);
-  const dy = 2 * (1 - t) * (p1.y - p0.y) + 2 * t * (p2.y - p1.y);
-  const len = Math.hypot(dx, dy) || 1;
-  return { x: dx / len, y: dy / len };
-};
+import { bezierPt } from './FlowDiagram.helpers';
+import { drawSolidBox, curve, drawCircleImage, drawFlowObjectRect } from './FlowDiagram.drawing';
+import { FlowObject } from './FlowDiagram.flowObjects';
 
 /**************************************************************************
  *  FlowDiagram – redesigned visuals per user request
@@ -96,52 +73,24 @@ export const FlowDiagram = () => {
     };
   }, []);
 
-  // FlowObject definition with placement and rendering logic
-  type FlowArrow = 'left' | 'middle' | 'right' | 'down';
-
-  interface FlowObjectConfig {
-    label: string;
-    color: string;
-    icon: string; // URL to logo/icon
-    arrow: FlowArrow;
-    t: number; // 0 to 1, how far along the arrow
-    devilish?: boolean;
-  }
-
   // Dummy objects for demo
   const flowObjects = React.useMemo(() => {
-    class LocalFlowObject {
-      label: string;
-      color: string;
-      icon: string;
-      arrow: FlowArrow;
-      t: number;
-      devilish: boolean;
-      constructor(cfg: FlowObjectConfig) {
-        this.label = cfg.label;
-        this.color = cfg.color;
-        this.icon = cfg.icon;
-        this.arrow = cfg.arrow;
-        this.t = cfg.t;
-        this.devilish = !!cfg.devilish;
-      }
-    }
     return [
-      new LocalFlowObject({
+      new FlowObject({
         label: 'Messages',
         color: '#f59e42',
         icon: leftIntegrationImages[0],
         arrow: 'left',
         t: 0.5,
       }),
-      new LocalFlowObject({
+      new FlowObject({
         label: 'Events',
         color: '#36c5f0',
         icon: leftIntegrationImages[1],
         arrow: 'left',
         t: 0.2,
       }),
-      new LocalFlowObject({
+      new FlowObject({
         label: 'Leak Calendar',
         color: '#ef4444',
         icon: rightIntegrationImages[2],
@@ -149,42 +98,42 @@ export const FlowDiagram = () => {
         t: 0.5,
         devilish: true,
       }),
-      new LocalFlowObject({
+      new FlowObject({
         label: 'Issues',
         color: 'black',
         icon: leftIntegrationImages[2],
         arrow: 'left',
         t: 0.2,
       }),
-      new LocalFlowObject({
+      new FlowObject({
         label: 'Any Tool Call',
         color: '#a78bfa',
         icon: agentImages[0],
         arrow: 'middle',
         t: 0.5,
       }),
-      new LocalFlowObject({
+      new FlowObject({
         label: 'New Metric Post',
         color: 'purple',
         icon: rightIntegrationImages[0],
         arrow: 'right',
         t: 0.2,
       }),
-      new LocalFlowObject({
+      new FlowObject({
         label: 'Create Doc',
         color: '#000',
         icon: rightIntegrationImages[1],
         arrow: 'right',
         t: 0.7,
       }),
-      new LocalFlowObject({
+      new FlowObject({
         label: 'Close Ticket',
         color: 'darkblue',
         icon: rightIntegrationImages[4],
         arrow: 'right',
         t: 0.55,
       }),
-      new LocalFlowObject({
+      new FlowObject({
         label: 'Blocked Tool Call',
         color: '#ef4444',
         icon: DEVIL_IMG,
@@ -199,8 +148,9 @@ export const FlowDiagram = () => {
 
   // Responsive resize with devicePixelRatio for crispness
   const resize = () => {
+    if (!wrapperRef.current || !canvasRef.current) return;
     const w = wrapperRef.current.clientWidth;
-    const h = wrapperRef.current.clientHeight; // Use actual wrapper height
+    const h = wrapperRef.current.clientHeight;
     const c = canvasRef.current;
     const dpr = window.devicePixelRatio || 1;
     c.width = w * dpr;
@@ -212,7 +162,20 @@ export const FlowDiagram = () => {
   useLayoutEffect(() => {
     resize();
     window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
+    // Add ResizeObserver for robust resizing
+    let observer;
+    let observedElem = null;
+    if (window.ResizeObserver && wrapperRef.current) {
+      observedElem = wrapperRef.current;
+      observer = new window.ResizeObserver(() => {
+        resize();
+      });
+      observer.observe(observedElem);
+    }
+    return () => {
+      window.removeEventListener("resize", resize);
+      if (observer && observedElem) observer.unobserve(observedElem);
+    };
   }, []);
 
   useEffect(() => {
@@ -244,6 +207,27 @@ export const FlowDiagram = () => {
         imageCache[url] = img;
       }
     });
+
+    // Helper to draw a logo or fallback circle (define once)
+    function drawLogoOrFallback(ctx, img, fallbackColor, x, y, size) {
+      if (img && img.complete && img.naturalWidth > 0) {
+        drawCircleImage(ctx, img, x, y, size);
+      } else {
+        ctx.save();
+        ctx.fillStyle = fallbackColor;
+        ctx.beginPath();
+        ctx.arc(x + size / 2, y + size / 2, size / 2, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    const logoConfigs = [
+      { key: 'vscode', imgKey: agentImages[0], color: "#0078D4" },
+      { key: 'windsurf', imgKey: agentImages[2], color: "#38bdf8" },
+      { key: 'cursor', imgKey: agentImages[1], color: "#888" },
+    ];
+
     const loop = () => {
       const { width: WIDTH, height: HEIGHT } = canvas;
       const layout = getLayout(WIDTH / dpr, HEIGHT / dpr);
@@ -253,63 +237,6 @@ export const FlowDiagram = () => {
 
       /* ------------------------------ clear --------------------------- */
       ctx.clearRect(0, 0, WIDTH, HEIGHT);
-
-      /* ------------------------- helpers ----------------------------- */
-      // Helper to draw a solid rounded rectangle (no glass effect)
-      const drawSolidBox = (x, y, w, h, label, boxColor = "#fff", textColor = "#222") => {
-        ctx.save();
-        const grad = ctx.createLinearGradient(x, y, x + w, y + h);
-        grad.addColorStop(0, "#e0f2fe"); // light blue
-        grad.addColorStop(1, "#bae6fd"); // slightly deeper blue
-        ctx.fillStyle = grad;
-
-        ctx.globalAlpha = 0.85;
-        ctx.shadowColor = "rgba(255, 255, 255, 0.25)";
-        ctx.shadowBlur = 12 * layout.scale; // scale shadow for mobile
-
-        ctx.beginPath();
-        ctx.roundRect(x, y, w, h, 12 * layout.scale);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = textColor;
-        ctx.font = `bold ${Math.max(14, Math.round(18 * layout.scale))}px Inter, sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(label, x + w / 2, y + h / 2);
-        ctx.restore();
-      };
-
-      const arrowHead = (x, y, dir, colour) => {
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(Math.atan2(dir.y, dir.x));
-        ctx.strokeStyle = colour;
-        ctx.lineWidth = 2.5 * layout.scale;
-        ctx.beginPath();
-        ctx.moveTo(-8 * layout.scale, 4 * layout.scale);
-        ctx.lineTo(0, 0);
-        ctx.lineTo(-8 * layout.scale, -4 * layout.scale);
-        ctx.stroke();
-        ctx.restore();
-      };
-
-      const curve = (p0, p1, p2, c0, c1, width = 1.5) => {
-        ctx.save();
-        const grad = ctx.createLinearGradient(p0.x, p0.y, p2.x, p2.y);
-        grad.addColorStop(0, c0);
-        grad.addColorStop(1, c1);
-        ctx.strokeStyle = grad;
-        ctx.lineWidth = width * layout.scale;
-        ctx.shadowColor = c1;
-        ctx.shadowBlur = 8 * layout.scale; // reduced blur for performance
-        ctx.beginPath();
-        ctx.moveTo(p0.x, p0.y);
-        ctx.quadraticCurveTo(p1.x, p1.y, p2.x, p2.y);
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-        arrowHead(p2.x, p2.y, bezierTangent(1, p0, p1, p2), c1);
-        ctx.restore();
-      };
 
       /* -------------------- static node drawing ---------------------- */
       // Draw integration images (left, bottom layer)
@@ -419,7 +346,7 @@ export const FlowDiagram = () => {
           agent.x - 16 * layout.scale, // half the previous x offset
           agent.y + ((i - (arrowCount - 1) / 2) * ySpread)
         );
-        curve(p0, p1, p2, "#0891b2", "#06b6d4"); // cyan
+        curve(ctx, p0, p1, p2, "#0891b2", "#06b6d4", layout); // cyan
       });
       // Middle arrow (agent to fort) with global endpoint control
       // Use fractional X for start/end
@@ -432,11 +359,13 @@ export const FlowDiagram = () => {
       // Define fortBoxW here for use in right arrows
       const fortBoxW = CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * (layout.isMobile ? 0.85 : 1);
       curve(
+        ctx,
         new Vector2(agentToFortStart.x, agentToFortStart.y),
         new Vector2(midControlX, midControlY),
         new Vector2(agentToFortEnd.x, agentToFortEnd.y),
         "#7c3aed",
         "#8b5cf6",
+        layout,
         layout.isMobile ? 2.2 : 2.7,
       );
       // Right (bottom) layer arrows (ContextFort to right integrations)
@@ -450,120 +379,8 @@ export const FlowDiagram = () => {
         const p0 = new Vector2(startX, startY);
         const p1 = new Vector2(rightArrowStartX - (layout.isMobile ? 40 : 70) * layout.scale, yy - arrowCurve * HEIGHT / dpr);
         const p2 = new Vector2(rightArrowStartX, yy);
-        curve(p0, p1, p2, "#ea580c", "#f97316"); // orange
+        curve(ctx, p0, p1, p2, "#ea580c", "#f97316", layout); // orange
       });
-
-      // Draw static objects on arrows
-      // Helper to draw a static object (circle with label)
-      function drawFlowObject(obj, x, y, size) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(x, y, size / 2, 0, 2 * Math.PI);
-        ctx.fillStyle = obj.color;
-        ctx.globalAlpha = 0.92;
-        ctx.shadowColor = obj.color;
-        ctx.shadowBlur = 8 * layout.scale;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = "#fff";
-        ctx.font = `bold ${Math.max(11, Math.round(13 * layout.scale))}px Inter, sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(obj.label, x, y);
-        ctx.restore();
-      }
-      // Helper to draw a rectangular flow object with logo partially out
-      function drawFlowObjectRect(
-        obj: {
-          label: string;
-          color: string;
-          icon: string;
-          arrow: string;
-          t: number;
-          devilish?: boolean;
-        },
-        x: number,
-        y: number,        
-        w: number,
-        h: number,
-        iconImg: HTMLImageElement | undefined
-      ) {
-        ctx.save();
-        // Reduce font and icon size for flow objects
-        const fontSize = layout.isMobile ? Math.max(7, Math.round(8.5 * layout.scale)) : Math.max(9, Math.round(11 * layout.scale));
-        ctx.font = `bold ${fontSize}px Inter, sans-serif`;
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'middle';
-        const textWidth = ctx.measureText(obj.label).width;
-        const minTextPad = h * (layout.isMobile ? 0.45 : 0.6) + (layout.isMobile ? 6 : 10) * layout.scale;
-        const neededW = textWidth + minTextPad;
-        if (neededW > w) {
-          w = neededW;
-        }
-        // Draw red glow for devilish
-        if (obj.devilish) {
-          ctx.save();
-          ctx.shadowColor = '#ff1a1a';
-          ctx.shadowBlur = 24 * layout.scale;
-          ctx.globalAlpha = 0.7;
-          ctx.beginPath();
-          const radius = 6 * layout.scale;
-          ctx.moveTo(x + radius, y);
-          ctx.lineTo(x + w - radius, y);
-          ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
-          ctx.lineTo(x + w, y + h - radius);
-          ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
-          ctx.lineTo(x + radius, y + h);
-          ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
-          ctx.lineTo(x, y + radius);
-          ctx.quadraticCurveTo(x, y, x + radius, y);
-          ctx.closePath();
-          ctx.fillStyle = obj.color;
-          ctx.fill();
-          ctx.globalAlpha = 1;
-          ctx.shadowBlur = 0;
-          ctx.restore();
-        }
-        // Draw rounded rectangle
-        ctx.beginPath();
-        const radius = 6 * layout.scale;
-        ctx.moveTo(x + radius, y);
-        ctx.lineTo(x + w - radius, y);
-        ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
-        ctx.lineTo(x + w, y + h - radius);
-        ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
-        ctx.lineTo(x + radius, y + h);
-        ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
-        ctx.lineTo(x, y + radius);
-        ctx.quadraticCurveTo(x, y, x + radius, y);
-        ctx.closePath();
-        ctx.fillStyle = obj.color;
-        ctx.globalAlpha = 0.96;
-        ctx.shadowColor = obj.color;
-        ctx.shadowBlur = 6 * layout.scale;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.shadowBlur = 0;
-        // Draw icon as a full circle, mostly outside top left
-        if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
-          const iconSize = h * 0.7;
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(x - iconSize * 0.35, y - iconSize * 0.35, iconSize * 0.5, 0, 2 * Math.PI);
-          ctx.closePath();
-          ctx.clip();
-          ctx.drawImage(iconImg, x - iconSize * 0.85, y - iconSize * 0.85, iconSize, iconSize);
-          ctx.restore();
-        }
-        // Draw label text
-        ctx.fillStyle = '#fff';
-        ctx.font = `bold ${fontSize}px Inter, sans-serif`;
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(obj.label, x + h * 0.6, y + h / 2);
-        ctx.restore();
-      }
 
       // Draw all flow objects based on their arrow and t
       flowObjects.forEach((obj) => {
@@ -608,7 +425,7 @@ export const FlowDiagram = () => {
             y: downStart.y * (1 - obj.t) + downEnd.y * obj.t,
           };
         }
-        if (pt) drawFlowObjectRect(obj, pt.x - w / 2, pt.y - h / 2, w, h, iconImg);
+        if (pt) drawFlowObjectRect(ctx, obj, pt.x - w / 2, pt.y - h / 2, w, h, iconImg, layout);
       });
 
       // === Draw agent and fort boxes last so they are always on top ===
@@ -619,24 +436,46 @@ export const FlowDiagram = () => {
       const agentBoxH = CONTEXTFORT_BOX_HEIGHT * HEIGHT / dpr * (layout.isMobile ? 0.85 : 1);
       // Draw Agent box
       drawSolidBox(
+        ctx,
         agent.x,
         agent.y - 0.055 * HEIGHT / dpr,
         agentBoxW,
         agentBoxH,
         "Agent",
         AGENT_BOX_COLOR,
-        AGENT_TEXT_COLOR
+        AGENT_TEXT_COLOR,
+        layout
       );
       // Draw Fort box (ContextFort)
       drawSolidBox(
+        ctx,
         fort.x,
         fort.y - 0.055 * HEIGHT / dpr,
         CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * (layout.isMobile ? 0.85 : 1),
         CONTEXTFORT_BOX_HEIGHT * HEIGHT / dpr * (layout.isMobile ? 0.85 : 1),
         "ContextFort",
         AGENT_BOX_COLOR,
-        AGENT_TEXT_COLOR
+        AGENT_TEXT_COLOR,
+        layout
       );
+      // Draw 'Scan Tool Calls' (top left inside ContextFort box)
+      ctx.save();
+      ctx.font = `bold ${Math.max(layout.isMobile ? 9 : 10, Math.round((layout.isMobile ? 10 : 12) * layout.scale))}px Inter, sans-serif`;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      ctx.fillStyle = AGENT_TEXT_COLOR;
+      ctx.globalAlpha = 0.85;
+      ctx.fillText("Scan Tool Calls", fort.x + 10 * layout.scale, fort.y - 0.055 * HEIGHT / dpr + 8 * layout.scale);
+      ctx.restore();
+      // Draw 'Block Data Exfil' (bottom right inside ContextFort box)
+      ctx.save();
+      ctx.font = `bold ${Math.max(layout.isMobile ? 9 : 10, Math.round((layout.isMobile ? 10 : 12) * layout.scale))}px Inter, sans-serif`;
+      ctx.textAlign = "right";
+      ctx.textBaseline = "bottom";
+      ctx.fillStyle = AGENT_TEXT_COLOR;
+      ctx.globalAlpha = 0.85;
+      ctx.fillText("Block Data Exfil", fort.x + CONTEXTFORT_BOX_WIDTH * WIDTH / dpr * (layout.isMobile ? 0.85 : 1) - 10 * layout.scale, fort.y - 0.055 * HEIGHT / dpr + CONTEXTFORT_BOX_HEIGHT * HEIGHT / dpr * (layout.isMobile ? 0.85 : 1) - 8 * layout.scale);
+      ctx.restore();
       // Draw 'Retrieve Context' (top left inside Agent box)
       ctx.save();
       ctx.font = `bold ${Math.max(layout.isMobile ? 9 : 10, Math.round((layout.isMobile ? 10 : 12) * layout.scale))}px Inter, sans-serif`;
@@ -660,59 +499,17 @@ export const FlowDiagram = () => {
       const logoSize = 28 * layout.scale;
       const logoGap = 18 * layout.scale;
       const logoStartX = agent.x + agentBoxW / 2 - 1.5 * logoSize - logoGap;
-
-      // Get images from agentImages
-      const [vscodeImg, cursorImg, windsurfImg] = [
-        imageCache[agentImages[0]],
-        imageCache[agentImages[1]],
-        imageCache[agentImages[2]],
-      ];
-
-      // Helper to draw an image as a circle (for avatars/logos)
-      function drawCircleImage(img, x, y, size) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(x + size / 2, y + size / 2, size / 2, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.clip();
-        ctx.drawImage(img, x, y, size, size);
-        ctx.restore();
-      }
-
-      // VSCode
-      if (vscodeImg && vscodeImg.complete && vscodeImg.naturalWidth > 0) {
-        drawCircleImage(vscodeImg, logoStartX, logoY, logoSize);
-      } else {
-        ctx.save();
-        ctx.fillStyle = "#0078D4";
-        ctx.beginPath();
-        ctx.arc(logoStartX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.restore();
-      }
-      // Windsurf
-      if (windsurfImg && windsurfImg.complete && windsurfImg.naturalWidth > 0) {
-        drawCircleImage(windsurfImg, logoStartX + logoSize + logoGap, logoY, logoSize);
-      } else {
-        ctx.save();
-        ctx.fillStyle = "#38bdf8";
-        ctx.beginPath();
-        ctx.arc(logoStartX + logoSize + logoGap + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.restore();
-      }
-      // Cursor
-      if (cursorImg && cursorImg.complete && cursorImg.naturalWidth > 0) {
-        drawCircleImage(cursorImg, logoStartX + 2 * (logoSize + logoGap), logoY, logoSize);
-      } else {
-        ctx.save();
-        ctx.fillStyle = "#888";
-        ctx.beginPath();
-        ctx.arc(logoStartX + 2 * (logoSize + logoGap) + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.restore();
-      }
-
+      // Draw all logos in a row
+      logoConfigs.forEach((cfg, i) => {
+        drawLogoOrFallback(
+          ctx,
+          imageCache[cfg.imgKey],
+          cfg.color,
+          logoStartX + i * (logoSize + logoGap),
+          logoY,
+          logoSize
+        );
+      });
       raf.current = requestAnimationFrame(loop);
     };
     raf.current = requestAnimationFrame(loop);
@@ -722,16 +519,14 @@ export const FlowDiagram = () => {
   return (
     <div
       ref={wrapperRef}
-      className="w-full max-w-full aspect-[900/320] sm:aspect-[900/320]"
+      className="w-full max-w-full aspect-[4/3] sm:aspect-[900/320]"
       style={{
         minHeight: 140,
         maxHeight: 320,
         width: '100%',
-        // left: diagramX, // Remove left
-        // top: diagramY,  // Remove top
         position: 'relative',
-        touchAction: 'manipulation', // improve mobile touch
-        overflow: 'hidden', // prevent scrollbars on mobile
+        touchAction: 'manipulation',
+        overflow: 'hidden',
       }}
     >
       <canvas ref={canvasRef} className="rounded-xl shadow-2xl w-full h-full" style={{ background: 'transparent', width: '100%', height: '100%', display: 'block', touchAction: 'manipulation' }} />
