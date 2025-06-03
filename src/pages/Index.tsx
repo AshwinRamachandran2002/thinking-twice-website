@@ -2,6 +2,9 @@ import { motion } from "framer-motion";
 import "@fontsource/inter";
 import { FlowDiagram } from "../components/FlowDiagram";
 import { Link } from "react-router-dom";
+import { MiniAgentInflowDiagram } from "../components/MiniAgentInflowDiagram";
+import { MiniAgentHijackDiagram, MiniAgentOutflowDiagram } from "../components/MiniAgentHijackDiagram";
+import devilImg from "../assets/devil.svg";
 
 /**************************************************************************
  *  LandingPageHero – unchanged except FlowDiagram now responsive
@@ -69,29 +72,51 @@ const LandingPageHero = () => {
           <FlowDiagram />
         </div>
 
-        {/* Problem Section */}
-        <section className="relative z-10 mt-20 w-full max-w-4xl rounded-3xl bg-gradient-to-br from-slate-900/80 via-slate-800/80 to-slate-900/60 shadow-2xl border border-orange-900/30 px-8 py-12 flex flex-col items-center text-center backdrop-blur-xl mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-400 via-yellow-400 to-red-400 bg-clip-text text-transparent mb-4 drop-shadow-lg">The Problem</h2>
-          <p className="text-lg md:text-xl text-slate-200 max-w-2xl mb-8">
-            Tool-calling agents are powerful—but they introduce new risks. <span className="font-semibold text-orange-300">Indirect prompt injection</span>, <span className="font-semibold text-orange-300">tool abuse</span>, and <span className="font-semibold text-orange-300">lack of visibility</span> can lead to data leaks, unauthorized actions, and security incidents. Most teams lack the tools to monitor, audit, and secure these agentic workflows.
-          </p>
-          <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-            <li className="bg-slate-800/70 rounded-2xl p-6 shadow-lg border border-orange-800/20">
-              <span className="text-2xl font-bold text-orange-300">01</span>
-              <div className="font-semibold text-slate-100 mt-2 mb-1">Prompt Injection</div>
-              <div className="text-slate-300 text-sm">Attackers manipulate agent prompts to trigger unintended tool calls or data exfiltration.</div>
-            </li>
-            <li className="bg-slate-800/70 rounded-2xl p-6 shadow-lg border border-orange-800/20">
-              <span className="text-2xl font-bold text-orange-300">02</span>
-              <div className="font-semibold text-slate-100 mt-2 mb-1">Tool Abuse</div>
-              <div className="text-slate-300 text-sm">Agents may invoke tools in unsafe ways, risking sensitive operations or compliance violations.</div>
-            </li>
-            <li className="bg-slate-800/70 rounded-2xl p-6 shadow-lg border border-orange-800/20">
-              <span className="text-2xl font-bold text-orange-300">03</span>
-              <div className="font-semibold text-slate-100 mt-2 mb-1">No Observability</div>
-              <div className="text-slate-300 text-sm">Teams lack real-time insight into agent actions, making it hard to detect or respond to threats.</div>
-            </li>
-          </ul>
+        {/* Problem Section – Agent Attack Flow */}
+        <section className="relative z-10 mt-20 w-full max-w-5xl rounded-3xl bg-gradient-to-br from-slate-900/80 via-slate-800/80 to-slate-900/60 shadow-2xl border border-orange-900/30 px-4 py-12 flex flex-col items-center text-center backdrop-blur-xl mb-10">
+          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-400 via-yellow-400 to-red-400 bg-clip-text text-transparent mb-8 drop-shadow-lg">How Agents Get Hijacked</h2>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 w-full">
+            {/* Step 1: Malicious Context In */}
+            <div className="flex flex-col items-center w-full md:w-1/3">
+              <MiniAgentInflowDiagram />
+              <div className="mt-4 text-orange-300 font-semibold">1. Malicious context enters via integrations</div>
+            </div>
+            {/* Step 2: Agent Hijacked */}
+            <div className="flex flex-col items-center w-full md:w-1/3">
+              <MiniAgentHijackDiagram />
+              <div className="mt-4 text-orange-300 font-semibold">2. Agent logic is hijacked</div>
+            </div>
+            {/* Step 3: Malicious Actions Out */}
+            <div className="flex flex-col items-center w-full md:w-1/3">
+              <MiniAgentOutflowDiagram />
+              <div className="mt-4 text-orange-300 font-semibold">3. Malicious actions sent to integrations</div>
+            </div>
+          </div>
+          {/* Example Attack GIFs */}
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 w-full mt-8">
+            {/* Hubspot Lead Attack GIF */}
+            <div className="flex flex-col items-center w-full md:w-1/2">
+              <div className="w-44 h-44 bg-slate-800/60 rounded-xl flex items-center justify-center border border-orange-800/30 mb-2 overflow-hidden">
+                {/* TODO: Insert Hubspot GIF here */}
+                <span className="text-slate-400 text-sm">[Hubspot Lead Attack GIF]</span>
+              </div>
+              <div className="flex items-center gap-2 mt-1">
+                <img src={devilImg} alt="devil" className="w-5 h-5" />
+                <span className="text-orange-300 font-semibold text-sm">Hubspot Lead → Leak Other Leads (Hubspot)</span>
+              </div>
+            </div>
+            {/* Jira Ticket Attack GIF */}
+            <div className="flex flex-col items-center w-full md:w-1/2">
+              <div className="w-44 h-44 bg-slate-800/60 rounded-xl flex items-center justify-center border border-orange-800/30 mb-2 overflow-hidden">
+                {/* TODO: Insert Jira GIF here */}
+                <span className="text-slate-400 text-sm">[Jira Ticket Attack GIF]</span>
+              </div>
+              <div className="flex items-center gap-2 mt-1">
+                <img src={devilImg} alt="devil" className="w-5 h-5" />
+                <span className="text-orange-300 font-semibold text-sm">Jira Ticket → Leak Workday Information</span>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Solutions Section */}
