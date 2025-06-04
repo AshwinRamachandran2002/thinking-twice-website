@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Session } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import Navbar from '../components/Navbar';
 
 export default function Dashboard() {
   const [session, setSession] = useState<Session | null>(null);
@@ -119,7 +120,9 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="min-h-screen font-sans text-white" style={{ fontFamily: "Gellix, Inter, sans-serif", backgroundColor: '#ffa62b', fontWeight: 'bold' }}>
+      <Navbar />
+      <div className="container mx-auto py-8 px-4 mt-20">
       <div className="grid gap-4 md:gap-8 max-w-6xl mx-auto">
         <Card>
           <CardHeader>
@@ -198,6 +201,7 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   );

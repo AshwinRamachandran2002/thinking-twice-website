@@ -22,12 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 
 .vite
-=======
->>>>>>> 90cf193 (Updates)
->>>>>>> recover-branch
 .env

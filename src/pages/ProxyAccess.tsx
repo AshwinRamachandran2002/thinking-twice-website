@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
+import Navbar from '../components/Navbar';
 
 export default function ProxyAccess() {
   const [email, setEmail] = useState('');
@@ -146,26 +147,15 @@ export default function ProxyAccess() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-100 via-gray-50 to-slate-100">
-      <header className="fixed top-0 left-0 right-0 z-50 flex w-full items-center justify-center p-4 backdrop-blur-md bg-white/70 shadow-sm transition-all duration-300">
-        <div className="container max-w-6xl mx-auto flex justify-between items-center">
-          <Link to="/" className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-teal-500 via-slate-600 to-slate-700 bg-clip-text text-transparent tracking-tight drop-shadow-sm select-none">
-            ContextFort
-          </Link>
-          <nav className="flex items-center gap-2 md:gap-4 text-sm font-medium">
-            <Link to="/" className="rounded-lg px-4 py-2 transition-colors hover:bg-teal-100/70 hover:text-teal-700 focus-visible:ring-2 focus-visible:ring-teal-500 font-semibold text-slate-700 border border-transparent hover:border-teal-200">Home</Link>
-            <Link to="/team" className="rounded-lg px-4 py-2 transition-colors hover:bg-teal-100/70 hover:text-teal-700 focus-visible:ring-2 focus-visible:ring-teal-500 font-semibold text-slate-700 border border-transparent hover:border-teal-200">Team</Link>
-            <Link to="/contact" className="rounded-lg bg-gradient-to-r from-teal-500 to-slate-600 px-6 py-3 text-white font-semibold shadow-md hover:from-teal-600 hover:to-slate-700 focus-visible:ring-2 focus-visible:ring-teal-400 border border-teal-400/30 transform transition-all duration-300 hover:scale-105">Schedule Demo</Link>
-          </nav>
-        </div>
-      </header>
+    <div className="min-h-screen font-sans text-slate-700" style={{ fontFamily: "Gellix, Inter, sans-serif", backgroundColor: '#fef9f3', fontWeight: 'bold' }}>
+      <Navbar />
 
       <main className="container max-w-7xl mx-auto pt-32 px-4 sm:px-6 md:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-[calc(100vh-12rem)]">
           {/* Left Side - Company Information */}
           <div className="flex flex-col space-y-6">
             <div className="space-y-2">
-              <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-teal-500 via-slate-600 to-slate-700 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-extrabold tracking-tight text-[#ffa62b]">
                 ContextFort Proxy
               </h1>
               <p className="text-xl text-slate-600">
@@ -180,8 +170,8 @@ export default function ProxyAccess() {
               
               <div className="mt-8 space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="bg-teal-100 p-2 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="bg-[#ffa62b]/20 p-2 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#ffa62b]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                       <polyline points="22 4 12 14.01 9 11.01"></polyline>
                     </svg>
@@ -193,8 +183,8 @@ export default function ProxyAccess() {
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <div className="bg-teal-100 p-2 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="bg-[#ffa62b]/20 p-2 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#ffa62b]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                     </svg>
                   </div>
@@ -205,8 +195,8 @@ export default function ProxyAccess() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="bg-teal-100 p-2 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="bg-[#ffa62b]/20 p-2 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#ffa62b]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                     </svg>
                   </div>
@@ -218,8 +208,8 @@ export default function ProxyAccess() {
 
 
                 <div className="flex items-start gap-3">
-                  <div className="bg-teal-100 p-2 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="bg-[#ffa62b]/20 p-2 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#ffa62b]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                       <line x1="3" y1="9" x2="21" y2="9"></line>
                       <line x1="9" y1="21" x2="9" y2="9"></line>
@@ -236,7 +226,7 @@ export default function ProxyAccess() {
 
           {/* Right Side - Login/Signup Form */}
           <div className="w-full max-w-md mx-auto lg:ml-auto">
-            <Card className="w-full shadow-lg border-teal-100">
+            <Card className="w-full shadow-lg border-[#ffa62b]/20">
               <CardHeader className="space-y-1">
                 <CardTitle className="text-2xl font-bold text-center">Access ContextFort Proxy</CardTitle>
                 <CardDescription className="text-center">
@@ -266,7 +256,7 @@ export default function ProxyAccess() {
                       <div className="space-y-2">
                       <div className="flex items-center justify-between">
                           <label htmlFor="password" className="text-sm font-medium">Password</label>
-                          <Link to="/reset-password" className="text-xs text-teal-600 hover:text-teal-800">
+                          <Link to="/reset-password" className="text-xs text-[#ffa62b] hover:text-orange-600">
                             Forgot Password?
                           </Link>
                         </div>
@@ -288,7 +278,7 @@ export default function ProxyAccess() {
                         </div>
                       )}
                       
-                      <Button type="submit" className="w-full bg-gradient-to-r from-teal-500 to-slate-600 hover:from-teal-600 hover:to-slate-700" disabled={loading}>
+                      <Button type="submit" className="w-full bg-[#ffa62b] hover:bg-orange-600" disabled={loading}>
                         {loading ? 'Signing in...' : 'Sign In'}
                       </Button>
                     </form>
@@ -327,7 +317,7 @@ export default function ProxyAccess() {
                         </div>
                       )}
                       
-                      <Button type="submit" className="w-full bg-gradient-to-r from-teal-500 to-slate-600 hover:from-teal-600 hover:to-slate-700" disabled={loading}>
+                      <Button type="submit" className="w-full bg-[#ffa62b] hover:bg-orange-600" disabled={loading}>
                         {loading ? 'Creating account...' : 'Create Account'}
                       </Button>
                     </form>

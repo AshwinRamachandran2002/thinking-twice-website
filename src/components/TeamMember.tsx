@@ -35,10 +35,10 @@ const TeamMember = ({
   // Helper function to render the appropriate icon
   const renderIcon = (iconName?: string) => {
     switch(iconName) {
-      case 'award': return <AwardIcon className="w-5 h-5 text-teal-600" />;
-      case 'education': return <GraduationCapIcon className="w-5 h-5 text-slate-600" />;
-      case 'work': return <BriefcaseIcon className="w-5 h-5 text-teal-500" />;
-      default: return <div className="w-2 h-2 bg-teal-500 rounded-full mt-2" />;
+      case 'award': return <AwardIcon className="w-5 h-5 text-[#ffa62b]" />;
+      case 'education': return <GraduationCapIcon className="w-5 h-5 text-[#ffa62b]" />;
+      case 'work': return <BriefcaseIcon className="w-5 h-5 text-[#ffa62b]" />;
+      default: return <div className="w-2 h-2 bg-[#ffa62b] rounded-full mt-2" />;
     }
   };
 
@@ -52,22 +52,22 @@ const TeamMember = ({
       {isCoFounder && (
         <>
           <div className="flex justify-center mb-5 relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-teal-400/20 to-slate-400/20 rounded-full blur-xl opacity-70"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#ffa62b]/20 to-orange-500/20 rounded-full blur-xl opacity-70"></div>
             <img
               src={imageUrl}
               alt={name}
-              className="w-36 h-36 rounded-full object-cover shadow-lg border-4 border-white hover:scale-105 transition-transform relative z-10"
+              className="w-36 h-36 rounded-full object-cover shadow-lg border-4 border-white transition-transform relative z-10"
             />
           </div>
           <div className="flex flex-col items-center">
-            <h3 className="text-xl font-bold mb-1 text-center bg-gradient-to-r from-teal-500 via-slate-600 to-slate-700 bg-clip-text text-transparent">{name}</h3>
+            <h3 className="text-xl font-bold mb-1 text-center text-[#ffa62b]">{name}</h3>
             <p className="text-slate-600 mb-5 text-center">{role}</p>
             
             {/* Regular Achievements section */}
             {achievements && achievements.length > 0 && (
               <div className="space-y-3 mb-5 w-full">
                 {achievements.map((achievement, index) => (
-                  <div key={index} className="flex items-start gap-3 bg-white p-3 rounded-md border-l-4 border-teal-400 shadow-sm hover:bg-teal-50 transition-colors">
+                  <div key={index} className="flex items-start gap-3 bg-white/80 backdrop-blur-sm p-3 rounded-lg border-l-4 border-[#ffa62b] shadow-md hover:bg-[#ffa62b]/10 transition-all duration-300 hover:shadow-lg">
                     <div className="flex-shrink-0 mt-0.5">
                       {renderIcon(achievement.icon)}
                     </div>
@@ -82,7 +82,7 @@ const TeamMember = ({
                 href={linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-500 hover:text-teal-600 transition-colors bg-gray-50 p-2 rounded-full hover:bg-teal-50"
+                className="text-slate-500 hover:text-[#ffa62b] transition-colors bg-white/70 backdrop-blur-sm p-2 rounded-full hover:bg-[#ffa62b]/10 border border-white/20"
                 aria-label={`${name}'s LinkedIn profile`}
               >
                 <LinkedinIcon className="w-5 h-5" />
@@ -91,7 +91,7 @@ const TeamMember = ({
                 href={twitterUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-500 hover:text-teal-600 transition-colors bg-gray-50 p-2 rounded-full hover:bg-teal-50"
+                className="text-slate-500 hover:text-[#ffa62b] transition-colors bg-white/70 backdrop-blur-sm p-2 rounded-full hover:bg-[#ffa62b]/10 border border-white/20"
                 aria-label={`${name}'s Twitter profile`}
               >
                 <TwitterIcon className="w-5 h-5" />
@@ -100,7 +100,7 @@ const TeamMember = ({
                 href={githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-500 hover:text-teal-600 transition-colors bg-gray-50 p-2 rounded-full hover:bg-teal-50"
+                className="text-slate-500 hover:text-[#ffa62b] transition-colors bg-white/70 backdrop-blur-sm p-2 rounded-full hover:bg-[#ffa62b]/10 border border-white/20"
                 aria-label={`${name}'s GitHub profile`}
               >
                 <GithubIcon className="w-5 h-5" />
@@ -109,7 +109,7 @@ const TeamMember = ({
                 href={scholarUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-500 hover:text-teal-600 transition-colors bg-gray-50 p-2 rounded-full hover:bg-teal-50"
+                className="text-slate-500 hover:text-[#ffa62b] transition-colors bg-white/70 backdrop-blur-sm p-2 rounded-full hover:bg-[#ffa62b]/10 border border-white/20"
                 aria-label={`${name}'s Google Scholar profile`}
               >
                 <BookOpenIcon className="w-5 h-5" />
@@ -135,12 +135,12 @@ const TeamMember = ({
           
           {/* Details Section */}
           <div className="md:w-2/3 flex flex-col">
-            <h3 className="text-2xl font-semibold mb-1 text-center md:text-left bg-gradient-to-r from-teal-500 via-slate-600 to-slate-700 bg-clip-text text-transparent">{name}</h3>
+            <h3 className="text-2xl font-semibold mb-1 text-center md:text-left text-[#ffa62b]">{name}</h3>
             <p className="text-slate-600 mb-4 text-center md:text-left">{role}</p>
             
             {/* Enhanced bio display */}
             {bio && (
-              <div className="mb-6 bg-white rounded-lg p-5 border border-teal-100 shadow-sm">
+              <div className="mb-6 bg-white/80 backdrop-blur-sm rounded-xl p-5 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="text-slate-700 prose">
                   {bio}
                 </div>
@@ -149,8 +149,8 @@ const TeamMember = ({
 
             {/* Featured Achievement with image */}
             {featuredAchievement && (
-              <div className="mb-6 bg-white rounded-lg overflow-hidden border border-teal-200 shadow-md">
-                <div className="p-4 bg-gradient-to-r from-teal-500 to-slate-600 text-white">
+              <div className="mb-6 bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
+                <div className="p-4 bg-gradient-to-r from-[#ffa62b] to-orange-600 text-white">
                   <h4 className="font-bold text-lg">{featuredAchievement.title}</h4>
                 </div>
                 
@@ -175,7 +175,7 @@ const TeamMember = ({
             {achievements && achievements.length > 0 && (
               <div className="space-y-3 mb-6">
                 {achievements.map((achievement, index) => (
-                  <div key={index} className="flex items-start gap-3 bg-white p-3 rounded-md border-l-4 border-teal-400 shadow-sm hover:bg-teal-50 transition-colors">
+                  <div key={index} className="flex items-start gap-3 bg-white/80 backdrop-blur-sm p-3 rounded-lg border-l-4 border-[#ffa62b] shadow-md hover:bg-[#ffa62b]/10 transition-all duration-300 hover:shadow-lg">
                     <div className="flex-shrink-0">
                       {renderIcon(achievement.icon)}
                     </div>
@@ -190,7 +190,7 @@ const TeamMember = ({
                 href={linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-500 hover:text-teal-600 transition-colors"
+                className="text-slate-500 hover:text-[#ffa62b] transition-colors"
                 aria-label={`${name}'s LinkedIn profile`}
               >
                 <LinkedinIcon className="w-6 h-6" />
@@ -199,7 +199,7 @@ const TeamMember = ({
                 href={twitterUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-500 hover:text-teal-600 transition-colors"
+                className="text-slate-500 hover:text-[#ffa62b] transition-colors"
                 aria-label={`${name}'s Twitter profile`}
               >
                 <TwitterIcon className="w-6 h-6" />
@@ -208,7 +208,7 @@ const TeamMember = ({
                 href={githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-500 hover:text-teal-600 transition-colors"
+                className="text-slate-500 hover:text-[#ffa62b] transition-colors"
                 aria-label={`${name}'s GitHub profile`}
               >
                 <GithubIcon className="w-6 h-6" />
@@ -217,7 +217,7 @@ const TeamMember = ({
                 href={scholarUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-500 hover:text-teal-600 transition-colors"
+                className="text-slate-500 hover:text-[#ffa62b] transition-colors"
                 aria-label={`${name}'s Google Scholar profile`}
               >
                 <BookOpenIcon className="w-6 h-6" />

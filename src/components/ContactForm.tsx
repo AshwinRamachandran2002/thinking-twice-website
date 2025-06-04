@@ -45,7 +45,7 @@ const ContactForm = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-gradient-to-br from-white to-teal-50 p-8 rounded-lg shadow-lg text-center"
+        className="bg-white p-8 rounded-lg shadow-lg text-center"
       >
         <div className="mb-8">
           <motion.div 
@@ -57,9 +57,9 @@ const ContactForm = () => {
               damping: 20,
               delay: 0.1 
             }}
-            className="w-20 h-20 bg-teal-100 rounded-full mx-auto mb-6 flex items-center justify-center"
+            className="w-20 h-20 bg-[#ffa62b]/20 rounded-full mx-auto mb-6 flex items-center justify-center"
           >
-            <svg className="w-10 h-10 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-10 h-10 text-[#ffa62b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path 
                 strokeLinecap="round" 
                 strokeLinejoin="round" 
@@ -91,9 +91,9 @@ const ContactForm = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-white p-6 rounded-lg shadow-sm border border-teal-100"
+            className="bg-white p-6 rounded-lg shadow-sm border border-[#ffa62b]/20"
           >
-            <h4 className="font-semibold text-teal-600 mb-3 flex items-center">
+            <h4 className="font-semibold text-[#ffa62b] mb-3 flex items-center">
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -108,20 +108,20 @@ const ContactForm = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.6 }}
-            className="bg-teal-50 p-6 rounded-lg"
+            className="bg-[#ffa62b]/10 p-6 rounded-lg"
           >
-            <h4 className="font-semibold text-teal-800 mb-3 flex items-center">
+            <h4 className="font-semibold text-orange-700 mb-3 flex items-center">
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
               Meanwhile, explore our research
             </h4>
-            <div className="text-teal-600 space-y-3">
+            <div className="text-[#ffa62b] space-y-3">
               <a 
                 href="https://arxiv.org/abs/2312.02119" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="block hover:text-teal-700 transition-colors flex items-center"
+                className="block hover:text-orange-600 transition-colors flex items-center"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -132,7 +132,7 @@ const ContactForm = () => {
                 href="https://storage.googleapis.com/deepmind-media/Security%20and%20Privacy/Gemini_Security_Paper.pdf" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="block hover:text-teal-700 transition-colors flex items-center"
+                className="block hover:text-orange-600 transition-colors flex items-center"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -232,13 +232,13 @@ const ContactForm = () => {
           />
         </div>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Button type="submit" className="bg-gradient-to-r from-teal-500 to-slate-600 hover:from-teal-600 hover:to-slate-700 text-white transform transition-all duration-300 hover:scale-105">
+          <Button type="submit" className="bg-[#ffa62b] hover:bg-orange-600 text-white transform transition-all duration-300 hover:scale-105">
             Submit Form
           </Button>
           <Button 
             type="button"
             onClick={openCalendly}
-            className="flex items-center gap-2 rounded-lg bg-white/80 backdrop-blur-sm border border-teal-200 text-slate-600 shadow-md hover:bg-teal-50 transform transition-all duration-300 hover:scale-105"
+            className="flex items-center gap-2 rounded-lg bg-white/80 backdrop-blur-sm border border-[#ffa62b]/20 text-slate-600 shadow-md hover:bg-[#ffa62b]/10 transform transition-all duration-300 hover:scale-105"
           >
             <Calendar className="h-5 w-5" />
             Schedule Meeting

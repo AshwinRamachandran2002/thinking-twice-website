@@ -1,5 +1,5 @@
-import React from "react";
 import { motion } from "framer-motion";
+import Navbar from '../components/Navbar';
 
 const blogPosts = [
   {
@@ -30,7 +30,15 @@ const blogPosts = [
 
 const Blog = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800 py-20 px-4 font-sans text-slate-100">
+    <div className="relative min-h-screen overflow-hidden font-sans text-slate-700 selection:bg-[#ffa62b]/30 selection:text-slate-900" style={{ fontFamily: "Gellix, Inter, sans-serif", backgroundColor: '#fef9f3', fontWeight: 'bold' }}>
+      {/* Muted mango background with subtle gradient */}
+      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-orange-50 via-amber-50 to-yellow-50" />
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_60%_20%,rgba(255,166,43,0.12),transparent_60%)]" />
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_30%_80%,rgba(255,166,43,0.08),transparent_50%)]" />
+      
+      <Navbar />
+      
+      <div className="py-20 px-4 mt-16">
       <div className="max-w-5xl mx-auto">
         <motion.h1 initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} transition={{duration:0.7}} className="text-5xl font-extrabold text-center mb-12 bg-gradient-to-r from-cyan-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-lg">Blog & Insights</motion.h1>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -55,6 +63,7 @@ const Blog = () => {
             </motion.a>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );
