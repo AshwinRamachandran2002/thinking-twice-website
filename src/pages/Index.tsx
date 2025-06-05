@@ -1,36 +1,41 @@
 import { motion } from "framer-motion";
 import "@fontsource/inter";
-import { SecurityDiagram } from "../components/SecurityDiagram";
 import { Link } from "react-router-dom";
-import { MiniAgentInflowDiagram } from "../components/MiniAgentInflowDiagram";
-import { MiniAgentHijackDiagram, MiniAgentOutflowDiagram } from "../components/MiniAgentHijackDiagram";
-import { MiniContextFortSolutionDiagram } from "../components/MiniContextFortSolutionDiagram";
 import Navbar from "../components/Navbar";
-import devilImg from "../assets/devil.svg";
+import { lazy, Suspense } from "react";
+import { useScrollOptimization } from "../hooks/use-scroll-optimization";
+import { ProblemSection } from "../components/ProblemSection";
+import { SolutionsSection } from "../components/SolutionsSection";
+
+// Lazy load heavy components
+const SecurityDiagram = lazy(() => import("../components/SecurityDiagram").then(module => ({
+  default: module.SecurityDiagram
+})));
 
 /**************************************************************************
  *  LandingPageHero – unchanged except FlowDiagram now responsive
  **************************************************************************/
 const LandingPageHero = () => {
+  const { scrollClass } = useScrollOptimization();
+  
   const container = {
     hidden: { opacity: 0, y: 20 },
     show: {
       opacity: 1,
       y: 0,
-      transition: { staggerChildren: 0.12, duration: 0.8, ease: "easeOut" },
+      transition: { staggerChildren: 0.08, duration: 0.5, ease: "easeOut" },
     },
   };
   const item = {
     hidden: { opacity: 0, y: 10 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden font-sans text-slate-700 selection:bg-[#ffa62b]/30 selection:text-slate-900" style={{ fontFamily: "Gellix, Inter, sans-serif", backgroundColor: '#fef9f3', fontWeight: 'bold' }}>
-      {/* Muted mango background with subtle gradient */}
+    <div className={`relative min-h-screen overflow-hidden font-sans text-slate-700 selection:bg-[#ffa62b]/30 selection:text-slate-900 ${scrollClass}`} style={{ fontFamily: "Gellix, Inter, sans-serif", backgroundColor: '#fef9f3', fontWeight: 'bold' }}>
+      {/* Simplified background without complex gradients */}
       <div className="absolute inset-0 -z-20 bg-gradient-to-b from-orange-50 via-amber-50 to-yellow-50" />
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_60%_20%,rgba(255,166,43,0.12),transparent_60%)]" />
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_30%_80%,rgba(255,166,43,0.08),transparent_50%)]" />
+      <div className="absolute inset-0 -z-10 opacity-30"></div>
 
       <Navbar />
 
@@ -51,23 +56,23 @@ const LandingPageHero = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
             <Link 
               to="/proxy" 
-              className="group relative flex items-center gap-2 rounded-full bg-white/80 backdrop-blur-sm px-6 py-3 text-lg font-bold text-black shadow-md focus-visible:ring-2 focus-visible:ring-[#ffa62b] transition-all duration-300 overflow-hidden no-underline"
+              className="group relative flex items-center gap-2 rounded-full bg-white/80 backdrop-blur-sm px-6 py-3 text-lg font-bold text-black shadow-md focus-visible:ring-2 focus-visible:ring-[#ffa62b] overflow-hidden no-underline"
             >
-              {/* Animated border */}
-              <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute inset-0 rounded-full border-[3px] border-[#ffa62b] animate-border-draw"></div>
+              {/* Static border instead of animated */}
+              <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="absolute inset-0 rounded-full border-[3px] border-[#ffa62b]"></div>
               </div>
               <span className="relative z-10 no-underline">Try our Product</span>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
             </Link>
           <Link 
             to="/contact" 
-            className="group relative flex items-center gap-2 rounded-full px-6 py-3 text-lg font-bold text-white shadow-md focus-visible:ring-2 focus-visible:ring-[#ffa62b] transition-all duration-300 overflow-hidden no-underline" 
+            className="group relative flex items-center gap-2 rounded-full px-6 py-3 text-lg font-bold text-white shadow-md focus-visible:ring-2 focus-visible:ring-[#ffa62b] overflow-hidden no-underline" 
             style={{ backgroundColor: '#ffa62b' }}
           >
-            {/* Animated border for solid button */}
-            <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div className="absolute inset-0 rounded-full border-[3px] border-white animate-border-glow"></div>
+            {/* Static border for solid button */}
+            <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="absolute inset-0 rounded-full border-[3px] border-white"></div>
             </div>
             <span className="relative z-10 no-underline">Get a Demo</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
@@ -75,83 +80,110 @@ const LandingPageHero = () => {
         </div>
         </motion.section>
 
-        <SecurityDiagram />
-
+        <Suspense fallback={<div className="w-full h-32 flex items-center justify-center">
+          <div className="text-slate-500">Loading diagram...</div>
+        </div>}>
+          <SecurityDiagram />
+        </Suspense>
 
         {/* Problem Section – Agent Attack Flow */}
-        <section className="relative z-10 mt-20 w-full max-w-5xl rounded-3xl bg-white shadow-lg border border-[#ffa62b]/20 px-4 py-12 flex flex-col items-center text-center backdrop-blur-xl mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-black mb-8 drop-shadow-sm" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>How Agents Get <span style={{ color: '#ffa62b' }}>Hijacked</span></h2>
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 w-full">
-            {/* Step 1: Malicious Context In */}
-            <div className="flex flex-col items-center w-full md:w-1/3">
-              <MiniAgentInflowDiagram />
-              <div className="mt-4 font-bold" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>1. Malicious context enters via integrations</div>
-            </div>
-            {/* Step 2: Agent Hijacked */}
-            <div className="flex flex-col items-center w-full md:w-1/3">
-              <MiniAgentHijackDiagram />
-              <div className="mt-4 font-bold" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>2. Agent logic is hijacked</div>
-            </div>
-            {/* Step 3: Malicious Actions Out */}
-            <div className="flex flex-col items-center w-full md:w-1/3">
-              <MiniAgentOutflowDiagram />
-              <div className="mt-4 font-bold" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>3. Malicious actions sent to integrations</div>
-            </div>
-          </div>
-          {/* Example Attack GIFs */}
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 w-full mt-8">
-            {/* Hubspot Lead Attack GIF */}
-            <div className="flex flex-col items-center w-full md:w-1/2">
-              <div className="w-44 h-44 bg-[#ffa62b]/10 rounded-2xl flex items-center justify-center border border-[#ffa62b]/20 mb-2 overflow-hidden shadow-md">
-                {/* TODO: Insert Hubspot GIF here */}
-                <span className="text-slate-500 text-sm font-medium" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>[Hubspot Lead Attack GIF]</span>
-              </div>
-              <div className="flex items-center gap-2 mt-1">
-                <img src={devilImg} alt="devil" className="w-5 h-5" />
-                <span className="font-bold text-sm" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>Hubspot Lead → Leak Other Leads (Hubspot)</span>
-              </div>
-            </div>
-            {/* Jira Ticket Attack GIF */}
-            <div className="flex flex-col items-center w-full md:w-1/2">
-              <div className="w-44 h-44 bg-[#ffa62b]/10 rounded-2xl flex items-center justify-center border border-[#ffa62b]/20 mb-2 overflow-hidden shadow-md">
-                {/* TODO: Insert Jira GIF here */}
-                <span className="text-slate-500 text-sm font-medium" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>[Jira Ticket Attack GIF]</span>
-              </div>
-              <div className="flex items-center gap-2 mt-1">
-                <img src={devilImg} alt="devil" className="w-5 h-5" />
-                <span className="font-bold text-sm" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>Jira Ticket → Leak Workday Information</span>
-              </div>
-            </div>
-          </div>
-        </section>
+        <ProblemSection />
 
         {/* Solutions Section */}
-        <section id="solutions" className="relative z-10 w-full max-w-4xl rounded-3xl bg-white shadow-lg border border-[#ffa62b]/20 px-8 py-12 flex flex-col items-center text-center backdrop-blur-xl mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-black mb-4 drop-shadow-sm" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>Our <span style={{ color: '#ffa62b' }}>Solutions</span></h2>
-          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mb-8 font-medium" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>
-            ContextFort delivers <span className="font-bold" style={{ color: '#ffa62b' }}>real-time monitoring</span>, <span className="font-bold text-black">security controls</span>, and <span className="font-bold text-black">seamless integration</span> for agentic applications. Gain visibility, enforce policies, and protect your AI workflows from day one.
-          </p>
-          <div className="flex justify-center mb-10">
-            <MiniContextFortSolutionDiagram />
+        <SolutionsSection />
+
+        {/* Blog Section */}
+        <motion.section
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true, margin: "-100px" }}
+          className="py-20 px-4"
+        >
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-extrabold mb-4">Latest Insights</h2>
+              <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+                Stay up-to-date with the latest security threats and protection strategies for AI tool-calling agents.
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <Link 
+                to="/blog/jira-attack" 
+                className="group bg-white/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-[#ffa62b]/10"
+              >
+                <div className="h-48 overflow-hidden">
+                  <img 
+                    src="/gifs/jira-attack.gif" 
+                    alt="Attack on Jira Atlassian MCP Server" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-6">
+                  <div className="text-xs text-slate-500 mb-2">June 4, 2025</div>
+                  <h3 className="text-xl font-bold mb-2 text-slate-900 group-hover:text-[#ffa62b] transition-colors">
+                    Attack on Jira Atlassian MCP Server
+                  </h3>
+                  <p className="text-slate-600 mb-4">
+                    How AI agents with tool-calling capabilities can be exploited to exfiltrate sensitive data from Jira through carefully crafted prompt injections.
+                  </p>
+                  <div className="flex items-center text-[#ffa62b] font-medium">
+                    Read more
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 ml-1">
+                      <path fillRule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </Link>
+              
+              <Link 
+                to="/blog" 
+                className="group bg-white/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-[#ffa62b]/10"
+              >
+                <div className="h-48 overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" 
+                    alt="How Tool-Calling Agents Are Changing Security" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-6">
+                  <div className="text-xs text-slate-500 mb-2">May 20, 2025</div>
+                  <h3 className="text-xl font-bold mb-2 text-slate-900 group-hover:text-[#ffa62b] transition-colors">
+                    How Tool-Calling Agents Are Changing Security
+                  </h3>
+                  <p className="text-slate-600 mb-4">
+                    Explore the new security challenges and opportunities as AI agents gain tool-calling capabilities.
+                  </p>
+                  <div className="flex items-center text-[#ffa62b] font-medium">
+                    Read more
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 ml-1">
+                      <path fillRule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </Link>
+              
+              <div className="md:col-span-2 lg:col-span-1 flex flex-col justify-center items-center bg-gradient-to-br from-[#ffa62b]/10 to-[#ffa62b]/5 rounded-xl p-8 border border-[#ffa62b]/20">
+                <h3 className="text-2xl font-bold mb-4 text-center">Explore More Insights</h3>
+                <p className="text-slate-600 text-center mb-6">
+                  Discover our full collection of articles, case studies, and security insights.
+                </p>
+                <Link 
+                  to="/blog" 
+                  className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-base font-bold text-white shadow-md focus-visible:ring-2 focus-visible:ring-[#ffa62b] overflow-hidden no-underline" 
+                  style={{ backgroundColor: '#ffa62b' }}
+                >
+                  <span className="relative z-10 no-underline">View All Articles</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10">
+                    <path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
           </div>
-          <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-            <li className="bg-[#ffa62b]/10 rounded-2xl p-6 shadow-md border border-[#ffa62b]/20 hover:border-[#ffa62b]/40 hover:bg-[#ffa62b]/20 transition-all duration-300">
-              <span className="text-2xl font-bold" style={{ color: '#ffa62b', fontFamily: "Gellix, Inter, sans-serif" }}>01</span>
-              <div className="font-bold text-black mt-2 mb-1" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>Agent Observability</div>
-              <div className="text-slate-600 text-sm font-medium" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>Track every tool call, prompt, and response. Instantly detect anomalies and threats.</div>
-            </li>
-            <li className="bg-[#ffa62b]/10 rounded-2xl p-6 shadow-md border border-[#ffa62b]/20 hover:border-[#ffa62b]/40 hover:bg-[#ffa62b]/20 transition-all duration-300">
-              <span className="text-2xl font-bold text-black" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>02</span>
-              <div className="font-bold text-black mt-2 mb-1" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>Security Enforcement</div>
-              <div className="text-slate-600 text-sm font-medium" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>Apply granular permissions, audit trails, and automated policy checks for every agent action.</div>
-            </li>
-            <li className="bg-[#ffa62b]/10 rounded-2xl p-6 shadow-md border border-[#ffa62b]/20 hover:border-[#ffa62b]/40 hover:bg-[#ffa62b]/20 transition-all duration-300">
-              <span className="text-2xl font-bold" style={{ color: '#ffa62b', fontFamily: "Gellix, Inter, sans-serif" }}>03</span>
-              <div className="font-bold text-black mt-2 mb-1" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>Easy Integration</div>
-              <div className="text-slate-600 text-sm font-medium" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>Plug ContextFort into your stack with SDKs, APIs, and no-code options—no friction, just results.</div>
-            </li>
-          </ul>
-        </section>
+        </motion.section>
 
       </main>
       

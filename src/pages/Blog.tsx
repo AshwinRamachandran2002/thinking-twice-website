@@ -3,6 +3,14 @@ import Navbar from '../components/Navbar';
 
 const blogPosts = [
   {
+    title: "Attack on Jira Atlassian MCP Server",
+    date: "2025-06-04",
+    author: "Thinking Twice Security Team",
+    summary: "How AI agents with tool-calling capabilities can be exploited to exfiltrate sensitive data from Jira through carefully crafted prompt injections.",
+    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80",
+    href: "/blog/jira-attack"
+  },
+  {
     title: "How Tool-Calling Agents Are Changing Security",
     date: "2025-05-20",
     author: "Ashwin Rao",

@@ -39,7 +39,6 @@ export const MiniAgentInflowDiagram = () => {
               strokeWidth={2.5}
               fill="none"
               markerEnd={`url(#${arrowId})`}
-              style={{ filter: "drop-shadow(0 0 4px #fbbf24)" }}
             />
           </g>
         );
@@ -118,7 +117,6 @@ export const MiniAgentOutflowDiagram = () => {
               strokeWidth={2.5}
               fill="none"
               markerEnd={`url(#${arrowId})`}
-              style={{ filter: "drop-shadow(0 0 4px #f87171)" }}
             />
           </g>
         );

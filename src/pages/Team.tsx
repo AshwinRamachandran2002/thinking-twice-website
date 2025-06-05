@@ -42,9 +42,7 @@ const Team = () => (
               WebkitBackdropFilter: 'blur(20px)',
             }}
           >
-            {/* Floating particles */}
-            <div className="absolute top-4 right-4 w-2 h-2 bg-gray-400/40 rounded-full animate-pulse"></div>
-            <div className="absolute bottom-8 left-4 w-1 h-1 bg-gray-300/40 rounded-full animate-bounce"></div>
+            {/* Removed floating particles animation */}
             <TeamMember
               name="Ashwin Ramachandran"
               role="Co-Founder"
@@ -79,9 +77,7 @@ const Team = () => (
               WebkitBackdropFilter: 'blur(20px)',
             }}
           >
-            {/* Floating particles */}
-            <div className="absolute top-4 right-4 w-2 h-2 bg-gray-400/40 rounded-full animate-pulse"></div>
-            <div className="absolute bottom-8 left-4 w-1 h-1 bg-gray-300/40 rounded-full animate-bounce"></div>
+            {/* Removed floating particles animation */}
             <TeamMember
               name="Harshvardhan Agarwal"
               role="Co-Founder"
@@ -122,10 +118,7 @@ const Team = () => (
             WebkitBackdropFilter: 'blur(20px)',
           }}
         >
-          {/* Floating particles */}
-          <div className="absolute bottom-4 right-4 w-2 h-2 bg-gray-400/40 rounded-full animate-pulse"></div>
-          <div className="absolute top-8 left-4 w-1 h-1 bg-gray-300/40 rounded-full animate-bounce"></div>
-          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-gray-400/20 via-transparent to-gray-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+          {/* Removed floating particles animation */}
           
           <TeamMember
             name="Prof. Earlence Fernandes"

@@ -6,18 +6,20 @@ const Navbar = () => {
     <>
       <header className="fixed top-0 left-0 right-0 z-50 flex w-full items-center justify-center p-4 backdrop-blur-md bg-white/70 shadow-sm transition-all duration-300">
         <div className="container max-w-6xl mx-auto flex justify-between items-center">
-          <span className="text-2xl md:text-3xl font-extrabold text-black tracking-tight drop-shadow-sm select-none">
-            Context<span style={{ color: '#ffa62b' }}>Fort</span>
-          </span>
+          <Link to="/" className="no-underline">
+            <span className="text-2xl md:text-3xl font-extrabold text-black tracking-tight drop-shadow-sm cursor-pointer hover:opacity-90 transition-opacity duration-300">
+              Context<span style={{ color: '#ffa62b' }}>Fort</span>
+            </span>
+          </Link>
           <nav className="flex items-center gap-2 md:gap-4 text-sm font-bold">
             <Link 
-              to="/" 
+              to="/blog" 
               className="group relative rounded-full px-4 py-2 font-bold text-black transition-all duration-300 overflow-hidden no-underline"
             >
               <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute inset-0 rounded-full border-[3px] border-[#ffa62b] animate-border-draw"></div>
               </div>
-              <span className="relative z-10 no-underline">Home</span>
+              <span className="relative z-10 no-underline">Blog</span>
             </Link>
             <Link 
               to="/team" 

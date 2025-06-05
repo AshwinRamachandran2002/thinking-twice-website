@@ -9,8 +9,7 @@ export function drawSolidBox(ctx, x, y, w, h, label, boxColor = "#fff", textColo
   grad.addColorStop(1, "#ccfbf1"); // teal-100
   ctx.fillStyle = grad;
   ctx.globalAlpha = 0.95;
-  ctx.shadowColor = "rgba(45, 212, 191, 0.15)"; // teal-400 with opacity
-  ctx.shadowBlur = 12 * layout.scale;
+  // Removed shadow that causes blurry text
   ctx.beginPath();
   ctx.roundRect(x, y, w, h, 12 * layout.scale);
   ctx.fill();
@@ -48,13 +47,11 @@ export function curve(ctx, p0, p1, p2, c0, c1, layout, width = 1.5) {
   grad.addColorStop(1, c1);
   ctx.strokeStyle = grad;
   ctx.lineWidth = width * layout.scale;
-  ctx.shadowColor = c1;
-  ctx.shadowBlur = 8 * layout.scale;
+  // Removed shadow blur that causes text blurring
   ctx.beginPath();
   ctx.moveTo(p0.x, p0.y);
   ctx.quadraticCurveTo(p1.x, p1.y, p2.x, p2.y);
   ctx.stroke();
-  ctx.shadowBlur = 0;
   // Draw arrowhead at the end of the curve
   arrowHead(ctx, p2.x, p2.y, bezierTangent(1, p0, p1, p2), c1, layout);
   ctx.restore();
@@ -82,8 +79,7 @@ export function drawFlowObjectRect(ctx, obj, x, y, w, h, iconImg, layout) {
   if (neededW > w) w = neededW;
   if (obj.devilish) {
     ctx.save();
-    ctx.shadowColor = '#ff1a1a';
-    ctx.shadowBlur = 24 * layout.scale;
+    // Removed shadow blur that causes text blurring
     ctx.globalAlpha = 0.7;
     ctx.beginPath();
     const radius = 6 * layout.scale;
@@ -117,11 +113,9 @@ export function drawFlowObjectRect(ctx, obj, x, y, w, h, iconImg, layout) {
   ctx.closePath();
   ctx.fillStyle = obj.color;
   ctx.globalAlpha = 0.96;
-  ctx.shadowColor = obj.color;
-  ctx.shadowBlur = 6 * layout.scale;
+  // Removed shadow blur that causes text blurring
   ctx.fill();
   ctx.globalAlpha = 1;
-  ctx.shadowBlur = 0;
   if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
     const iconSize = h * 0.7;
     ctx.save();

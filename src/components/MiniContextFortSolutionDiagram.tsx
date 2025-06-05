@@ -34,7 +34,7 @@ export const MiniContextFortSolutionDiagram = () => {
   function MiniFlowObject({ obj, pt }) {
     return (
       <g>
-        <rect x={pt.x - 26} y={pt.y - 12} width={52} height={24} rx={7} fill={obj.color} opacity="0.97" style={{filter:'drop-shadow(0 1.5px 4px rgba(0,0,0,0.13))'}} />
+        <rect x={pt.x - 26} y={pt.y - 12} width={52} height={24} rx={7} fill={obj.color} opacity="0.97" />
         <circle cx={pt.x - 14} cy={pt.y} r={8.5} fill="#fff" />
         <image href={obj.icon} x={pt.x - 21} y={pt.y - 7.5} width={17} height={17} />
         <text x={pt.x - 2} y={pt.y + 5} fontSize="10.5" fill="#fff" fontWeight="bold" style={{fontFamily:'Inter,sans-serif'}}>{obj.label}</text>
@@ -58,7 +58,7 @@ export const MiniContextFortSolutionDiagram = () => {
       <rect x={agentBox.x} y={agentBox.y} width={agentBox.w} height={agentBox.h} rx={10} fill="#f8fafc" stroke="#0d9488" strokeWidth="2" />
       <text x={agentBox.x + agentBox.w / 2} y={agentBox.y + agentBox.h / 2 + 4} textAnchor="middle" fontSize="13.5" fill="#334155" fontWeight="bold">Agent</text>
       {/* ContextFort box (gradient) */}
-      <rect x={fortBox.x} y={fortBox.y} width={fortBox.w} height={fortBox.h} rx={15} fill="url(#fort-gradient)" stroke="#14b8a6" strokeWidth="2.2" />
+      <rect x={fortBox.x} y={fortBox.y} width={fortBox.w} height={fortBox.h} rx={15} fill="#f0fdfa" stroke="#14b8a6" strokeWidth="2.2" />
       <text x={fortBox.x + fortBox.w / 2} y={fortBox.y + 25} textAnchor="middle" fontSize="14" fill="#0f172a" fontWeight="bold">ContextFort</text>
       {/* Agent to Fort arrow */}
       <path

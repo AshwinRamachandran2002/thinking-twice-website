@@ -47,7 +47,7 @@ export const MiniAgentInflowDiagram = () => {
               strokeWidth={isMalicious ? 2.5 : 2}
               fill="none"
               markerEnd={`url(#${arrowId})`}
-              style={isMalicious ? { filter: "drop-shadow(0 0 4px #f87171)" } : {}}
+              style={isMalicious ? {} : {}}
             />
           </g>
         );
