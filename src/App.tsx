@@ -22,6 +22,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 // Import blog posts
 import JiraAttack from "./pages/blog/JiraAttack";
+import ZendeskAttack from "./pages/blog/ZendeskAttack";
 
 // Configure QueryClient with performance optimizations
 const queryClient = new QueryClient({
@@ -101,6 +102,7 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/jira-attack" element={<JiraAttack />} />
+            <Route path="/blog/zendesk-attack" element={<ZendeskAttack />} />
             <Route path="/team" element={<Team />} />
             <Route path="/proxy" element={<ProxyAccess />} />
             <Route path="/auth/callback" element={<AuthCallback />} />

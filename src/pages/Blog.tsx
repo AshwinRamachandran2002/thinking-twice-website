@@ -3,6 +3,14 @@ import Navbar from '../components/Navbar';
 
 const blogPosts = [
   {
+    title: "Attack on Zendesk Support MCP Server",
+    date: "2025-06-04",
+    author: "Thinking Twice Security Team",
+    summary: "How AI agents with tool-calling capabilities can be exploited to exfiltrate sensitive vulnerability information from Zendesk through carefully crafted prompt injections.",
+    image: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=800&q=80",
+    href: "/blog/zendesk-attack"
+  },
+  {
     title: "Attack on Jira Atlassian MCP Server",
     date: "2025-06-04",
     author: "Thinking Twice Security Team",

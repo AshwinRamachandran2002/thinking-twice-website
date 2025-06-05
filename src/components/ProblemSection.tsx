@@ -49,19 +49,18 @@ export const ProblemSection = () => {
               </div>
               <div className="flex items-center gap-2 mt-2">
                 <img src={devilImg} alt="devil" className="w-6 h-6" />
-                <span className="font-bold text-base" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>Jira Ticket → Leak Sensitive Atlassian Data</span>
+                <span className="font-bold text-base" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>Jira Ticket → Attacker Leaks Confidential Project Data & Access Keys</span>
               </div>
             </div>
-            
-            {/* Hubspot Lead Attack GIF */}
+
+            {/* Zendesk Support Attack GIF */}
             <div className="flex flex-col items-center w-full max-w-2xl">
               <div className="w-full h-[30rem] bg-[#ffa62b]/10 rounded-2xl flex items-center justify-center border border-[#ffa62b]/20 mb-4 overflow-hidden shadow-md">
-                {/* Content placeholder instead of GIF for better performance */}
-                <span className="text-slate-500 text-base font-medium" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>[Hubspot Lead Attack GIF]</span>
+                <img src="/gifs/zendesk-attack.gif" alt="Zendesk Support Attack" className="w-full h-full object-contain" />
               </div>
               <div className="flex items-center gap-2 mt-2">
                 <img src={devilImg} alt="devil" className="w-6 h-6" />
-                <span className="font-bold text-base" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>Hubspot Lead → Leak Other Leads (Hubspot)</span>
+                <span className="font-bold text-base" style={{ fontFamily: "Gellix, Inter, sans-serif" }}>Zendesk Support → Attacker Extracts Customer Vulnerability Reports & Critical Security Issues</span>
               </div>
             </div>
           </div>
