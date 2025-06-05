@@ -46,7 +46,7 @@ const JiraAttack = () => {
                 </div>
                 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/src/assets/jira-attack/1.png" alt="User has two projects: 'Ongoing' and 'TOP SECRET'" className="w-full" />
+                  <img src="/images/jira-attack/1.png" alt="User has two projects: 'Ongoing' and 'TOP SECRET'" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
                       1. User has two Jira projects: "Ongoing" (accessible to multiple team members) and "TOP SECRET" (highly restricted access)
@@ -55,7 +55,7 @@ const JiraAttack = () => {
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/src/assets/jira-attack/2.png" alt="Ongoing project has a TODO assigned to the Attacker" className="w-full" />
+                  <img src="/images/jira-attack/2.png" alt="Ongoing project has a TODO assigned to the Attacker" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
                       2. The "Ongoing" project has a TODO assigned to the Attacker, giving them legitimate access to this project
@@ -64,7 +64,7 @@ const JiraAttack = () => {
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/src/assets/jira-attack/3.png" alt="Attacker aims to exfiltrate the tasks in TOP SECRET project" className="w-full" />
+                  <img src="/images/jira-attack/3.png" alt="Attacker aims to exfiltrate the tasks in TOP SECRET project" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
                       3. The Attacker's goal is to exfiltrate information from the "TOP SECRET" project, which they don't have access to
@@ -73,7 +73,7 @@ const JiraAttack = () => {
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/src/assets/jira-attack/4.png" alt="The sensitive task contains Feature and Client information" className="w-full" />
+                  <img src="/images/jira-attack/4.png" alt="The sensitive task contains Feature and Client information" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
                       4. The sensitive tasks in "TOP SECRET" contain valuable feature and client information
@@ -82,7 +82,7 @@ const JiraAttack = () => {
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/src/assets/jira-attack/5.png" alt="Attacker adds a comment with Prompt Injection" className="w-full" />
+                  <img src="/images/jira-attack/5.png" alt="Attacker adds a comment with Prompt Injection" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
                       5. The Attacker adds a malicious comment with a prompt injection to their task in the "Ongoing" project
@@ -91,7 +91,7 @@ const JiraAttack = () => {
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/src/assets/jira-attack/6.png" alt="User prompts Copilot with Claude Sonnet 3.7 to 'Obtain Summary of Tasks in Ongoing'" className="w-full" />
+                  <img src="/images/jira-attack/6.png" alt="User prompts Copilot with Claude Sonnet 3.7 to 'Obtain Summary of Tasks in Ongoing'" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
                       6. A legitimate user prompts GitHub Copilot (with Claude Sonnet 3.7) to obtain a summary of tasks in the "Ongoing" project
@@ -100,7 +100,7 @@ const JiraAttack = () => {
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/src/assets/jira-attack/7.png" alt="Claude first fetches latest comments from Ongoing project" className="w-full" />
+                  <img src="/images/jira-attack/7.png" alt="Claude first fetches latest comments from Ongoing project" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
                       7. Claude fetches the latest comments from the "Ongoing" project, including the malicious prompt injection
@@ -109,7 +109,7 @@ const JiraAttack = () => {
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/src/assets/jira-attack/8.png" alt="Claude is manipulated to send information from TOP SECRET to attacker" className="w-full" />
+                  <img src="/images/jira-attack/8.png" alt="Claude is manipulated to send information from TOP SECRET to attacker" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
                       8. Claude is manipulated to access and send information from the "TOP SECRET" project
@@ -118,7 +118,7 @@ const JiraAttack = () => {
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/src/assets/jira-attack/9.png" alt="A comment with leaked information is added to Ongoing visible to Attacker" className="w-full" />
+                  <img src="/images/jira-attack/9.png" alt="A comment with leaked information is added to Ongoing visible to Attacker" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
                       9. A comment containing the leaked sensitive information is added to the "Ongoing" project, visible to the Attacker

@@ -46,8 +46,8 @@ const LandingPageHero = () => {
             <img decoding="async" src="https://framerusercontent.com/images/O703WMlgsx2KJikRoCbLUwT5hk.png" alt="" style={{display:'block',width:'110px',height:'23px',objectPosition:'center',objectFit:'fill'}} />
           </motion.div>
           <motion.h1 variants={item} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight drop-shadow-sm text-black">
-            <span style={{ color: '#ffa62b' }}>Security & Observability</span><br />
-            <span className="text-black">for Tool-Calling Agents</span>
+            <span style={{ color: '#ffa62b' }}>Prompt Injection Protection</span><br />
+            <span className="text-black">for AI Agents</span>
           </motion.h1>
           <motion.p variants={item} className="max-w-xl text-lg md:text-xl leading-relaxed text-slate-600 font-medium">
             <span className="font-bold" style={{ color: '#ffa62b' }}>Secure</span>&nbsp;AI agents against Data Exfiltration Attacks. <br/>Instantly gain&nbsp;
@@ -62,10 +62,22 @@ const LandingPageHero = () => {
               <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <div className="absolute inset-0 rounded-full border-[3px] border-[#ffa62b]"></div>
               </div>
-              <span className="relative z-10 no-underline">Try our Product</span>
+              <span className="relative z-10 no-underline">See our proxy live</span>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
             </Link>
-          <Link 
+            <Link 
+              to="/docs" 
+              className="group relative flex items-center gap-2 rounded-full px-6 py-3 text-lg font-bold text-white shadow-md focus-visible:ring-2 focus-visible:ring-[#ffa62b] overflow-hidden no-underline" 
+              style={{ backgroundColor: '#ffa62b' }}
+            >
+              <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="absolute inset-0 rounded-full border-[3px] border-white"></div>
+              </div>
+              <span className="relative z-10 no-underline">Try our API</span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
+            </Link>
+          </div>
+        </motion.section> 
             to="/contact" 
             className="group relative flex items-center gap-2 rounded-full px-6 py-3 text-lg font-bold text-white shadow-md focus-visible:ring-2 focus-visible:ring-[#ffa62b] overflow-hidden no-underline" 
             style={{ backgroundColor: '#ffa62b' }}
@@ -108,7 +120,7 @@ const LandingPageHero = () => {
               </p>
             </div>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               <Link 
                 to="/blog/jira-attack" 
                 className="group bg-white/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-[#ffa62b]/10"
@@ -138,23 +150,23 @@ const LandingPageHero = () => {
               </Link>
               
               <Link 
-                to="/blog" 
+                to="/blog/zendesk-attack" 
                 className="group bg-white/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-[#ffa62b]/10"
               >
                 <div className="h-48 overflow-hidden">
                   <img 
-                    src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" 
-                    alt="How Tool-Calling Agents Are Changing Security" 
+                    src="/gifs/zendesk-attack.gif" 
+                    alt="Attack on Zendesk Support MCP Server" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-6">
-                  <div className="text-xs text-slate-500 mb-2">May 20, 2025</div>
+                  <div className="text-xs text-slate-500 mb-2">June 4, 2025</div>
                   <h3 className="text-xl font-bold mb-2 text-slate-900 group-hover:text-[#ffa62b] transition-colors">
-                    How Tool-Calling Agents Are Changing Security
+                    Attack on Zendesk Support MCP Server
                   </h3>
                   <p className="text-slate-600 mb-4">
-                    Explore the new security challenges and opportunities as AI agents gain tool-calling capabilities.
+                    How AI agents with tool-calling capabilities can be exploited to exfiltrate sensitive vulnerability information from Zendesk.
                   </p>
                   <div className="flex items-center text-[#ffa62b] font-medium">
                     Read more
@@ -164,23 +176,6 @@ const LandingPageHero = () => {
                   </div>
                 </div>
               </Link>
-              
-              <div className="md:col-span-2 lg:col-span-1 flex flex-col justify-center items-center bg-gradient-to-br from-[#ffa62b]/10 to-[#ffa62b]/5 rounded-xl p-8 border border-[#ffa62b]/20">
-                <h3 className="text-2xl font-bold mb-4 text-center">Explore More Insights</h3>
-                <p className="text-slate-600 text-center mb-6">
-                  Discover our full collection of articles, case studies, and security insights.
-                </p>
-                <Link 
-                  to="/blog" 
-                  className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-base font-bold text-white shadow-md focus-visible:ring-2 focus-visible:ring-[#ffa62b] overflow-hidden no-underline" 
-                  style={{ backgroundColor: '#ffa62b' }}
-                >
-                  <span className="relative z-10 no-underline">View All Articles</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10">
-                    <path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" />
-                  </svg>
-                </Link>
-              </div>
             </div>
           </div>
         </motion.section>
