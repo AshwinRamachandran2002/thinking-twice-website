@@ -58,14 +58,29 @@
 }
 
 /* Optimize backdrop-filter which is very expensive */
-.optimize-scroll [style*="backdrop-filter"] {
+.optimize-scroll [style*="backdrop-filter"],
+.optimize-scroll .backdrop-blur-xl,
+.optimize-scroll [class*="backdrop-blur"] {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  background: rgba(255, 255, 255, 0.9) !important;
 }
 
 /* Optimize box-shadows which can be expensive to render */
 .optimize-scroll [class*="shadow"] {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Disable expensive hover transforms during scroll */
+.optimize-scroll [class*="hover:scale"],
+.optimize-scroll [class*="hover:rotate"] {
+  transform: none !important;
+}
+
+/* Optimize gradient backgrounds during scroll */
+.optimize-scroll [style*="linear-gradient"],
+.optimize-scroll [style*="radial-gradient"] {
+  background: rgba(156, 163, 175, 0.1) !important;
 }
 
 /* Optimize blur effects */
@@ -120,4 +135,61 @@
   opacity: 0.7 !important;
   image-rendering: optimizeSpeed !important;
   transform: scale(0.9) !important;
+}
+
+/* CSS-based fade in animation to replace Framer Motion */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* Hero section animations */
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroItem {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-hero-fade-in {
+  animation: heroFadeIn 0.5s ease-out forwards;
+}
+
+.animate-hero-item {
+  animation: heroItem 0.4s ease-out forwards;
+}
+
+/* Optimize Framer Motion animations during scroll */
+.optimize-scroll [data-framer-component] {
+  animation-play-state: paused !important;
+}
+
+.optimize-scroll motion-section,
+.optimize-scroll motion-div {
+  animation-play-state: paused !important;
 }
