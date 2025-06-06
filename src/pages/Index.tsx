@@ -12,9 +12,6 @@ const SecurityDiagram = lazy(() => import("../components/SecurityDiagram").then(
   default: module.SecurityDiagram
 })));
 
-/**************************************************************************
- *  LandingPageHero – unchanged except FlowDiagram now responsive
- **************************************************************************/
 const LandingPageHero = () => {
   const { scrollClass } = useScrollOptimization();
   
@@ -58,12 +55,11 @@ const LandingPageHero = () => {
               to="/proxy" 
               className="group relative flex items-center gap-2 rounded-full bg-white/80 backdrop-blur-sm px-6 py-3 text-lg font-bold text-black shadow-md focus-visible:ring-2 focus-visible:ring-[#ffa62b] overflow-hidden no-underline"
             >
-              {/* Static border instead of animated */}
               <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <div className="absolute inset-0 rounded-full border-[3px] border-[#ffa62b]"></div>
               </div>
               <span className="relative z-10 no-underline">See our proxy live</span>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
             </Link>
             <Link 
               to="/docs" 
@@ -77,19 +73,6 @@ const LandingPageHero = () => {
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
             </Link>
           </div>
-        </motion.section> 
-            to="/contact" 
-            className="group relative flex items-center gap-2 rounded-full px-6 py-3 text-lg font-bold text-white shadow-md focus-visible:ring-2 focus-visible:ring-[#ffa62b] overflow-hidden no-underline" 
-            style={{ backgroundColor: '#ffa62b' }}
-          >
-            {/* Static border for solid button */}
-            <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              <div className="absolute inset-0 rounded-full border-[3px] border-white"></div>
-            </div>
-            <span className="relative z-10 no-underline">Get a Demo</span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
-          </Link>
-        </div>
         </motion.section>
 
         <Suspense fallback={<div className="w-full h-32 flex items-center justify-center">
@@ -127,7 +110,7 @@ const LandingPageHero = () => {
               >
                 <div className="h-48 overflow-hidden">
                   <img 
-                    src="/gifs/jira-attack.gif" 
+                    src="/images/jira-attack/attack.gif" 
                     alt="Attack on Jira Atlassian MCP Server" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -179,9 +162,7 @@ const LandingPageHero = () => {
             </div>
           </div>
         </motion.section>
-
       </main>
-      
     </div>
   );
 };
