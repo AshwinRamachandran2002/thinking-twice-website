@@ -1,12 +1,16 @@
-import { useEffect, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { supabase, sandboxSessionService, UserSandboxSession } from '@/lib/supabase';
+import { useEffect, useState, useRef } from 'react';
+import { Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { supabase, sandboxSessionService, apiKeyService, UserSandboxSession, ApiKey } from '@/lib/supabase';
+import { createCheckoutSession, handleCheckoutSuccess } from '@/lib/stripe';
 import { Session } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import Navbar from '../components/Navbar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RefreshCw, Copy, CheckCircle, ChevronRight, Terminal, AlertCircle, CreditCard, Zap, BarChart, Activity } from 'lucide-react';
 
 export default function Dashboard() {
   const [session, setSession] = useState<Session | null>(null);
@@ -15,13 +19,33 @@ export default function Dashboard() {
   const [sessionExpired, setSessionExpired] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>('proxy');
+  const [apiKey, setApiKey] = useState<ApiKey | null>(null);
+  const [isLoadingApiKey, setIsLoadingApiKey] = useState(false);
+  const [isCreatingApiKey, setIsCreatingApiKey] = useState(false);
+  const [tokenCount, setTokenCount] = useState<number>(0);
+  const [isRefreshingTokens, setIsRefreshingTokens] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [codeCopied, setCodeCopied] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('python');
+  const codeRef = useRef<HTMLPreElement>(null);
   
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Load user session and sandbox session
   useEffect(() => {
     let mounted = true;
+
+    // Set active tab based on the path that got us here
+    if (location.pathname === '/api' || location.state?.from === 'api') {
+      setActiveTab('api');
+    } else {
+      setActiveTab('proxy');
+    }
 
     const loadSessions = async () => {
       try {
@@ -59,6 +83,45 @@ export default function Dashboard() {
           setSandboxSession(null);
           setTimeRemaining(0);
         }
+
+        // Load API key information
+        try {
+          setIsLoadingApiKey(true);
+          const existingApiKey = await apiKeyService.getUserApiKey(session.user.id);
+          if (existingApiKey) {
+            setApiKey(existingApiKey);
+            setTokenCount(existingApiKey.tokens_processed);
+          }
+          else {
+            try {
+              const newApiKey = await apiKeyService.createApiKey(session.user.id, 'free_tier');
+              setApiKey(newApiKey);
+              setTokenCount(0);
+              toast({
+                title: "API Key Created",
+                description: "Your free API key has been automatically generated.",
+              });
+            } catch (createError) {
+              console.error('Failed to create API key:', createError);
+              toast({
+                title: "API Key Error",
+                description: "Could not create or retrieve your API key. Please try again.",
+                variant: "destructive",
+              });
+            }
+          }
+        } catch (apiKeyError) {
+          console.error('Failed to load API key:', apiKeyError);
+          setApiKey(null);
+          setTokenCount(0);
+          toast({
+            title: "API Key Error",
+            description: "Unable to load your API key. Please try again later.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsLoadingApiKey(false);
+        }
       } catch (err) {
         console.error('Session check failed:', err);
         navigate('/proxy');
@@ -83,7 +146,7 @@ export default function Dashboard() {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, location.pathname, location.state?.from]);
 
   // Countdown timer effect
   useEffect(() => {
@@ -104,6 +167,109 @@ export default function Dashboard() {
 
     return () => clearInterval(timer);
   }, [session, sandboxSession, timeRemaining]);
+
+  // API key functions
+  const createNewApiKey = async () => {
+    if (!session || isCreatingApiKey) return;
+
+    setIsCreatingApiKey(true);
+    try {
+      const newApiKey = await apiKeyService.createApiKey(session.user.id, 'free_tier');
+      setApiKey(newApiKey);
+      setTokenCount(0);
+      
+      toast({
+        title: "API Key Created",
+        description: "Your API key has been generated successfully.",
+      });
+    } catch (error) {
+      console.error('Failed to create API key:', error);
+      toast({
+        title: "Failed to create API key",
+        description: "Unable to create a new API key. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingApiKey(false);
+    }
+  };
+
+  const refreshTokenCount = async () => {
+    if (!session || !apiKey || isRefreshingTokens) return;
+    
+    setIsRefreshingTokens(true);
+    try {
+      const count = await apiKeyService.getTokenUsage(session.user.id);
+      setTokenCount(count);
+      
+      toast({
+        title: "Usage Updated",
+        description: "Your token usage information has been refreshed.",
+      });
+    } catch (error) {
+      console.error('Failed to refresh token count:', error);
+      toast({
+        title: "Failed to refresh usage",
+        description: "Unable to update token usage. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRefreshingTokens(false);
+    }
+  };
+
+  const copyApiKey = () => {
+    if (!apiKey) return;
+    
+    navigator.clipboard.writeText(apiKey.api_key);
+    setCopySuccess(true);
+    
+    setTimeout(() => {
+      setCopySuccess(false);
+    }, 2000);
+    
+    toast({
+      title: "API Key Copied",
+      description: "Your API key has been copied to clipboard.",
+    });
+  };
+
+  const handleCheckout = async () => {
+    if (!session || isCheckingOut) return;
+    
+    setIsCheckingOut(true);
+    try {
+      await createCheckoutSession(session.user.id, session.user.email || '');
+      // Redirect will happen in the createCheckoutSession function
+    } catch (error) {
+      console.error('Failed to initiate checkout:', error);
+      toast({
+        title: "Checkout Failed",
+        description: "Unable to start the checkout process. Please try again.",
+        variant: "destructive",
+      });
+      setIsCheckingOut(false);
+    }
+  };
+
+  const copyCodeExample = () => {
+    if (!codeRef.current) return;
+    
+    const code = codeRef.current.textContent;
+    if (!code) return;
+    
+    navigator.clipboard.writeText(code);
+    setCodeCopied(true);
+    
+    setTimeout(() => {
+      setCodeCopied(false);
+    }, 2000);
+    
+    toast({
+      title: "Code Copied",
+      description: `The ${selectedLanguage} example has been copied to clipboard.`,
+    });
+  };
 
   // Function to destroy sandbox server
   const destroySandboxServer = async (sessionId: string) => {
@@ -259,6 +425,55 @@ export default function Dashboard() {
     }
   }, [sessionExpired, toast]);
 
+  // Check for Stripe checkout success
+  useEffect(() => {
+    if (!session) return;
+    
+    const searchParams = new URLSearchParams(location.search);
+    const sessionId = searchParams.get('session_id');
+    const success = searchParams.get('success');
+    
+    if (sessionId && success === 'true' && !isCheckingOut) {
+      const processPayment = async () => {
+        try {
+          setIsCheckingOut(true);
+          
+          toast({
+            title: "Processing payment",
+            description: "Please wait while we verify your payment...",
+          });
+          
+          await handleCheckoutSuccess(sessionId, session.user.id);
+          
+          // Refresh API key data after successful payment
+          const updatedApiKey = await apiKeyService.getUserApiKey(session.user.id);
+          if (updatedApiKey) {
+            setApiKey(updatedApiKey);
+          }
+          
+          toast({
+            title: "Payment successful!",
+            description: "Your account has been upgraded to Pro!",
+          });
+          
+          // Clear URL params
+          navigate('/dashboard', { replace: true });
+        } catch (error) {
+          console.error('Error processing payment:', error);
+          toast({
+            title: "Payment verification failed",
+            description: "We could not verify your payment. Please contact support.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsCheckingOut(false);
+        }
+      };
+      
+      processPayment();
+    }
+  }, [session, location.search, navigate, toast, isCheckingOut]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -278,118 +493,828 @@ export default function Dashboard() {
     <div className="min-h-screen font-sans text-white" style={{ fontFamily: "Gellix, Inter, sans-serif", backgroundColor: '#ffa62b', fontWeight: 'bold' }}>
       <Navbar />
       <div className="container mx-auto py-8 px-4 mt-20">
-      <div className="grid gap-4 md:gap-8 max-w-6xl mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle>ContextFort Sandbox Demo</CardTitle>
-            <CardDescription>Experience ContextFort's protection in action with our secure code-server sandbox powered by Fly.io</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            {!sandboxSession || sessionExpired ? (
-              <div className="flex flex-col space-y-4">
-                <div className="text-center space-y-2">
-                  <h3 className="text-lg font-semibold">No Active Sandbox Session</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Create a new sandbox session to access the ContextFort demo environment.
-                  </p>
-                </div>
-                <Button 
-                  onClick={createNewSession}
-                  disabled={isCreatingSession}
-                  className="w-full"
-                >
-                  {isCreatingSession ? "Deploying Server..." : "Create New Sandbox Session"}
-                </Button>
-                {isCreatingSession && (
-                  <div className="text-center text-sm text-muted-foreground">
-                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-teal-500 mx-auto mb-2"></div>
-                    This may take a few minutes to deploy your personalized server...
-                  </div>
-                )}
-              </div>
-            ) : (
-              <>
-                <div className="flex flex-col space-y-2">
-                  <h3 className="text-lg font-semibold">Time Remaining: {formatTime(timeRemaining)}</h3>
-                  <p className="text-sm text-muted-foreground">Your sandbox session will expire in {formatTime(timeRemaining)}</p>
-                </div>
-                
-                <div className="grid gap-4">
-                  <div className="flex flex-col space-y-2">
-                    <h3 className="font-semibold">Sandbox Access</h3>
+        <div className="grid gap-4 md:gap-8 max-w-6xl mx-auto">
+          <Tabs defaultValue={activeTab} onValueChange={(value) => setActiveTab(value)}>
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="proxy">Proxy</TabsTrigger>
+              <TabsTrigger value="api">API</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="proxy">
+              <Card>
+                <CardHeader>
+                  <CardTitle>ContextFort Sandbox Demo</CardTitle>
+                  <CardDescription>Experience ContextFort's protection in action with our secure code-server sandbox powered by Fly.io</CardDescription>
+                </CardHeader>
+                <CardContent className="grid gap-4">
+                  {!sandboxSession || sessionExpired ? (
+                    <div className="flex flex-col space-y-4">
+                      <div className="text-center space-y-2">
+                        <h3 className="text-lg font-semibold">No Active Sandbox Session</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Create a new sandbox session to access the ContextFort demo environment.
+                        </p>
+                      </div>
+                      <Button 
+                        onClick={createNewSession}
+                        disabled={isCreatingSession}
+                        className="w-full"
+                      >
+                        {isCreatingSession ? "Deploying Server..." : "Create New Sandbox Session"}
+                      </Button>
+                      {isCreatingSession && (
+                        <div className="text-center text-sm text-muted-foreground">
+                          <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-teal-500 mx-auto mb-2"></div>
+                          This may take a few minutes to deploy your personalized server...
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex flex-col space-y-2">
+                        <h3 className="text-lg font-semibold">Time Remaining: {formatTime(timeRemaining)}</h3>
+                        <p className="text-sm text-muted-foreground">Your sandbox session will expire in {formatTime(timeRemaining)}</p>
+                      </div>
+                      
+                      <div className="grid gap-4">
+                        <div className="flex flex-col space-y-2">
+                          <h3 className="font-semibold">Sandbox Access</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Access your code-server environment using these credentials:
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <Input 
+                              value={sandboxSession.sandbox_url}
+                              readOnly
+                              className="font-mono"
+                            />
+                            <Button 
+                              variant="outline"
+                              onClick={() => {
+                                navigator.clipboard.writeText(sandboxSession.sandbox_url);
+                                toast({ description: "URL copied to clipboard" });
+                              }}
+                            >
+                              Copy
+                            </Button>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Input 
+                              value={sandboxSession.sandbox_password}
+                              readOnly
+                              type="text"
+                              className="font-mono"
+                            />
+                            <Button 
+                              variant="outline"
+                              onClick={() => {
+                                navigator.clipboard.writeText(sandboxSession.sandbox_password);
+                                toast({ description: "Password copied to clipboard" });
+                              }}
+                            >
+                              Copy
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <h3 className="font-semibold">Getting Started</h3>
+                          <ol className="list-decimal list-inside space-y-2 text-sm">
+                            <li>Visit the sandbox URL in your browser</li>
+                            <li>Enter the provided password when prompted</li>
+                            <li>You'll be connected to a secure code-server environment</li>
+                            <li>Try the example prompt injection attacks below</li>
+                          </ol>
+                        </div>
+
+                        <div className="space-y-2">
+                          <h3 className="font-semibold">Example Prompt Injections</h3>
+                          <div className="text-sm space-y-2">
+                            <p>Test these prompts in the sandbox environment to see how ContextFort protects against them:</p>
+                            <ul className="list-disc list-inside space-y-1">
+                              <li>System role override attempts</li>
+                              <li>Temperature and sampling manipulations</li>
+                              <li>Data exfiltration attempts</li>
+                              <li>Jailbreak patterns</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="space-y-2">
+                    <h3 className="font-semibold">Need Help?</h3>
                     <p className="text-sm text-muted-foreground">
-                      Access your code-server environment using these credentials:
+                      If you encounter any issues with your sandbox session, try creating a new session or contact our support team.
                     </p>
-                    <div className="flex items-center gap-2">
-                      <Input 
-                        value={sandboxSession.sandbox_url}
-                        readOnly
-                        className="font-mono"
-                      />
-                      <Button 
-                        variant="outline"
-                        onClick={() => {
-                          navigator.clipboard.writeText(sandboxSession.sandbox_url);
-                          toast({ description: "URL copied to clipboard" });
-                        }}
-                      >
-                        Copy
-                      </Button>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Input 
-                        value={sandboxSession.sandbox_password}
-                        readOnly
-                        type="text"
-                        className="font-mono"
-                      />
-                      <Button 
-                        variant="outline"
-                        onClick={() => {
-                          navigator.clipboard.writeText(sandboxSession.sandbox_password);
-                          toast({ description: "Password copied to clipboard" });
-                        }}
-                      >
-                        Copy
-                      </Button>
-                    </div>
                   </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-                  <div className="space-y-2">
-                    <h3 className="font-semibold">Getting Started</h3>
-                    <ol className="list-decimal list-inside space-y-2 text-sm">
-                      <li>Visit the sandbox URL in your browser</li>
-                      <li>Enter the provided password when prompted</li>
-                      <li>You'll be connected to a secure code-server environment</li>
-                      <li>Try the example prompt injection attacks below</li>
-                    </ol>
-                  </div>
+            <TabsContent value="api">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Left column - API key and usage */}
+                <div className="lg:col-span-1 space-y-6">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-xl flex items-center gap-2">
+                        <Terminal className="h-5 w-5" />
+                        API Key
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {isLoadingApiKey ? (
+                        <div className="flex justify-center py-4">
+                          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white"></div>
+                        </div>
+                      ) : apiKey ? (
+                        <div className="space-y-4">
+                          <div className="flex flex-col space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                apiKey.payment_status === 'paid' 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-amber-100 text-amber-800'
+                              }`}>
+                                {apiKey.payment_status === 'paid' ? 'PRO' : 'FREE TIER'}
+                              </span>
+                              <span className="text-xs text-slate-400">Created: {new Date(apiKey.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div className="flex items-center gap-2 mt-2">
+                              <Input 
+                                value={apiKey.api_key}
+                                readOnly
+                                type="text"
+                                className="font-mono bg-slate-900 text-slate-50 text-sm"
+                              />
+                              <Button 
+                                variant="outline"
+                                onClick={copyApiKey}
+                                className="flex items-center gap-1"
+                                size="sm"
+                              >
+                                {copySuccess ? <CheckCircle className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                              </Button>
+                            </div>
+                          </div>
 
-                  <div className="space-y-2">
-                    <h3 className="font-semibold">Example Prompt Injections</h3>
-                    <div className="text-sm space-y-2">
-                      <p>Test these prompts in the sandbox environment to see how ContextFort protects against them:</p>
-                      <ul className="list-disc list-inside space-y-1">
-                        <li>System role override attempts</li>
-                        <li>Temperature and sampling manipulations</li>
-                        <li>Data exfiltration attempts</li>
-                        <li>Jailbreak patterns</li>
-                      </ul>
-                    </div>
-                  </div>
+                          <div className="space-y-4 pt-4 border-t border-slate-200">
+                            <div className="flex justify-between items-center">
+                              <h4 className="font-medium flex items-center gap-1.5">
+                                <Activity className="h-4 w-4" />
+                                API Usage
+                              </h4>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={refreshTokenCount}
+                                disabled={isRefreshingTokens}
+                                className="h-8 px-2"
+                              >
+                                <RefreshCw className={`h-3.5 w-3.5 ${isRefreshingTokens ? 'animate-spin' : ''}`} />
+                              </Button>
+                            </div>
+                            
+                            <div className="space-y-3">
+                              <div>
+                                <div className="flex justify-between text-sm mb-1">
+                                  <span>Tokens Processed</span>
+                                  <span className="font-semibold">{tokenCount.toLocaleString()}</span>
+                                </div>
+                                <div className="w-full bg-slate-200 rounded-full h-2.5">
+                                  <div 
+                                    className={`h-2.5 rounded-full ${
+                                      tokenCount > (apiKey.payment_status === 'paid' ? 800000 : 8000) 
+                                      ? 'bg-amber-500' 
+                                      : 'bg-emerald-500'
+                                    }`}
+                                    style={{ 
+                                      width: `${Math.min(100, (tokenCount / (apiKey.payment_status === 'paid' ? 1000000 : 10000)) * 100)}%` 
+                                    }}
+                                  ></div>
+                                </div>
+                                <div className="flex justify-between mt-1">
+                                  <p className="text-xs text-slate-500">
+                                    {apiKey.payment_status === 'paid' 
+                                      ? `${Math.floor((tokenCount / 1000000) * 100)}% of monthly allocation` 
+                                      : `${Math.floor((tokenCount / 10000) * 100)}% of free tier limit`}
+                                  </p>
+                                  <p className="text-xs font-medium">
+                                    {apiKey.payment_status === 'paid' 
+                                      ? `${tokenCount.toLocaleString()} / 1,000,000` 
+                                      : `${tokenCount.toLocaleString()} / 10,000`}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div>
+                                <div className="flex justify-between text-sm mb-1">
+                                  <span>Daily Usage</span>
+                                  <span className="font-semibold">{Math.floor(tokenCount * 0.15).toLocaleString()}</span>
+                                </div>
+                                <div className="w-full bg-slate-200 rounded-full h-2">
+                                  <div 
+                                    className="bg-blue-500 h-2 rounded-full" 
+                                    style={{ 
+                                      width: `${Math.min(100, Math.floor(tokenCount * 0.15) / (apiKey.payment_status === 'paid' ? 50000 : 1000) * 100)}%` 
+                                    }}
+                                  ></div>
+                                </div>
+                              </div>
+                              
+                              {apiKey.payment_status !== 'paid' && (
+                                <Button 
+                                  onClick={handleCheckout}
+                                  disabled={isCheckingOut}
+                                  className="w-full bg-emerald-600 hover:bg-emerald-700 flex items-center gap-2 mt-2"
+                                  size="sm"
+                                >
+                                  <CreditCard className="h-4 w-4" />
+                                  {isCheckingOut ? "Processing..." : "Upgrade to Pro - $10/month"}
+                                </Button>
+                              )}
+
+                              {apiKey.payment_status === 'paid' && (
+                                <div className="bg-emerald-50 border border-emerald-200 rounded-md p-2 text-xs text-emerald-700 mt-2">
+                                  <p className="font-medium">Pro Plan Active</p>
+                                  <p>Your subscription renews on {new Date(new Date(apiKey.created_at).setMonth(new Date(apiKey.created_at).getMonth() + 1)).toLocaleDateString()}</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center space-y-4 py-6">
+                          <AlertCircle className="h-10 w-10 text-amber-500" />
+                          <div className="text-center space-y-2">
+                            <p className="font-medium">No API Key Found</p>
+                            <p className="text-sm text-slate-500">
+                              Create a new API key to get started with the ContextFort API
+                            </p>
+                          </div>
+                          <Button 
+                            onClick={createNewApiKey}
+                            disabled={isCreatingApiKey}
+                            className="bg-white text-[#ffa62b] hover:bg-slate-100"
+                          >
+                            {isCreatingApiKey ? "Creating API Key..." : "Get Free API Key"}
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-xl flex items-center gap-2">
+                        <BarChart className="h-5 w-5" />
+                        Performance
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-sm">Average Latency</span>
+                            <span className="text-sm font-medium">52ms</span>
+                          </div>
+                          <div className="w-full bg-slate-200 rounded-full h-2">
+                            <div className="bg-blue-500 h-2 rounded-full w-[20%]"></div>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-1">Faster than 92% of users</p>
+                        </div>
+                        
+                        <div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-sm">Success Rate</span>
+                            <span className="text-sm font-medium">99.8%</span>
+                          </div>
+                          <div className="w-full bg-slate-200 rounded-full h-2">
+                            <div className="bg-emerald-500 h-2 rounded-full w-[99.8%]"></div>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-1">Last error: 3 days ago</p>
+                        </div>
+                        
+                        <div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-sm">Blocked Attacks</span>
+                            <span className="text-sm font-medium">{Math.floor(tokenCount * 0.05)}</span>
+                          </div>
+                          <div className="w-full bg-slate-200 rounded-full h-2">
+                            <div className="bg-rose-500 h-2 rounded-full w-[5%]"></div>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-1">~5% of requests identified as potential attacks</p>
+                        </div>
+                        
+                        <div className="mt-6 pt-3 border-t border-slate-200">
+                          <h4 className="text-sm font-medium mb-2">Monthly Usage Trends</h4>
+                          <div className="flex items-end gap-1 h-24">
+                            {Array.from({ length: 14 }, (_, i) => {
+                              const height = Math.floor(20 + Math.random() * 80);
+                              return (
+                                <div key={i} className="flex-1 bg-slate-200 rounded-sm" style={{ height: `${height}%` }}>
+                                  <div 
+                                    className="w-full bg-blue-400 rounded-sm"
+                                    style={{ height: `${Math.min(100, height * 0.7)}%` }}
+                                  ></div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          <div className="flex justify-between mt-1">
+                            <span className="text-xs text-slate-500">14 days ago</span>
+                            <span className="text-xs text-slate-500">Today</span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-              </>
-            )}
 
-            <div className="space-y-2">
-              <h3 className="font-semibold">Need Help?</h3>
-              <p className="text-sm text-muted-foreground">
-                If you encounter any issues with your sandbox session, try creating a new session or contact our support team.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                {/* Right column - Code example and docs */}
+                <div className="lg:col-span-2 space-y-6">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-center">
+                        <CardTitle className="text-xl flex items-center gap-2">
+                          <Zap className="h-5 w-5" />
+                          Quick Start
+                        </CardTitle>
+                        <div className="flex items-center gap-2">
+                          <Select
+                            value={selectedLanguage}
+                            onValueChange={setSelectedLanguage}
+                          >
+                            <SelectTrigger className="w-[130px] h-8 text-xs">
+                              <SelectValue placeholder="Language" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="python">Python</SelectItem>
+                              <SelectItem value="javascript">JavaScript</SelectItem>
+                              <SelectItem value="typescript">TypeScript</SelectItem>
+                              <SelectItem value="java">Java</SelectItem>
+                              <SelectItem value="go">Go</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={copyCodeExample}
+                            className="h-8 px-2 flex items-center gap-1.5"
+                          >
+                            {codeCopied ? (
+                              <>
+                                <CheckCircle className="h-3.5 w-3.5" />
+                                <span className="text-xs">Copied!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="h-3.5 w-3.5" />
+                                <span className="text-xs">Copy Code</span>
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                      <CardDescription>
+                        Integrate our API in just a few lines of code
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="bg-slate-900 text-slate-50 p-4 rounded-md overflow-auto">
+                        <pre className="text-sm" ref={codeRef}>
+{selectedLanguage === 'python' ? 
+`import requests
+
+# ContextFort API endpoint
+url = "https://api.contextfort.com/v1/secure"
+
+# Your API key
+api_key = "${apiKey?.api_key || 'your_api_key_here'}"
+
+# Example: Secure a tool call
+payload = {
+    "tool_calls": [
+        {
+            "name": "search_database",
+            "arguments": {
+                "query": "financial reports 2025",
+                "limit": 10
+            }
+        }
+    ],
+    "user_prompt": "Show me the latest financial reports",
+    "user_id": "user-123",
+    "context": "Financial data analysis session"
+}
+
+headers = {
+    "Authorization": f"Bearer {api_key}",
+    "Content-Type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+result = response.json()
+
+# Check if the tool call is allowed
+if result["allowed"]:
+    print("Tool call allowed")
+    # Execute your tool call here
+else:
+    print(f"Tool call blocked: {result['reason']}")` 
+: selectedLanguage === 'javascript' ? 
+`// Using fetch API
+const apiKey = "${apiKey?.api_key || 'your_api_key_here'}";
+const url = "https://api.contextfort.com/v1/secure";
+
+const payload = {
+  tool_calls: [
+    {
+      name: "search_database",
+      arguments: {
+        query: "financial reports 2025",
+        limit: 10
+      }
+    }
+  ],
+  user_prompt: "Show me the latest financial reports",
+  user_id: "user-123",
+  context: "Financial data analysis session"
+};
+
+async function secureToolCall() {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': \`Bearer \${apiKey}\`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    const result = await response.json();
+    
+    if (result.allowed) {
+      console.log("Tool call allowed");
+      // Execute your tool call here
+    } else {
+      console.log(\`Tool call blocked: \${result.reason}\`);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+secureToolCall();`
+: selectedLanguage === 'typescript' ? 
+`// TypeScript implementation
+interface ToolCall {
+  name: string;
+  arguments: Record<string, any>;
+}
+
+interface SecurityPayload {
+  tool_calls: ToolCall[];
+  user_prompt: string;
+  user_id: string;
+  context: string;
+}
+
+interface SecurityResponse {
+  allowed: boolean;
+  reason?: string;
+}
+
+const apiKey = "${apiKey?.api_key || 'your_api_key_here'}";
+const url = "https://api.contextfort.com/v1/secure";
+
+const payload: SecurityPayload = {
+  tool_calls: [
+    {
+      name: "search_database",
+      arguments: {
+        query: "financial reports 2025",
+        limit: 10
+      }
+    }
+  ],
+  user_prompt: "Show me the latest financial reports",
+  user_id: "user-123",
+  context: "Financial data analysis session"
+};
+
+async function secureToolCall(): Promise<void> {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': \`Bearer \${apiKey}\`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    const result: SecurityResponse = await response.json();
+    
+    if (result.allowed) {
+      console.log("Tool call allowed");
+      // Execute your tool call here
+    } else {
+      console.log(\`Tool call blocked: \${result.reason}\`);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+secureToolCall();`
+: selectedLanguage === 'java' ? 
+`import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import org.json.JSONObject;
+
+public class ContextFortApiExample {
+
+    public static void main(String[] args) {
+        String apiKey = "${apiKey?.api_key || 'your_api_key_here'}";
+        String url = "https://api.contextfort.com/v1/secure";
+        
+        // Create JSON payload
+        JSONObject arguments = new JSONObject();
+        arguments.put("query", "financial reports 2025");
+        arguments.put("limit", 10);
+        
+        JSONObject toolCall = new JSONObject();
+        toolCall.put("name", "search_database");
+        toolCall.put("arguments", arguments);
+        
+        JSONObject[] toolCalls = {toolCall};
+        
+        JSONObject payload = new JSONObject();
+        payload.put("tool_calls", toolCalls);
+        payload.put("user_prompt", "Show me the latest financial reports");
+        payload.put("user_id", "user-123");
+        payload.put("context", "Financial data analysis session");
+        
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + apiKey)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
+                .build();
+                
+            HttpResponse<String> response = client.send(request, 
+                HttpResponse.BodyHandlers.ofString());
+                
+            JSONObject result = new JSONObject(response.body());
+            
+            if (result.getBoolean("allowed")) {
+                System.out.println("Tool call allowed");
+                // Execute your tool call here
+            } else {
+                System.out.println("Tool call blocked: " + 
+                    result.getString("reason"));
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}`
+: selectedLanguage === 'go' ? 
+`package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+)
+
+type Arguments struct {
+	Query string \`json:"query"\`
+	Limit int    \`json:"limit"\`
+}
+
+type ToolCall struct {
+	Name      string    \`json:"name"\`
+	Arguments Arguments \`json:"arguments"\`
+}
+
+type SecurityPayload struct {
+	ToolCalls  []ToolCall \`json:"tool_calls"\`
+	UserPrompt string     \`json:"user_prompt"\`
+	UserID     string     \`json:"user_id"\`
+	Context    string     \`json:"context"\`
+}
+
+type SecurityResponse struct {
+	Allowed bool   \`json:"allowed"\`
+	Reason  string \`json:"reason,omitempty"\`
+}
+
+func main() {
+	apiKey := "${apiKey?.api_key || 'your_api_key_here'}"
+	url := "https://api.contextfort.com/v1/secure"
+
+	// Create the payload
+	payload := SecurityPayload{
+		ToolCalls: []ToolCall{
+			{
+				Name: "search_database",
+				Arguments: Arguments{
+					Query: "financial reports 2025",
+					Limit: 10,
+				},
+			},
+		},
+		UserPrompt: "Show me the latest financial reports",
+		UserID:     "user-123",
+		Context:    "Financial data analysis session",
+	}
+
+	// Convert payload to JSON
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		fmt.Println("Error marshalling JSON:", err)
+		return
+	}
+
+	// Create request
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return
+	}
+
+	// Set headers
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	// Send request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Read response
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error reading response:", err)
+		return
+	}
+
+	// Parse response
+	var result SecurityResponse
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		fmt.Println("Error parsing response:", err)
+		return
+	}
+
+	// Check result
+	if result.Allowed {
+		fmt.Println("Tool call allowed")
+		// Execute your tool call here
+	} else {
+		fmt.Printf("Tool call blocked: %s\\n", result.Reason)
+	}
+}`
+: "// Select a language from the dropdown"
+}</pre>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="border-t pt-4 flex flex-col space-y-2">
+                      <div className="w-full flex justify-between items-center">
+                        <span className="text-sm font-medium">Need help?</span>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex items-center gap-2"
+                          onClick={() => window.open('/api-docs', '_blank')}
+                        >
+                          <span>Documentation</span>
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Our API supports multiple languages including Python, JavaScript, Java, and more.
+                      </p>
+                    </CardFooter>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-xl">Additional Resources</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Button variant="outline" className="justify-start h-auto py-3" onClick={() => window.open('/api-docs/examples', '_blank')}>
+                          <div className="flex flex-col items-start text-left">
+                            <span className="font-medium">Code Examples</span>
+                            <span className="text-xs text-muted-foreground">Sample implementations in various languages</span>
+                          </div>
+                        </Button>
+                        
+                        <Button variant="outline" className="justify-start h-auto py-3" onClick={() => window.open('/api-docs/webhooks', '_blank')}>
+                          <div className="flex flex-col items-start text-left">
+                            <span className="font-medium">Webhook Integration</span>
+                            <span className="text-xs text-muted-foreground">Set up real-time alerts for security events</span>
+                          </div>
+                        </Button>
+                        
+                        <Button variant="outline" className="justify-start h-auto py-3" onClick={() => window.open('/api-docs/policies', '_blank')}>
+                          <div className="flex flex-col items-start text-left">
+                            <span className="font-medium">Security Policies</span>
+                            <span className="text-xs text-muted-foreground">Configure custom security rules and filters</span>
+                          </div>
+                        </Button>
+                        
+                        <Button variant="outline" className="justify-start h-auto py-3" onClick={() => window.open('/support', '_blank')}>
+                          <div className="flex flex-col items-start text-left">
+                            <span className="font-medium">Support</span>
+                            <span className="text-xs text-muted-foreground">Contact our team for implementation help</span>
+                          </div>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-xl">API Key Security</CardTitle>
+                      <CardDescription>
+                        Best practices for securing your API key
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3">
+                          <div className="bg-amber-100 text-amber-800 p-2 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-semibold">Store Securely</h3>
+                            <p className="text-xs text-slate-600">Never hardcode API keys in client-side code. Use environment variables or a secure vault.</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-start gap-3">
+                          <div className="bg-amber-100 text-amber-800 p-2 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-semibold">Backend Proxying</h3>
+                            <p className="text-xs text-slate-600">Proxy API requests through your backend to prevent exposing the key to users.</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-start gap-3">
+                          <div className="bg-amber-100 text-amber-800 p-2 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                              <circle cx="12" cy="8" r="1"></circle>
+                            </svg>
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-semibold">Regular Rotation</h3>
+                            <p className="text-xs text-slate-600">Rotate your API keys periodically to limit the impact of potential leaks.</p>
+                          </div>
+                        </div>
+
+                        <div className="mt-2">
+                          <Button 
+                            variant="link" 
+                            className="p-0 h-auto text-sm text-[#ffa62b]"
+                            onClick={() => window.open('/api-docs/security', '_blank')}
+                          >
+                            View security documentation →
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   );

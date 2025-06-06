@@ -1,59 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
-import Navbar from '../components/Navbar';
+import Navbar from '@/components/Navbar';
 
-export default function ProxyAccess() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [initialCheckDone, setInitialCheckDone] = useState(false);
-  const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
+const siteUrl = import.meta.env.VITE_APP_URL || window.location.origin;
 
-// Function to validate email domain
-const validateEmailDomain = (email: string): boolean => {
-  const domain = email.split('@')[1];
-  if (!domain) return false;
-
-  // Common personal email domains to block
-  const personalDomains = [
-    'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'live.com', 
-    'aol.com', 'icloud.com', 'mail.com', 'protonmail.com', 'zoho.com'
-  ];
-
-  // If it's a personal email domain, reject it
-  if (personalDomains.includes(domain.toLowerCase())) {
-    return false;
-  }
-
-  // Allow .edu domains
-  if (domain.toLowerCase().endsWith('.edu')) {
-    return true;
-  }
-
-  // Check for common email providers' business domains
-  const personalBusinessDomains = ['gmail.business', 'outlook.business'];
-  if (personalBusinessDomains.some(d => domain.toLowerCase().includes(d))) {
-    return false;
-  }
-
-  return true;
-};e, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase } from '@/lib/supabase';
-import { useToast } from '@/hooks/use-toast';
-import Navbar from '../components/Navbar';
-
-export default function ProxyAccess() {
+export default function ApiAccess() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -61,7 +18,7 @@ export default function ProxyAccess() {
   const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   // Function to validate email domain
   const validateEmailDomain = (email: string): boolean => {
     const domain = email.split('@')[1];
@@ -70,7 +27,9 @@ export default function ProxyAccess() {
     // Common personal email domains to block
     const personalDomains = [
       'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'live.com', 
-      'aol.com', 'icloud.com', 'mail.com', 'protonmail.com', 'zoho.com'
+      'aol.com', 'icloud.com', 'mail.com', 'protonmail.com', 'zoho.com',
+      'yandex.com', 'tutanota.com', 'proton.me', 'inbox.com', 'gmx.com',
+      'fastmail.com', 'me.com', 'mac.com'
     ];
 
     // If it's a personal email domain, reject it
@@ -89,13 +48,13 @@ export default function ProxyAccess() {
       return false;
     }
 
+    // If it's not a personal email and not .edu, assume it's a business domain
     return true;
   };
 
   useEffect(() => {
     let mounted = true;
 
-    // Check if user is already logged in
     const checkSession = async () => {
       if (!mounted || initialCheckDone) return;
       
@@ -115,7 +74,7 @@ export default function ProxyAccess() {
             description: "Redirecting to your dashboard...",
             variant: "default",
           });
-          navigate('/dashboard');
+          navigate('/dashboard', { state: { from: 'api' } });
         }
       } catch (err) {
         console.error('Session check failed:', err);
@@ -138,7 +97,7 @@ export default function ProxyAccess() {
     
     if (loading) return;
     
-    // Validate email domain before proceeding
+    // Validate email domain first
     if (!validateEmailDomain(email)) {
       toast({
         title: "Invalid Email Domain",
@@ -146,8 +105,8 @@ export default function ProxyAccess() {
         variant: "destructive",
       });
       setMessage({ 
-        type: 'error', 
-        text: 'Please use your organization's email address. Personal email addresses are not allowed.' 
+        type: "error", 
+        text: "Please use your organization's email address. Personal email addresses are not allowed." 
       });
       return;
     }
@@ -181,14 +140,14 @@ export default function ProxyAccess() {
       setTimeout(() => {
         navigate('/dashboard');
       }, 1000);
-    } catch (error: unknown) {
+    } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign in';
       toast({
         title: "Login failed",
         description: errorMessage,
         variant: "destructive",
       });
-      setMessage({ type: 'error', text: errorMessage });
+      setMessage({ type: "error", text: errorMessage });
     } finally {
       setLoading(false);
     }
@@ -196,8 +155,8 @@ export default function ProxyAccess() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate email domain before proceeding
+
+    // Validate email domain first
     if (!validateEmailDomain(email)) {
       toast({
         title: "Invalid Email Domain",
@@ -205,8 +164,8 @@ export default function ProxyAccess() {
         variant: "destructive",
       });
       setMessage({ 
-        type: 'error', 
-        text: 'Please use your organization's email address. Personal email addresses are not allowed.' 
+        type: "error", 
+        text: "Please use your organization's email address. Personal email addresses are not allowed." 
       });
       return;
     }
@@ -219,7 +178,7 @@ export default function ProxyAccess() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${siteUrl}/auth/callback?type=signup`,
         },
       });
       
@@ -232,8 +191,8 @@ export default function ProxyAccess() {
       });
       
       setMessage({ 
-        type: 'success', 
-        text: 'Registration successful! Please check your email to confirm your account.' 
+        type: "success", 
+        text: "Registration successful! Please check your email to confirm your account." 
       });
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred during registration';
@@ -244,7 +203,7 @@ export default function ProxyAccess() {
         variant: "destructive",
       });
       
-      setMessage({ type: 'error', text: errorMessage });
+      setMessage({ type: "error", text: errorMessage });
     } finally {
       setLoading(false);
     }
@@ -260,16 +219,16 @@ export default function ProxyAccess() {
           <div className="flex flex-col space-y-6">
             <div className="space-y-2">
               <h1 className="text-4xl font-extrabold tracking-tight text-[#ffa62b]">
-                ContextFort Proxy
+                ContextFort API
               </h1>
               <p className="text-xl text-slate-600">
-                Real-time context-aware security for your tool-calling agent
+                Direct API integration for your agent security needs
               </p>
             </div>
             
             <div className="prose prose-slate max-w-none">
               <p className="text-lg">
-                Unlike static filters or prompt sanitizers, we protect against data exfiltration by intercepting tool calls after LLM output but before execution
+                Integrate our powerful context-aware security directly into your applications with a simple REST API
               </p>
               
               <div className="mt-8 space-y-4">
@@ -281,8 +240,8 @@ export default function ProxyAccess() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-800">Real-time Protection</h3>
-                    <p className="text-slate-600">Block unintended tool calls in real-time using context-aware policies</p>
+                    <h3 className="font-semibold text-slate-800">Simple Integration</h3>
+                    <p className="text-slate-600">Easy-to-implement REST API with comprehensive documentation</p>
                   </div>
                 </div>
                 
@@ -293,8 +252,8 @@ export default function ProxyAccess() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-800">Policy Enforcement</h3>
-                    <p className="text-slate-600">Define and enforce granular security policies for all agent actions</p>
+                    <h3 className="font-semibold text-slate-800">Advanced Security</h3>
+                    <p className="text-slate-600">Context-aware filtering to prevent unintended data access</p>
                   </div>
                 </div>
 
@@ -305,11 +264,10 @@ export default function ProxyAccess() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-800">Zero-Change Integration</h3>
-                    <p className="text-slate-600">Drop-in proxy requires no changes to your existing models or agent code</p>
+                    <h3 className="font-semibold text-slate-800">Flexible Deployment</h3>
+                    <p className="text-slate-600">Deploy in your own infrastructure or use our managed service</p>
                   </div>
                 </div>
-
 
                 <div className="flex items-start gap-3">
                   <div className="bg-[#ffa62b]/20 p-2 rounded-full">
@@ -320,8 +278,8 @@ export default function ProxyAccess() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-800">Enterprise Monitoring</h3>
-                    <p className="text-slate-600">Log all blocked and passed tool calls directly to Datadog/Splunk</p>
+                    <h3 className="font-semibold text-slate-800">Detailed Analytics</h3>
+                    <p className="text-slate-600">Comprehensive logging and monitoring of all security events</p>
                   </div>
                 </div>
               </div>
@@ -332,9 +290,9 @@ export default function ProxyAccess() {
           <div className="w-full max-w-md mx-auto lg:ml-auto">
             <Card className="w-full shadow-lg border-[#ffa62b]/20">
               <CardHeader className="space-y-1">
-                <CardTitle className="text-2xl font-bold text-center">Access ContextFort Proxy</CardTitle>
+                <CardTitle className="text-2xl font-bold text-center">Access ContextFort API</CardTitle>
                 <CardDescription className="text-center">
-                  Sign in to your account or create a new one
+                  Sign in with your organization email
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -347,18 +305,18 @@ export default function ProxyAccess() {
                   <TabsContent value="login">
                     <form onSubmit={handleSignIn} className="space-y-4">
                       <div className="space-y-2">
-                        <label htmlFor="email" className="text-sm font-medium">Email</label>
+                        <label htmlFor="email" className="text-sm font-medium">Work Email</label>
                         <Input 
                           id="email" 
                           type="email" 
-                          placeholder="your@email.com" 
+                          placeholder="you@company.com" 
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           required
                         />
                       </div>
                       <div className="space-y-2">
-                      <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between">
                           <label htmlFor="password" className="text-sm font-medium">Password</label>
                           <Link to="/reset-password" className="text-xs text-[#ffa62b] hover:text-orange-600">
                             Forgot Password?
@@ -376,7 +334,7 @@ export default function ProxyAccess() {
                       
                       {message && (
                         <div className={`p-3 rounded-md text-sm ${
-                          message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                          message.type === "error" ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
                         }`}>
                           {message.text}
                         </div>
@@ -391,11 +349,11 @@ export default function ProxyAccess() {
                   <TabsContent value="register">
                     <form onSubmit={handleSignUp} className="space-y-4">
                       <div className="space-y-2">
-                        <label htmlFor="register-email" className="text-sm font-medium">Email</label>
+                        <label htmlFor="register-email" className="text-sm font-medium">Work Email</label>
                         <Input 
                           id="register-email" 
                           type="email" 
-                          placeholder="your@email.com" 
+                          placeholder="you@company.com" 
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           required
@@ -415,7 +373,7 @@ export default function ProxyAccess() {
                       
                       {message && (
                         <div className={`p-3 rounded-md text-sm ${
-                          message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                          message.type === "error" ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
                         }`}>
                           {message.text}
                         </div>
@@ -429,77 +387,9 @@ export default function ProxyAccess() {
                 </Tabs>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
-                <div className="relative w-full">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">Or continue with</span>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3 w-full">
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={() => {
-                      setLoading(true);
-                      supabase.auth.signInWithOAuth({
-                        provider: 'google',
-                        options: {
-                          redirectTo: `${window.location.origin}/auth/callback`
-                        }
-                      }).then(({ error }) => {
-                        if (error) {
-                          toast({
-                            title: "Authentication failed",
-                            description: error.message,
-                            variant: "destructive",
-                          });
-                          setMessage({ type: 'error', text: error.message });
-                          setLoading(false);
-                        }
-                      });
-                    }}
-                    disabled={loading}
-                  >
-                    <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                    </svg>
-                    Google
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={() => {
-                      setLoading(true);
-                      supabase.auth.signInWithOAuth({
-                        provider: 'github',
-                        options: {
-                          redirectTo: `${window.location.origin}/auth/callback`
-                        }
-                      }).then(({ error }) => {
-                        if (error) {
-                          toast({
-                            title: "Authentication failed",
-                            description: error.message,
-                            variant: "destructive",
-                          });
-                          setMessage({ type: 'error', text: error.message });
-                          setLoading(false);
-                        }
-                      });
-                    }}
-                    disabled={loading}
-                  >
-                    <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 1c-3.3 0-6 1.1-8 3.4C2.7 6.3 2 8.7 2 11.7v.6c0 3 .7 5.4 2 7.2 2 2.3 4.7 3.4 8 3.4 3.3 0 6-1.1 8-3.4 1.3-1.8 2-4.2 2-7.2v-.6c0-3-.7-5.4-2-7.2C18 2.1 15.3 1 12 1zm4.3 14.5a4.88 4.88 0 0 1-1.9 2.3 5.34 5.34 0 0 1-5.1.2 4.91 4.91 0 0 1-1.6-1.1A4.9 4.9 0 0 1 6.6 15a5.4 5.4 0 0 1-.5-2.3 5.4 5.4 0 0 1 .5-2.3 4.94 4.94 0 0 1 1.1-1.9 5.33 5.33 0 0 1 8.1.8c.5.6.9 1.2 1.1 1.9.2.7.4 1.5.4 2.3a5.6 5.6 0 0 1-.5 2.3c-.3.7-.6 1.3-1 1.9z" />
-                    </svg>
-                    GitHub
-                  </Button>
+                <div className="text-center text-sm text-slate-600">
+                  <p>Only organization email addresses are accepted.</p>
+                  <p>Personal email providers (Gmail, Outlook, etc.) are not allowed.</p>
                 </div>
               </CardFooter>
             </Card>

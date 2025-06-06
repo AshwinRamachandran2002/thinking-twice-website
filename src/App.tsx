@@ -8,13 +8,11 @@ import { isMobileDevice, runWhenIdle, isLowPowerMode } from "./lib/optimization"
 import Index from "./pages/Index";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
-import GetApiAccess from "./pages/GetApiAccess";
 import Success from "./pages/Success";
-import ApiDocs from "./pages/ApiDocs";
-import About from "./pages/About";
 import Blog from "./pages/Blog";
 import Team from "./pages/Team";
 import ProxyAccess from "./pages/ProxyAccess";
+import ApiAccess from "./pages/ApiAccess";
 import Dashboard from "./pages/Dashboard";
 import AuthCallback from "./pages/AuthCallback";
 import ResetPassword from "./pages/ResetPassword";
@@ -96,15 +94,13 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/get-api-access" element={<GetApiAccess />} />
             <Route path="/success" element={<Success />} />
-            <Route path="/api-docs" element={<ApiDocs />} />
-            <Route path="/about" element={<About />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/jira-attack" element={<JiraAttack />} />
             <Route path="/blog/zendesk-attack" element={<ZendeskAttack />} />
             <Route path="/team" element={<Team />} />
             <Route path="/proxy" element={<ProxyAccess />} />
+            <Route path="/api" element={<ApiAccess />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             

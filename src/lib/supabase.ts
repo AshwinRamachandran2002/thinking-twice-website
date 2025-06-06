@@ -24,11 +24,12 @@ export const supabaseAdmin = supabaseServiceKey
 
 export type ApiKey = {
   id: string;
-  email: string;
-  stripe_customer_id: string;
+  user_id: string;
   api_key: string;
   revoked: boolean;
   created_at: string;
+  payment_status: 'pending' | 'paid' | 'free_tier';
+  tokens_processed: number;
 }
 
 export type UserSandboxSession = {
@@ -166,5 +167,128 @@ export const sandboxSessionService = {
   // Check if session is expired
   isSessionExpired(session: UserSandboxSession): boolean {
     return session.session_expired || this.getRemainingTime(session) <= 0;
+  }
+};
+
+// API key management functions
+export const apiKeyService = {
+  // Create new API key for user
+  async createApiKey(userId: string, paymentStatus: ApiKey['payment_status'] = 'free_tier'): Promise<ApiKey> {
+    // Generate a new API key
+    const apiKey = 'cf_' + Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    const { data, error } = await supabase
+      .from('api_keys')
+      .insert({
+        user_id: userId,
+        api_key: apiKey,
+        revoked: false,
+        payment_status: paymentStatus,
+        tokens_processed: 0
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  },
+
+
+
+  // Get API key for user
+  async getUserApiKey(userId: string): Promise<ApiKey | null> {
+    const { data, error } = await supabase
+      .from('api_keys')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('revoked', false)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      throw error;
+    }
+
+    return data;
+  },
+
+  // Revoke API key
+  async revokeApiKey(keyId: string): Promise<void> {
+    // Using a direct ID-based update to avoid CORS issues
+    const { error } = await supabase
+      .from('api_keys')
+      .update({ revoked: true })
+      .eq('id', keyId);
+
+    if (error) {
+      throw error;
+    }
+  },
+
+  // Update payment status
+  async updatePaymentStatus(userId: string, status: ApiKey['payment_status']): Promise<void> {
+    // First, get the API key ID to use a more specific update
+    const { data: keyData, error: fetchError } = await supabase
+      .from('api_keys')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('revoked', false)
+      .single();
+    
+    if (fetchError) {
+      throw fetchError;
+    }
+    
+    if (!keyData) {
+      throw new Error('No active API key found for this user');
+    }
+    
+    // Update using the specific key ID (avoids CORS issues with multiple filters)
+    const { error } = await supabase
+      .from('api_keys')
+      .update({ payment_status: status })
+      .eq('id', keyData.id);
+
+    if (error) {
+      throw error;
+    }
+  },
+
+  // Get token usage
+  async getTokenUsage(userId: string): Promise<number> {
+    const { data, error } = await supabase
+      .from('api_keys')
+      .select('tokens_processed')
+      .eq('user_id', userId)
+      .eq('revoked', false)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      throw error;
+    }
+
+    return data?.tokens_processed || 0;
+  },
+
+  // Check if user has paid
+  async hasUserPaid(userId: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('api_keys')
+      .select('payment_status')
+      .eq('user_id', userId)
+      .eq('revoked', false)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      throw error;
+    }
+
+    return data?.payment_status === 'paid';
   }
 };

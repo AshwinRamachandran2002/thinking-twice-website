@@ -74,7 +74,7 @@ export default function ProxyAccess() {
             description: "Redirecting to your dashboard...",
             variant: "default",
           });
-          navigate('/dashboard');
+          navigate('/dashboard', { state: { from: 'proxy' } });
         }
       } catch (err) {
         console.error('Session check failed:', err);
@@ -138,9 +138,9 @@ export default function ProxyAccess() {
       
       // Navigate after a short delay to allow toast to be seen
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate('/dashboard', { state: { from: 'proxy' } });
       }, 1000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign in';
       toast({
         title: "Login failed",
