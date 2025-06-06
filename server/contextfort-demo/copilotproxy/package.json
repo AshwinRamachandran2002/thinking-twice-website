@@ -18,12 +18,21 @@
       {
         "command": "contextfort.startup",
         "title": "Open ContextFort Instructions"
+      },
+      {
+        "command": "contextfort.toggleProxy",
+        "title": "Toggle ContextFort Proxy Filtering"
       }
     ],
     "keybindings": [
       {
         "command": "contextfort.startup",
         "key": "ctrl+alt+i",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "contextfort.toggleProxy",
+        "key": "ctrl+alt+p",
         "when": "editorTextFocus"
       }
     ]

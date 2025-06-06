@@ -2,7 +2,17 @@ import os
 from mitmproxy import http
 from datetime import datetime
 import json
+import importlib.util
 from check import SecurityChecker, Context
+
+# Try to import the proxy state manager
+try:
+    from proxy_state_manager import is_proxy_filtering_enabled
+    check_proxy_enabled = is_proxy_filtering_enabled
+except ImportError:
+    # Default to always enabled if the module isn't available
+    def check_proxy_enabled():
+        return True
 
 # Define the folder where logs will be stored
 LOG_FOLDER = "copilot_logs"
@@ -169,6 +179,11 @@ def log_response(flow: http.HTTPFlow):
     if detect_tool_calls_in_response(response_data["body"]):
         print("🔧 Tool call detected in response!")
         
+        # Check if proxy filtering is enabled
+        if not check_proxy_enabled():
+            print("ℹ️  Proxy filtering is disabled, skipping security check")
+            return
+            
         # Get the corresponding request data
         try:
             # Find the most recent request file

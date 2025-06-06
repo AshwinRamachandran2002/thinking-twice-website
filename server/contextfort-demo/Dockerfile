@@ -12,7 +12,7 @@ RUN python3 -m venv /opt/venv
 
 # Install openai inside it
 RUN /opt/venv/bin/pip install --upgrade pip && \
-    /opt/venv/bin/pip install mitmproxy openai
+    /opt/venv/bin/pip install mitmproxy openai watchdog
 
 # Environment variable will be injected by Fly.io secrets
 ENV OPENAI_API_KEY=""
@@ -21,6 +21,7 @@ ENV OPENAI_API_KEY=""
 COPY start.sh /start.sh
 COPY check.py /check.py
 COPY copilot_proxy.py /copilot_proxy.py
+COPY proxy_state_manager.py /proxy_state_manager.py
 COPY copilot-chat-0.27.2.vsix /copilot-chat-0.27.2.vsix
 
 # Install the Copilot Chat extension

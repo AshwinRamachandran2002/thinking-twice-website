@@ -22,6 +22,10 @@ update-ca-certificates
 cat /etc/ssl/certs/ca-certificates.crt > /root/combined-ca-bundle.pem
 cat /root/.mitmproxy/mitmproxy-ca-cert.pem >> /root/combined-ca-bundle.pem
 
+echo "🚀 Starting proxy state manager..."
+/opt/venv/bin/python3 /proxy_state_manager.py > /tmp/proxy_state_manager.log 2>&1 &
+STATE_MANAGER_PID=$!
+
 echo "🚀 Starting mitmdump proxy..."
 export SSL_CERT_FILE=/root/.mitmproxy/mitmproxy-ca-cert.pem
 export ELECTRON_TRUST_ENV_CA=1
@@ -36,7 +40,7 @@ if ! ps -p $PROXY_PID > /dev/null; then
     exit 1
 fi
 
-trap "echo '🛑 Shutting down Copilot Proxy...'; kill $PROXY_PID; exit" INT TERM
+trap "echo '🛑 Shutting down Copilot Proxy and State Manager...'; kill $PROXY_PID; kill $STATE_MANAGER_PID; exit" INT TERM
 
 echo "🖥️ Starting code-server on 0.0.0.0:8080..."
 
