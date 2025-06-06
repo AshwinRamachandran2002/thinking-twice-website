@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import Navbar from '../../components/Navbar';
 import { Link } from "react-router-dom";
 
-const JiraAttack = () => {
+const ZendeskAttack = () => {
   return (
     <div className="relative min-h-screen overflow-hidden font-sans text-slate-700 selection:bg-[#ffa62b]/30 selection:text-slate-900" style={{ fontFamily: "Gellix, Inter, sans-serif", backgroundColor: '#fef9f3', fontWeight: 'bold' }}>
       {/* Muted mango background with subtle gradient */}
@@ -27,17 +27,17 @@ const JiraAttack = () => {
             transition={{duration:0.7}}
             className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-[#ffa62b]/20 overflow-hidden p-8 md:p-12"
           >
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-slate-900 leading-tight">Attack on Jira Atlassian MCP Server</h1>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-slate-900 leading-tight">Attack on Zendesk Support MCP Server</h1>
             <div className="text-sm text-slate-500 mb-8 border-b border-slate-200 pb-4">June 4, 2025 • ContextFort Security Team</div>
             
             <div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-700">
               <p className="lead text-xl font-medium mb-8 text-slate-800 leading-relaxed">
-                Using a Jira Atlassian Model Context Protocol (MCP) server, we demonstrate how AI agents with tool-calling capabilities can be exploited to exfiltrate sensitive data through carefully crafted prompt injections.
+                Using a Zendesk Support Model Context Protocol (MCP) server, we demonstrate how AI agents with tool-calling capabilities can be exploited to exfiltrate sensitive vulnerability information through carefully crafted prompt injections.
               </p>
 
               <h2 className="text-2xl font-bold mt-12 mb-4">The Attack Scenario</h2>
               <p className="mb-6 text-slate-700 leading-relaxed">
-                In this security demonstration, we showcase a sophisticated attack that leverages prompt injection to manipulate an AI assistant into accessing and leaking sensitive information from a restricted Jira project.
+                In this security demonstration, we showcase a sophisticated attack that leverages prompt injection to manipulate an AI assistant into accessing and leaking sensitive vulnerability information from a critical support ticket.
               </p>
 
               <div className="my-8 space-y-12">
@@ -46,82 +46,55 @@ const JiraAttack = () => {
                 </div>
                 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/images/jira-attack/1.png" alt="User has two projects: 'Ongoing' and 'TOP SECRET'" className="w-full" />
+                  <img src="/images/zendesk-attack/1.png" alt="User has received a CRITICAL ticket from a customer" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
-                      1. User has two Jira projects: "Ongoing" (accessible to multiple team members) and "TOP SECRET" (highly restricted access)
+                      1. A user has received a CRITICAL priority ticket from a customer
                     </p>
                   </div>
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/images/jira-attack/2.png" alt="Ongoing project has a TODO assigned to the Attacker" className="w-full" />
+                  <img src="/images/zendesk-attack/2.png" alt="The ticket contains vulnerability details" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
-                      2. The "Ongoing" project has a TODO assigned to the Attacker, giving them legitimate access to this project
+                      2. The ticket contains details about a VULNERABILITY the customer requested a fix for
                     </p>
                   </div>
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/images/jira-attack/3.png" alt="Attacker aims to exfiltrate the tasks in TOP SECRET project" className="w-full" />
+                  <img src="/images/zendesk-attack/3.png" alt="Attacker sends email with prompt injection" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
-                      3. The Attacker's goal is to exfiltrate information from the "TOP SECRET" project, which they don't have access to
+                      3. Attacker sends an email to Zendesk with a PROMPT INJECTION
                     </p>
                   </div>
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/images/jira-attack/4.png" alt="The sensitive task contains Feature and Client information" className="w-full" />
+                  <img src="/images/zendesk-attack/4.png" alt="User prompts Copilot to obtain ticket details" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
-                      4. The sensitive tasks in "TOP SECRET" contain valuable feature and client information
+                      4. User prompts Copilot with Claude Sonnet 3.7 to 'Obtain Details about Latest Ticket'
                     </p>
                   </div>
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/images/jira-attack/5.png" alt="Attacker adds a comment with Prompt Injection" className="w-full" />
+                  <img src="/images/zendesk-attack/5.png" alt="Claude fetches ticket details and sends to attacker" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
-                      5. The Attacker adds a malicious comment with a prompt injection to their task in the "Ongoing" project
+                      5. Claude first fetches details of the latest ticket then proceeds to send information from the HIGH priority ticket to attacker
                     </p>
                   </div>
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/images/jira-attack/6.png" alt="User prompts Copilot with Claude Sonnet 3.7 to 'Obtain Summary of Tasks in Ongoing'" className="w-full" />
+                  <img src="/images/zendesk-attack/6.png" alt="Vulnerability information sent to attacker" className="w-full" />
                   <div className="p-4 bg-slate-50">
                     <p className="text-sm text-slate-700 font-medium">
-                      6. A legitimate user prompts GitHub Copilot (with Claude Sonnet 3.7) to obtain a summary of tasks in the "Ongoing" project
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/images/jira-attack/7.png" alt="Claude first fetches latest comments from Ongoing project" className="w-full" />
-                  <div className="p-4 bg-slate-50">
-                    <p className="text-sm text-slate-700 font-medium">
-                      7. Claude fetches the latest comments from the "Ongoing" project, including the malicious prompt injection
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/images/jira-attack/8.png" alt="Claude is manipulated to send information from TOP SECRET to attacker" className="w-full" />
-                  <div className="p-4 bg-slate-50">
-                    <p className="text-sm text-slate-700 font-medium">
-                      8. Claude is manipulated to access and send information from the "TOP SECRET" project
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-xl overflow-hidden border border-slate-200 shadow-md">
-                  <img src="/images/jira-attack/9.png" alt="A comment with leaked information is added to Ongoing visible to Attacker" className="w-full" />
-                  <div className="p-4 bg-slate-50">
-                    <p className="text-sm text-slate-700 font-medium">
-                      9. A comment containing the leaked sensitive information is added to the "Ongoing" project, visible to the Attacker
+                      6. Information about the VULNERABILITY is sent via email to Attacker
                     </p>
                   </div>
                 </div>
@@ -132,34 +105,34 @@ const JiraAttack = () => {
                 This attack demonstrates several critical vulnerabilities in AI agent tool-calling systems:
               </p>
               <ul className="list-disc pl-6 mb-8 space-y-2 text-slate-700">
-                <li className="leading-relaxed"><span className="font-bold text-slate-900">Privilege Escalation:</span> The attacker was able to access information they shouldn't have permission to view.</li>
-                <li className="leading-relaxed"><span className="font-bold text-slate-900">Indirect Prompt Injection:</span> The malicious prompt was delivered through a legitimate communication channel (Jira comments).</li>
+                <li className="leading-relaxed"><span className="font-bold text-slate-900">Privilege Escalation:</span> The attacker was able to access sensitive vulnerability information they shouldn't have permission to view.</li>
+                <li className="leading-relaxed"><span className="font-bold text-slate-900">Indirect Prompt Injection:</span> The malicious prompt was delivered through a legitimate communication channel (Zendesk tickets).</li>
                 <li className="leading-relaxed"><span className="font-bold text-slate-900">Trust Exploitation:</span> The AI agent trusted content from an apparently legitimate source without verifying permissions.</li>
-                <li className="leading-relaxed"><span className="font-bold text-slate-900">Data Exfiltration:</span> Sensitive information was leaked to an unauthorized user through a legitimate communication channel.</li>
+                <li className="leading-relaxed"><span className="font-bold text-slate-900">Data Exfiltration:</span> Sensitive vulnerability information was leaked to an unauthorized user through a legitimate communication channel.</li>
               </ul>
 
               <h2 className="text-2xl font-bold mt-12 mb-4">How This Attack Works in the Real World</h2>
               <p className="mb-4 text-slate-700 leading-relaxed">
-                While this demonstration was performed in a controlled environment, similar attacks can happen in real-world organizations that integrate AI assistants with their collaboration tools. Let's explore how this might play out:
+                While this demonstration was performed in a controlled environment, similar attacks can happen in real-world organizations that integrate AI assistants with their support tools. Let's explore how this might play out:
               </p>
               
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 mb-8">
                 <h3 className="text-xl font-bold mb-3">Real-World Attack Scenario</h3>
                 <ol className="list-decimal pl-6 space-y-3 text-slate-700">
                   <li className="leading-relaxed">
-                    <span className="font-semibold">Initial Access:</span> An attacker gains legitimate access to a shared project, perhaps as a contractor or through a compromised account.
+                    <span className="font-semibold">Initial Access:</span> An attacker creates a support ticket with seemingly benign content.
                   </li>
                   <li className="leading-relaxed">
-                    <span className="font-semibold">Reconnaissance:</span> The attacker identifies that the organization uses AI assistants integrated with their project management tools.
+                    <span className="font-semibold">Reconnaissance:</span> The attacker identifies that the organization uses AI assistants integrated with their support system.
                   </li>
                   <li className="leading-relaxed">
-                    <span className="font-semibold">Payload Delivery:</span> The attacker plants malicious prompts in seemingly benign comments, bug reports, or task descriptions.
+                    <span className="font-semibold">Payload Delivery:</span> The attacker plants malicious prompts in support ticket comments or updates.
                   </li>
                   <li className="leading-relaxed">
-                    <span className="font-semibold">Exploitation:</span> When a legitimate user asks the AI assistant for help with the project, the assistant processes the malicious prompts.
+                    <span className="font-semibold">Exploitation:</span> When a support agent asks the AI assistant for help with tickets, the assistant processes the malicious prompts.
                   </li>
                   <li className="leading-relaxed">
-                    <span className="font-semibold">Data Exfiltration:</span> The AI is manipulated to access sensitive information from restricted projects and share it back in a location accessible to the attacker.
+                    <span className="font-semibold">Data Exfiltration:</span> The AI is manipulated to access sensitive vulnerability information and share it back in a location accessible to the attacker.
                   </li>
                 </ol>
               </div>
@@ -182,7 +155,7 @@ const JiraAttack = () => {
 
               <h2 className="text-2xl font-bold mt-12 mb-4">Conclusion</h2>
               <p className="mb-4 text-slate-700 leading-relaxed">
-                As AI agents become more powerful and gain access to sensitive corporate tools and data, securing these systems becomes critically important. The attack demonstrated here shows how traditional security boundaries can be bypassed through social engineering of AI systems.
+                As AI agents become more powerful and gain access to sensitive support systems and customer data, securing these systems becomes critically important. The attack demonstrated here shows how traditional security boundaries can be bypassed through social engineering of AI systems.
               </p>
               <p className="mb-8 text-slate-700 leading-relaxed">
                 ContextFort provides the security and observability layer you need to safely deploy AI agents with tool-calling capabilities in your organization. Our solution gives you visibility and control over every tool call, preventing data exfiltration attacks and ensuring that your AI systems operate securely and within their intended boundaries.
@@ -197,7 +170,7 @@ const JiraAttack = () => {
                   style={{ backgroundColor: '#ffa62b' }}
                 >
                   <span className="relative z-10 no-underline">Request a Demo</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
                 </Link>
               </div>
               
@@ -206,7 +179,7 @@ const JiraAttack = () => {
                 <ul className="list-disc pl-6 space-y-2 text-slate-700">
                   <li className="leading-relaxed">AI agents with tool-calling capabilities can be vulnerable to sophisticated prompt injection attacks</li>
                   <li className="leading-relaxed">Attackers can use legitimate communication channels to deliver malicious prompts</li>
-                  <li className="leading-relaxed">Without proper security, AI agents may leak sensitive information across access boundaries</li>
+                  <li className="leading-relaxed">Without proper security, AI agents may leak sensitive vulnerability information to unauthorized parties</li>
                   <li className="leading-relaxed">ContextFort provides a comprehensive security layer to prevent these types of attacks</li>
                   <li className="leading-relaxed">Security and observability are crucial for safely deploying AI agents in your organization</li>
                 </ul>
@@ -235,6 +208,21 @@ const JiraAttack = () => {
               <div className="mt-16">
                 <h3 className="text-2xl font-bold mb-6">Related Articles</h3>
                 <div className="grid md:grid-cols-2 gap-6">
+                  <Link to="/blog/jira-attack" className="group flex flex-col bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow border border-slate-200">
+                    <div className="h-40 overflow-hidden">
+                      <img 
+                        src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80" 
+                        alt="Attack on Jira Atlassian MCP Server" 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-4 flex-grow">
+                      <div className="text-xs text-slate-500 mb-1">June 4, 2025</div>
+                      <h4 className="text-lg font-bold mb-2 group-hover:text-[#ffa62b] transition-colors">Attack on Jira Atlassian MCP Server</h4>
+                      <p className="text-sm text-slate-600 line-clamp-2">How AI agents with tool-calling capabilities can be exploited to exfiltrate sensitive data from Jira.</p>
+                    </div>
+                  </Link>
+                  
                   <Link to="/blog/tool-calling-security" className="group flex flex-col bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow border border-slate-200">
                     <div className="h-40 overflow-hidden">
                       <img 
@@ -249,21 +237,6 @@ const JiraAttack = () => {
                       <p className="text-sm text-slate-600 line-clamp-2">Explore the new security challenges and opportunities as AI agents gain tool-calling capabilities.</p>
                     </div>
                   </Link>
-                  
-                  <Link to="/blog/red-teaming-agents" className="group flex flex-col bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow border border-slate-200">
-                    <div className="h-40 overflow-hidden">
-                      <img 
-                        src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" 
-                        alt="Red Teaming Autonomous Agents: Lessons Learned" 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <div className="p-4 flex-grow">
-                      <div className="text-xs text-slate-500 mb-1">April 10, 2025</div>
-                      <h4 className="text-lg font-bold mb-2 group-hover:text-[#ffa62b] transition-colors">Red Teaming Autonomous Agents: Lessons Learned</h4>
-                      <p className="text-sm text-slate-600 line-clamp-2">A deep dive into real-world red teaming of LLM-powered agents, including indirect prompt injection and defense strategies.</p>
-                    </div>
-                  </Link>
                 </div>
               </div>
             </div>
@@ -274,4 +247,4 @@ const JiraAttack = () => {
   );
 };
 
-export default JiraAttack;
+export default ZendeskAttack;

@@ -12,18 +12,21 @@ export const useInViewport = (options = {}) => {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Update state when observer callback fires
-        setIsInViewport(entry.isIntersecting);
-        
-        // Once in viewport, keep hasBeenInViewport true forever
+        // Update state with a small delay to smooth out quick transitions
         if (entry.isIntersecting) {
-          setHasBeenInViewport(true);
+          // Only set to true if actually intersecting
+          requestAnimationFrame(() => {
+            setIsInViewport(true);
+          });
+        } else if (!entry.isIntersecting && entry.intersectionRatio === 0) {
+          // Only set to false if fully out of view
+          setIsInViewport(false);
         }
       },
       {
         // Default options that can be overridden
         rootMargin: '0px',
-        threshold: 0.1,
+        threshold: [0, 0.2, 0.4, 0.6, 0.8, 1.0], // Multiple thresholds for smoother transitions
         ...options,
       }
     );

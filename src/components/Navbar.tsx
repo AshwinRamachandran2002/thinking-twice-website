@@ -1,7 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 flex w-full items-center justify-center p-4 backdrop-blur-md bg-white/70 shadow-sm transition-all duration-300">
@@ -12,15 +16,42 @@ const Navbar = () => {
             </span>
           </Link>
           <nav className="flex items-center gap-2 md:gap-4 text-sm font-bold">
-            <Link 
-              to="/blog" 
-              className="group relative rounded-full px-4 py-2 font-bold text-black transition-all duration-300 overflow-hidden no-underline"
-            >
-              <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute inset-0 rounded-full border-[3px] border-[#ffa62b] animate-border-draw"></div>
-              </div>
-              <span className="relative z-10 no-underline">Blog</span>
-            </Link>
+            {window.location.pathname === '/proxy' || window.location.pathname === '/dashboard' ? (
+              <button 
+                onClick={async () => {
+                  try {
+                    await supabase.auth.signOut();
+                    toast({
+                      title: "Logged out successfully",
+                      variant: "default",
+                    });
+                    navigate('/proxy');
+                  } catch (error) {
+                    toast({
+                      title: "Error logging out",
+                      description: "Please try again",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                className="group relative rounded-full px-4 py-2 font-bold text-black transition-all duration-300 overflow-hidden"
+              >
+                <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute inset-0 rounded-full border-[3px] border-red-500 animate-border-draw"></div>
+                </div>
+                <span className="relative z-10">Logout</span>
+              </button>
+            ) : (
+              <Link 
+                to="/blog" 
+                className="group relative rounded-full px-4 py-2 font-bold text-black transition-all duration-300 overflow-hidden no-underline"
+              >
+                <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute inset-0 rounded-full border-[3px] border-[#ffa62b] animate-border-draw"></div>
+                </div>
+                <span className="relative z-10 no-underline">Blog</span>
+              </Link>
+            )}
             <Link 
               to="/team" 
               className="group relative rounded-full px-4 py-2 font-bold text-black transition-all duration-300 overflow-hidden no-underline"
