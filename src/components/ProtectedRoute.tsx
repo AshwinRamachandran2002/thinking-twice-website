@@ -12,17 +12,37 @@ export default function ProtectedRoute({ redirectPath = '/proxy' }: ProtectedRou
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data } = await supabase.auth.getSession();
-      setIsAuthenticated(!!data.session);
-      setIsLoading(false);
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Session check error:', error);
+          setIsAuthenticated(false);
+        } else {
+          setIsAuthenticated(!!data.session);
+        }
+      } catch (err) {
+        console.error('Auth check error:', err);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     // Check for active session
     checkAuth();
 
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', { event, hasSession: !!session });
+      
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        setIsAuthenticated(true);
+      } else if (event === 'SIGNED_OUT') {
+        setIsAuthenticated(false);
+      } else {
+        // For all other events, set auth state based on session presence
+        setIsAuthenticated(!!session);
+      }
       setIsLoading(false);
     });
 
@@ -31,6 +51,7 @@ export default function ProtectedRoute({ redirectPath = '/proxy' }: ProtectedRou
     };
   }, []);
 
+  // Show loading state
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -40,6 +61,12 @@ export default function ProtectedRoute({ redirectPath = '/proxy' }: ProtectedRou
         </div>
       </div>
     );
+  }
+
+  // If we're loading or on the auth callback page, don't redirect
+  const isAuthCallback = window.location.pathname === '/auth/callback';
+  if (isAuthCallback) {
+    return <Outlet />;
   }
 
   return isAuthenticated ? <Outlet /> : <Navigate to={redirectPath} replace />;

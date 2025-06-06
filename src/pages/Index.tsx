@@ -87,7 +87,7 @@ const LandingPageHero = () => {
               >
                 <div className="h-48 overflow-hidden">
                   <img 
-                    src="/images/jira-attack/attack.gif" 
+                    src="/gifs/jira-attack.gif" 
                     alt="Attack on Jira Atlassian MCP Server" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"

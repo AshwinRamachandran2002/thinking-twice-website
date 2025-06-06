@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 
+const siteUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+
 export default function ResetPassword() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,12 +28,23 @@ export default function ResetPassword() {
       'fastmail.com', 'me.com', 'mac.com'
     ];
 
-    if (personalDomains.includes(domain.toLowerCase())) return false;
-    if (domain.toLowerCase().endsWith('.edu')) return true;
-    
+    // If it's a personal email domain, reject it
+    if (personalDomains.includes(domain.toLowerCase())) {
+      return false;
+    }
+
+    // Allow .edu domains
+    if (domain.toLowerCase().endsWith('.edu')) {
+      return true;
+    }
+
+    // Check for common email providers' business domains
     const personalBusinessDomains = ['gmail.business', 'outlook.business'];
-    if (personalBusinessDomains.some(d => domain.toLowerCase().includes(d))) return false;
-    
+    if (personalBusinessDomains.some(d => domain.toLowerCase().includes(d))) {
+      return false;
+    }
+
+    // If it's not a personal email and not .edu, assume it's a business domain
     return true;
   };
 
@@ -51,8 +64,11 @@ export default function ResetPassword() {
     setLoading(true);
     
     try {
+      console.log('Attempting to send reset password email to:', email);
+      
+      // Use the complete URL path for password reset
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
+        redirectTo: `${siteUrl}/auth/callback?type=recovery`,
       });
       
       if (error) throw error;
@@ -60,10 +76,11 @@ export default function ResetPassword() {
       setSuccess(true);
       toast({
         title: "Password Reset Email Sent",
-        description: "Please check your email for a link to reset your password. Follow the link to set a new password.",
+        description: "Please check your email (including spam folder) for a link to reset your password.",
         variant: "default",
       });
     } catch (error: unknown) {
+      console.error('Reset password error:', error);
       const errorMessage = error instanceof Error ? error.message : 'An error occurred during password reset';
       
       toast({
@@ -90,32 +107,24 @@ export default function ResetPassword() {
               </div>
               <span className="relative z-10">Home</span>
             </Link>
-            <Link to="/proxy" className="group relative rounded-full px-4 py-2 font-bold text-black transition-all duration-300 overflow-hidden">
-              <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute inset-0 rounded-full border-[3px] border-[#ffa62b] animate-border-draw"></div>
-              </div>
-              <span className="relative z-10">Back to Login</span>
-            </Link>
           </nav>
         </div>
       </header>
 
-      <main className="container max-w-md mx-auto pt-32 px-4 sm:px-6 md:px-8 min-h-screen flex flex-col justify-center">
-        <Card className="w-full shadow-lg border-[#ffa62b]/20">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">Reset Password</CardTitle>
-            <CardDescription className="text-center">
-              Enter your email address and we'll send you a link to reset your password
-            </CardDescription>
+      <div className="container max-w-xl mx-auto pt-32 px-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Reset Password</CardTitle>
+            <CardDescription>Enter your email to receive a password reset link</CardDescription>
           </CardHeader>
           <CardContent>
             {success ? (
-              <div className="text-center space-y-4">
-                <div className="bg-orange-50 p-4 rounded-md text-orange-700 border border-orange-200">
-                  <h3 className="font-semibold">Password Reset Email Sent</h3>
-                  <p className="text-sm mt-1">Please check your email for a link to reset your password.</p>
+              <div className="space-y-4">
+                <div className="p-3 rounded-md bg-green-100 text-green-700 text-sm">
+                  Password reset link has been sent to your email. Please check your inbox and spam folder.
                 </div>
                 <Button 
+                  type="button" 
                   className="w-full bg-[#ffa62b] hover:bg-orange-600"
                   onClick={() => navigate('/proxy')}
                 >
@@ -145,15 +154,18 @@ export default function ResetPassword() {
                 </Button>
                 
                 <div className="text-center mt-4">
-                  <Link to="/proxy" className="text-sm text-[#ffa62b] hover:text-orange-600">
-                    Return to login
+                  <Link 
+                    to="/proxy" 
+                    className="text-sm text-[#ffa62b] hover:text-orange-600 transition-colors"
+                  >
+                    Back to Login
                   </Link>
                 </div>
               </form>
             )}
           </CardContent>
         </Card>
-      </main>
+      </div>
     </div>
   );
 }

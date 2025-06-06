@@ -1,10 +1,81 @@
-import React from "react";
-import slackLogo from '../assets/slack.svg';
-import calendarLogo from '../assets/calendar.svg';
-import githubLogo from '../assets/github.svg';
-import driveLogo from '../assets/drive.svg';
-import hubspotLogo from '../assets/hubspot.svg';
-import sheetsLogo from '../assets/sheets.svg';
+import React, { useRef, useEffect, useState, useCallback } from "react";
+import { useInViewport } from "../hooks/use-in-viewport";
+import { useScrollOptimization } from "../hooks/use-scroll-optimization";
+
+interface SecuritySource {
+  name: string;
+  description: string;
+}
+
+interface SecuritySourceProps {
+  source: SecuritySource;
+  index: number;
+}
+
+interface CardProps {
+  children: React.ReactNode;
+  isContextFort?: boolean;
+  className?: string;
+}
+
+const externalTools: SecuritySource[] = [
+  { name: 'Slack', description: 'Private Communication' },
+  { name: 'Drive', description: 'Document Storage' },
+  { name: 'Sheets', description: 'Data Management' },
+];
+
+const SecuritySource = React.memo(({ source, index }: SecuritySourceProps) => {
+  return (
+    <div 
+      className="flex items-center space-x-3 p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-all duration-300"
+      style={{ 
+        animationDelay: `${index * 150}ms`,
+        animation: 'fadeInUp 0.6s ease-out forwards'
+      }}
+    >
+      <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
+        {source.name.charAt(0)}
+      </div>
+      <div>
+        <div 
+          className="text-sm font-bold text-black" 
+          style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+        >
+          {source.name}
+        </div>
+        <div 
+          className="text-xs text-gray-600" 
+          style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+        >
+          {source.description}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+// Memoized card for better performance
+const Card = React.memo(({ children, isContextFort = false, className = "" }: CardProps) => {
+  return (
+    <div className="group">
+      <div 
+        className={`relative h-[30rem] rounded-3xl p-6 backdrop-blur-xl ${isContextFort ? 'border-[3px] border-[#ffa62b]' : 'border border-white/20'} shadow-2xl hover:shadow-3xl transition-all duration-700 hover:scale-105 hover:rotate-1 ${className}`}
+        style={{
+          background: isContextFort 
+            ? 'linear-gradient(135deg, rgba(255, 166, 43, 0.2) 0%, rgba(255, 166, 43, 0.1) 100%)'
+            : 'linear-gradient(135deg, rgba(156, 163, 175, 0.15) 0%, rgba(156, 163, 175, 0.08) 100%)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          ...(isContextFort ? {
+            boxShadow: '0 0 30px rgba(255, 166, 43, 0.3), 0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          } : {})
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+});
 
 export const SecurityDiagram = () => {
   const externalInfoSources = [
@@ -88,37 +159,12 @@ export const SecurityDiagram = () => {
                   </p>
                 </div>
 
-                {/* Service Icons */}
-                <div className="space-y-4">
-                  {externalInfoSources.map((source, index) => (
-                    <div 
-                      key={source.name}
-                      className="flex items-center space-x-3 p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-all duration-300"
-                      style={{ 
-                        animationDelay: `${index * 150}ms`,
-                        animation: 'fadeInUp 0.6s ease-out forwards'
-                      }}
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
-                        <img src={source.icon} alt={source.name} className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div 
-                          className="text-sm font-bold text-black" 
-                          style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                        >
-                          {source.name}
-                        </div>
-                        <div 
-                          className="text-xs text-gray-600" 
-                          style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                        >
-                          {source.description}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              {/* Service Icons - Using memoized components */}
+              <div className="space-y-4">
+                {externalTools.map((source, index) => (
+                  <SecuritySource key={source.name} source={source} index={index} />
+                ))}
+              </div>
 
                 {/* Floating particles */}
                 <div className="absolute top-4 right-4 w-2 h-2 bg-gray-400/40 rounded-full animate-pulse"></div>
@@ -212,89 +258,58 @@ export const SecurityDiagram = () => {
             </div>
 
             {/* ContextFort Card */}
-            <div className="group">
-              <div 
-                className="relative h-[30rem] rounded-3xl p-6 backdrop-blur-xl border-[3px] border-[#ffa62b] shadow-2xl hover:shadow-3xl transition-all duration-700 hover:scale-105 hover:rotate-1"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255, 166, 43, 0.2) 0%, rgba(255, 166, 43, 0.1) 100%)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  boxShadow: '0 0 30px rgba(255, 166, 43, 0.3), 0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                }}
-              >
-                {/* Security glow */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#ffa62b]/30 via-transparent to-[#ffa62b]/15 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+            <Card isContextFort={true}>
+              {/* Removed security glow animation */}
+              
+              {/* Card Header */}
+              <div className="relative text-center mb-6">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[#ffa62b]/40 to-[#ffa62b]/30 backdrop-blur-sm flex items-center justify-center border border-[#ffa62b]/40 shadow-lg">
+                  <span className="text-2xl">🛡️</span>
+                </div>
+                <h3 
+                  className="text-xl font-bold text-black mb-2" 
+                  style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                >
+                  ContextFort
+                </h3>
+                <p 
+                  className="text-sm font-medium" 
+                  style={{ color: '#ffa62b', fontFamily: "Gellix, Inter, sans-serif" }}
+                >
+                  Security Gateway
+                </p>
+              </div>
+
+              {/* Security Features */}
+              <div className="relative space-y-4">
+                <div className="p-4 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-[#ffa62b]/10 transition-colors duration-300">
+                  <div 
+                    className="text-sm font-bold text-black mb-1" 
+                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                  >
+                    Contextual Security
+                  </div>
+                  <div 
+                    className="text-xs text-gray-600" 
+                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                  >
+                    Understands user intent and allows only required tool calls with constrained arguments
+                  </div>
+                </div>
                 
-                {/* Card Header */}
-                <div className="relative text-center mb-6">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[#ffa62b]/40 to-[#ffa62b]/30 backdrop-blur-sm flex items-center justify-center border border-[#ffa62b]/40 shadow-lg">
-                    <span className="text-2xl">🛡️</span>
+                <div className="p-4 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-[#ffa62b]/10 transition-colors duration-300">
+                  <div 
+                    className="text-sm font-bold text-black mb-1" 
+                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                  >
+                    Content Scanning
                   </div>
                   <h3 
                     className="text-xl font-bold text-black mb-2" 
                     style={{ fontFamily: "Gellix, Inter, sans-serif" }}
                   >
-                    ContextFort
-                  </h3>
-                  <p 
-                    className="text-sm font-medium" 
-                    style={{ color: '#ffa62b', fontFamily: "Gellix, Inter, sans-serif" }}
-                  >
-                    Security Gateway
-                  </p>
-                </div>
-
-                {/* Security Features */}
-                <div className="relative space-y-4">
-                  <div className="p-4 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-[#ffa62b]/10 transition-colors duration-300">
-                    <div 
-                      className="text-sm font-bold text-black mb-1" 
-                      style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                    >
-                      Threat Detection
-                    </div>
-                    <div 
-                      className="text-xs text-gray-600" 
-                      style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                    >
-                      Real-time security monitoring
-                    </div>
+                    Scans inputs and outputs for potential prompt injections and suspicious patterns
                   </div>
-                  
-                  <div className="p-4 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-[#ffa62b]/10 transition-colors duration-300">
-                    <div 
-                      className="text-sm font-bold text-black mb-1" 
-                      style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                    >
-                      Policy Enforcement
-                    </div>
-                    <div 
-                      className="text-xs text-gray-600" 
-                      style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                    >
-                      Automated security controls
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-[#ffa62b]/10 transition-colors duration-300">
-                    <div 
-                      className="text-sm font-bold text-black mb-1" 
-                      style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                    >
-                      Audit Logging
-                    </div>
-                    <div 
-                      className="text-xs text-gray-600" 
-                      style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                    >
-                      Complete activity tracking
-                    </div>
-                  </div>
-                </div>
-
-                {/* Shield animation */}
-                <div className="absolute top-4 right-4">
-                  <div className="w-6 h-6 border-2 border-[#ffa62b]/40 rounded-full animate-spin"></div>
                 </div>
               </div>
             </div>
@@ -328,37 +343,12 @@ export const SecurityDiagram = () => {
                   </p>
                 </div>
 
-                {/* Tool Icons */}
-                <div className="space-y-4">
-                  {externalTools.map((tool, index) => (
-                    <div 
-                      key={tool.name}
-                      className="flex items-center space-x-3 p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-all duration-300"
-                      style={{ 
-                        animationDelay: `${index * 150}ms`,
-                        animation: 'fadeInUp 0.6s ease-out forwards'
-                      }}
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
-                        <img src={tool.icon} alt={tool.name} className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div 
-                          className="text-sm font-bold text-black" 
-                          style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                        >
-                          {tool.name}
-                        </div>
-                        <div 
-                          className="text-xs text-gray-600" 
-                          style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                        >
-                          {tool.description}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              {/* Tool Icons - Using memoized components */}
+              <div className="space-y-4">
+                {externalTools.map((tool, index) => (
+                  <SecuritySource key={tool.name} source={tool} index={index} />
+                ))}
+              </div>
 
                 {/* Floating particles */}
                 <div className="absolute bottom-4 right-4 w-2 h-2 bg-gray-400/40 rounded-full animate-pulse"></div>
