@@ -1,0 +1,30 @@
+# fly.toml app configuration file generated for thinking-twice-server-sparkling-leaf-7661 on 2025-06-05T22:11:00-07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'thinking-twice-server-sparkling-leaf-7661'
+primary_region = 'sjc'
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[env]
+  PORT = '3001'
+
+[[services]]
+  protocol = 'tcp'
+  internal_port = 3001
+
+  [[services.ports]]
+    port = 80
+    handlers = ['http']
+
+  [[services.ports]]
+    port = 443
+    handlers = ['tls', 'http']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1

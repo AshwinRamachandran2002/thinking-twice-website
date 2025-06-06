@@ -28,21 +28,12 @@ const LandingPageHero = () => {
           <div className="inline-flex items-center gap-2 rounded-full border border-[#ffa62b]/30 bg-[#ffa62b]/10 px-5 py-2 backdrop-blur-md opacity-0 animate-hero-item" style={{ animationDelay: '0.1s' }}>
             <span className="text-sm font-bold">Backed by</span>
             <img decoding="async" src="https://framerusercontent.com/images/O703WMlgsx2KJikRoCbLUwT5hk.png" alt="" style={{display:'block',width:'110px',height:'23px',objectPosition:'center',objectFit:'fill'}} />
-<<<<<<< HEAD
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight drop-shadow-sm text-black opacity-0 animate-hero-item" style={{ animationDelay: '0.2s' }}>
             <span style={{ color: '#ffa62b' }}>Security & Observability</span><br />
             <span className="text-black">for Tool-Calling Agents</span>
           </h1>
           <p className="max-w-xl text-lg md:text-xl leading-relaxed text-slate-600 font-medium opacity-0 animate-hero-item" style={{ animationDelay: '0.3s' }}>
-=======
-          </motion.div>
-          <motion.h1 variants={item} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight drop-shadow-sm text-black">
-            <span style={{ color: '#ffa62b' }}>Prompt Injection Protection</span><br />
-            <span className="text-black">for AI Agents</span>
-          </motion.h1>
-          <motion.p variants={item} className="max-w-xl text-lg md:text-xl leading-relaxed text-slate-600 font-medium">
->>>>>>> 746f809b0301abb402ddcd9389fc7a9dbf8ba147
             <span className="font-bold" style={{ color: '#ffa62b' }}>Secure</span>&nbsp;AI agents against Data Exfiltration Attacks. <br/>Instantly gain&nbsp;
             <span className="font-bold" style={{ color: '#ffa62b' }}>visibility and control</span>&nbsp;over every tool call.
           </p>
@@ -68,25 +59,8 @@ const LandingPageHero = () => {
               <span className="relative z-10 no-underline">Try our API</span>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
             </Link>
-<<<<<<< HEAD
-          <Link 
-            to="/contact" 
-            className="group relative flex items-center gap-2 rounded-full px-6 py-3 text-lg font-bold text-white shadow-md focus-visible:ring-2 focus-visible:ring-[#ffa62b] overflow-hidden no-underline" 
-            style={{ backgroundColor: '#ffa62b' }}
-          >
-            {/* Static border for solid button */}
-            <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              <div className="absolute inset-0 rounded-full border-[3px] border-white"></div>
-            </div>
-            <span className="relative z-10 no-underline">Get a Demo</span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 relative z-10"><path d="M13.172 11l-4.95-4.95a1 1 0 011.414-1.414l6.364 6.364a 1 1 0 010 1.414l-6.364 6.364a1 1 0 01-1.414-1.414L13.172 13H4a1 1 0 110-2h9.172z" /></svg>
-          </Link>
         </div>
         </section>
-=======
-          </div>
-        </motion.section>
->>>>>>> 746f809b0301abb402ddcd9389fc7a9dbf8ba147
 
         <SecurityDiagram />
 
@@ -170,12 +144,8 @@ const LandingPageHero = () => {
               </Link>
             </div>
           </div>
-<<<<<<< HEAD
         </section>
 
-=======
-        </motion.section>
->>>>>>> 746f809b0301abb402ddcd9389fc7a9dbf8ba147
       </main>
     </div>
   );
