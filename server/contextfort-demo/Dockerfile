@@ -28,8 +28,12 @@ RUN code-server --install-extension /copilot-chat-0.27.2.vsix
 
 # Authenticate copilot and add mcp servers to settings file
 
+COPY mcp_config.json /root/.local/share/code-server/User/settings.json
 RUN chmod +x /start.sh
 
 ENTRYPOINT []
 
 CMD ["/start.sh"]
+
+# change the user to coder
+USER coder
