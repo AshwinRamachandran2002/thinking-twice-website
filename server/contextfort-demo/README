@@ -1,0 +1,21 @@
+flyctl launch --name contextfort-demo --region sjc --no-deploy
+# Replace generated files with the above
+flyctl deploy
+
+https://contextfort-demo.fly.dev
+Login: default
+
+Password: contextfort2025 (or whatever you set)
+
+VS Code will open in the browser with Copilot + proxy setup
+
+You can SSH in to inspect logs:
+
+bash
+Copy
+Edit
+
+fly ssh console
+tail -f /home/coder/mitmproxy.log
+
+fly secrets set PASSWORD=contextfort2025

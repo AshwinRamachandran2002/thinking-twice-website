@@ -1,4 +1,3 @@
-import React from 'react';
 import { useInViewport } from '../hooks/use-in-viewport';
 import { MiniAgentInflowDiagram } from './MiniAgentInflowDiagram';
 import { MiniAgentHijackDiagram, MiniAgentOutflowDiagram } from './MiniAgentHijackDiagram';
