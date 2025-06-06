@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 // A hook that tracks if an element is in the viewport
 export const useInViewport = (options = {}) => {
   const [isInViewport, setIsInViewport] = useState(false);
+  const [hasBeenInViewport, setHasBeenInViewport] = useState(false);
   const elementRef = useRef(null);
 
   useEffect(() => {
@@ -42,5 +43,5 @@ export const useInViewport = (options = {}) => {
     };
   }, [options]);
 
-  return { elementRef, isInViewport };
+  return { elementRef, isInViewport, hasBeenInViewport };
 };

@@ -78,54 +78,20 @@ const Card = React.memo(({ children, isContextFort = false, className = "" }: Ca
 });
 
 export const SecurityDiagram = () => {
-  // Track scroll state for optimizations
-  const { scrollClass } = useScrollOptimization();
-  
-  // Enhanced viewport detection with larger margins
-  const { elementRef, isInViewport } = useInViewport({
-    threshold: 0.1,
-    rootMargin: '200px', // Increased margin to preload earlier
-  });
-  
-  // Combine animation classes
-  const animationClass = isInViewport 
-    ? scrollClass  // Only apply scroll optimization when in viewport
-    : 'paused-animations'; // Otherwise pause all animations
-  
-  // Feature flag to completely disable animations when not visible
-  const [renderGradients, setRenderGradients] = useState(false);
-  
-  // Throttled effect to delay gradient rendering for performance
-  useEffect(() => {
-    if (isInViewport) {
-      // Only render gradients when component is visible and after a small delay
-      const timer = setTimeout(() => setRenderGradients(true), 100);
-      return () => clearTimeout(timer);
-    } else {
-      // Immediately remove gradients when component is not visible
-      setRenderGradients(false);
-    }
-  }, [isInViewport]);
+  const externalInfoSources = [
+    { name: 'GitHub', icon: githubLogo, description: 'Code & Issues' },
+    { name: 'Calendar', icon: calendarLogo, description: 'Meetings & Events' },
+    { name: 'HubSpot', icon: hubspotLogo, description: 'CRM Data' },
+  ];
 
-  // Memoize background gradient
-  const BackgroundGradient = useCallback(() => {
-    if (!renderGradients) {
-      return (
-        <div className="absolute inset-0 -m-8 bg-gradient-to-r from-[#ffa62b]/10 to-purple-500/10 opacity-20"></div>
-      );
-    }
-    
-    return (
-      <div className="absolute inset-0 -m-8">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-[#ffa62b]/20 to-purple-500/20 rounded-full blur-3xl opacity-30"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-l from-blue-500/20 to-[#ffa62b]/20 rounded-full blur-3xl opacity-30"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-emerald-500/20 to-[#ffa62b]/20 rounded-full blur-3xl opacity-25"></div>
-      </div>
-    );
-  }, [renderGradients]);
+  const externalTools = [
+    { name: 'Slack', icon: slackLogo, description: 'Private Communication' },
+    { name: 'Google Drive', icon: driveLogo, description: 'File Storage' },
+    { name: 'Sheets', icon: sheetsLogo, description: 'Analytical Data' },
+  ];
 
   return (
-    <div className={`w-full py-20 px-4 optimize-when-scrolling`} ref={elementRef}>
+    <div className="w-full py-20 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-16">
@@ -139,34 +105,59 @@ export const SecurityDiagram = () => {
 
         {/* Main Diagram */}
         <div className="relative">
-          {/* Background gradient mesh - optimized based on viewport */}
-          <BackgroundGradient />
+          {/* Background gradient mesh */}
+          <div className="absolute inset-0 -m-8">
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-[#ffa62b]/20 to-purple-500/20 rounded-full blur-3xl opacity-30"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-l from-blue-500/20 to-[#ffa62b]/20 rounded-full blur-3xl opacity-30"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-emerald-500/20 to-[#ffa62b]/20 rounded-full blur-3xl opacity-25"></div>
+          </div>
 
-          {/* Removed animated thick mango line */}
 
-          {/* Cards Container - Using memoized components */}
+
+          {/* Animated Thick Mango Line */}
+          <div className="absolute inset-0 pointer-events-none hidden lg:block z-10">
+            <div 
+              className="absolute h-1.5 bg-[#ffa62b] animate-line-grow"
+              style={{ 
+                top: '50%', 
+                left: '0',
+                transform: 'translateY(-50%)',
+                width: '0%'
+              }}
+            />
+          </div>
+
+          {/* Cards Container */}
           <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 z-20">
             
             {/* External Information Sources Card */}
-            <Card>
-              {/* Card Header */}
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gray-300/30 to-gray-300/20 backdrop-blur-sm flex items-center justify-center border border-gray-300/30">
-                  <span className="text-2xl">🗄️</span>
+            <div className="group">
+              <div 
+                className="relative h-[30rem] rounded-3xl p-6 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:scale-105 hover:rotate-1"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(156, 163, 175, 0.15) 0%, rgba(156, 163, 175, 0.08) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                }}
+              >
+                {/* Card Header */}
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gray-300/30 to-gray-300/20 backdrop-blur-sm flex items-center justify-center border border-gray-300/30">
+                    <span className="text-2xl">🗄️</span>
+                  </div>
+                  <h3 
+                    className="text-xl font-bold text-black mb-2" 
+                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                  >
+                    External Information
+                  </h3>
+                  <p 
+                    className="text-sm text-gray-600 font-medium" 
+                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                  >
+                    Data Sources
+                  </p>
                 </div>
-                <h3 
-                  className="text-xl font-bold text-black mb-2" 
-                  style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                >
-                  External Information
-                </h3>
-                <p 
-                  className="text-sm text-gray-600 font-medium" 
-                  style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                >
-                  Data Sources
-                </p>
-              </div>
 
               {/* Service Icons - Using memoized components */}
               <div className="space-y-4">
@@ -175,85 +166,96 @@ export const SecurityDiagram = () => {
                 ))}
               </div>
 
-              {/* Removed animated particles */}
-              <div className="absolute top-4 right-4 w-2 h-2 bg-gray-400/40 rounded-full"></div>
-              <div className="absolute bottom-8 left-4 w-1 h-1 bg-gray-300/40 rounded-full"></div>
-            </Card>
+                {/* Floating particles */}
+                <div className="absolute top-4 right-4 w-2 h-2 bg-gray-400/40 rounded-full animate-pulse"></div>
+                <div className="absolute bottom-8 left-4 w-1 h-1 bg-gray-300/40 rounded-full animate-bounce"></div>
+              </div>
+            </div>
 
             {/* AI Agent Card */}
-            <Card>
-              {/* Glow effect - static instead of animated */}
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-gray-400/20 via-transparent to-gray-400/10 opacity-30"></div>
-              
-              {/* Card Header */}
-              <div className="relative text-center mb-6">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gray-300/30 to-gray-300/20 backdrop-blur-sm flex items-center justify-center border border-gray-300/30 shadow-lg">
-                  <span className="text-2xl">🤖</span>
-                </div>
-                <h3 
-                  className="text-xl font-bold text-black mb-2" 
-                  style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                >
-                  AI Agent
-                </h3>
-                <p 
-                  className="text-sm text-gray-600 font-medium" 
-                  style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                >
-                  Processing Hub
-                </p>
-              </div>
-
-              {/* Agent Features */}
-              <div className="relative space-y-4">
-                <div className="p-4 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20">
-                  <div 
-                    className="text-sm font-bold text-black mb-1" 
-                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                  >
-                    Tool Calling
-                  </div>
-                  <div 
-                    className="text-xs text-gray-600" 
-                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                  >
-                    Executes actions across platforms
-                  </div>
-                </div>
+            <div className="group">
+              <div 
+                className="relative h-[30rem] rounded-3xl p-6 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:scale-105 hover:-rotate-1"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(156, 163, 175, 0.15) 0%, rgba(156, 163, 175, 0.08) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                }}
+              >
+                {/* Glow effect */}
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-gray-400/20 via-transparent to-gray-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 
-                <div className="p-4 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20">
-                  <div 
-                    className="text-sm font-bold text-black mb-1" 
-                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                  >
-                    Context Retrieval
+                {/* Card Header */}
+                <div className="relative text-center mb-6">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gray-300/30 to-gray-300/20 backdrop-blur-sm flex items-center justify-center border border-gray-300/30 shadow-lg">
+                    <span className="text-2xl">🤖</span>
                   </div>
-                  <div 
-                    className="text-xs text-gray-600" 
+                  <h3 
+                    className="text-xl font-bold text-black mb-2" 
                     style={{ fontFamily: "Gellix, Inter, sans-serif" }}
                   >
-                    Gathers relevant information
+                    AI Agent
+                  </h3>
+                  <p 
+                    className="text-sm text-gray-600 font-medium" 
+                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                  >
+                    Processing Hub
+                  </p>
+                </div>
+
+                {/* Agent Features */}
+                <div className="relative space-y-4">
+                  <div className="p-4 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20">
+                    <div 
+                      className="text-sm font-bold text-black mb-1" 
+                      style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                    >
+                      Tool Calling
+                    </div>
+                    <div 
+                      className="text-xs text-gray-600" 
+                      style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                    >
+                      Executes actions across platforms
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20">
+                    <div 
+                      className="text-sm font-bold text-black mb-1" 
+                      style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                    >
+                      Context Retrieval
+                    </div>
+                    <div 
+                      className="text-xs text-gray-600" 
+                      style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                    >
+                      Gathers relevant information
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20">
+                    <div 
+                      className="text-sm font-bold text-black mb-1" 
+                      style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                    >
+                      Response Generation
+                    </div>
+                    <div 
+                      className="text-xs text-gray-600" 
+                      style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                    >
+                      Creates intelligent outputs
+                    </div>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20">
-                  <div 
-                    className="text-sm font-bold text-black mb-1" 
-                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                  >
-                    Response Generation
-                  </div>
-                  <div 
-                    className="text-xs text-gray-600" 
-                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                  >
-                    Creates intelligent outputs
-                  </div>
-                </div>
+                {/* Pulsing center */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gray-300/10 rounded-full animate-ping opacity-20"></div>
               </div>
-
-              {/* Removed pulsing animation */}
-            </Card>
+            </div>
 
             {/* ContextFort Card */}
             <Card isContextFort={true}>
@@ -302,38 +304,44 @@ export const SecurityDiagram = () => {
                   >
                     Content Scanning
                   </div>
-                  <div 
-                    className="text-xs text-gray-600" 
+                  <h3 
+                    className="text-xl font-bold text-black mb-2" 
                     style={{ fontFamily: "Gellix, Inter, sans-serif" }}
                   >
                     Scans inputs and outputs for potential prompt injections and suspicious patterns
                   </div>
                 </div>
               </div>
-
-              {/* Removed animated shield */}
-            </Card>
+            </div>
 
             {/* External Tools Card */}
-            <Card>
-              {/* Card Header */}
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gray-300/30 to-gray-300/20 backdrop-blur-sm flex items-center justify-center border border-gray-300/30 shadow-lg">
-                  <span className="text-2xl">🔧</span>
+            <div className="group">
+              <div 
+                className="relative h-[30rem] rounded-3xl p-6 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:scale-105 hover:-rotate-1"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(156, 163, 175, 0.15) 0%, rgba(156, 163, 175, 0.08) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                }}
+              >
+                {/* Card Header */}
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gray-300/30 to-gray-300/20 backdrop-blur-sm flex items-center justify-center border border-gray-300/30 shadow-lg">
+                    <span className="text-2xl">🔧</span>
+                  </div>
+                  <h3 
+                    className="text-xl font-bold text-black mb-2" 
+                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                  >
+                    External Tools
+                  </h3>
+                  <p 
+                    className="text-sm text-gray-600 font-medium" 
+                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+                  >
+                    Action Endpoints
+                  </p>
                 </div>
-                <h3 
-                  className="text-xl font-bold text-black mb-2" 
-                  style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                >
-                  External Tools
-                </h3>
-                <p 
-                  className="text-sm text-gray-600 font-medium" 
-                  style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                >
-                  Action Endpoints
-                </p>
-              </div>
 
               {/* Tool Icons - Using memoized components */}
               <div className="space-y-4">
@@ -342,32 +350,43 @@ export const SecurityDiagram = () => {
                 ))}
               </div>
 
-              {/* Removed animated particles */}
-              <div className="absolute bottom-4 right-4 w-2 h-2 bg-gray-400/40 rounded-full"></div>
-              <div className="absolute top-8 left-4 w-1 h-1 bg-gray-300/40 rounded-full"></div>
-            </Card>
+                {/* Floating particles */}
+                <div className="absolute bottom-4 right-4 w-2 h-2 bg-gray-400/40 rounded-full animate-pulse"></div>
+                <div className="absolute top-8 left-4 w-1 h-1 bg-gray-300/40 rounded-full animate-bounce"></div>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
 
-      {/* Custom animations - load only if in viewport */}
-      {isInViewport && (
-        <style>{`
-          @keyframes fadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(20px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
+      {/* Custom animations */}
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
           }
-        `}</style>
-      )}
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes line-grow {
+          0% {
+            width: 0%;
+          }
+          100% {
+            width: 100%;
+          }
+        }
+        
+        .animate-line-grow {
+          animation: line-grow 3s ease-out 1s forwards;
+        }
+        
+      `}</style>
     </div>
   );
 };
-
-// Export a memoized version of the component
-export default React.memo(SecurityDiagram);

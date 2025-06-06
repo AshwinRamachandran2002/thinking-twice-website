@@ -67,7 +67,7 @@ const TeamMember = ({
             {achievements && achievements.length > 0 && (
               <div className="space-y-3 mb-5 w-full">
                 {achievements.map((achievement, index) => (
-                  <div key={index} className="flex items-start gap-3 bg-white/80 backdrop-blur-sm p-3 rounded-lg border-l-4 border-[#ffa62b] shadow-md hover:bg-[#ffa62b]/10 transition-all duration-300 hover:shadow-lg">
+                  <div key={index} className="flex items-start gap-3 bg-white/80 backdrop-blur-sm p-3 rounded-lg border-l-4 border-[#ffa62b] shadow-md hover:bg-[#ffa62b]/10 duration-300 hover:shadow-lg">
                     <div className="flex-shrink-0 mt-0.5">
                       {renderIcon(achievement.icon)}
                     </div>
@@ -140,7 +140,7 @@ const TeamMember = ({
             
             {/* Enhanced bio display */}
             {bio && (
-              <div className="mb-6 bg-white/80 backdrop-blur-sm rounded-xl p-5 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="mb-6 bg-white/80 backdrop-blur-sm rounded-xl p-5 border border-white/20 shadow-lg hover:shadow-xl duration-300">
                 <div className="text-slate-700 prose">
                   {bio}
                 </div>
@@ -149,7 +149,7 @@ const TeamMember = ({
 
             {/* Featured Achievement with image */}
             {featuredAchievement && (
-              <div className="mb-6 bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="mb-6 bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 shadow-lg hover:shadow-xl duration-300">
                 <div className="p-4 bg-gradient-to-r from-[#ffa62b] to-orange-600 text-white">
                   <h4 className="font-bold text-lg">{featuredAchievement.title}</h4>
                 </div>
@@ -175,7 +175,7 @@ const TeamMember = ({
             {achievements && achievements.length > 0 && (
               <div className="space-y-3 mb-6">
                 {achievements.map((achievement, index) => (
-                  <div key={index} className="flex items-start gap-3 bg-white/80 backdrop-blur-sm p-3 rounded-lg border-l-4 border-[#ffa62b] shadow-md hover:bg-[#ffa62b]/10 transition-all duration-300 hover:shadow-lg">
+                  <div key={index} className="flex items-start gap-3 bg-white/80 backdrop-blur-sm p-3 rounded-lg border-l-4 border-[#ffa62b] shadow-md hover:bg-[#ffa62b]/10 duration-300 hover:shadow-lg">
                     <div className="flex-shrink-0">
                       {renderIcon(achievement.icon)}
                     </div>

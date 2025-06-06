@@ -15,7 +15,7 @@
   }
 
   /* Disable all animations and transitions to prevent performance issues */
-  .heavy-optimize-scrolling * {
+  /* .heavy-optimize-scrolling * {
     animation: none !important;
     transition: none !important;
     transform: none !important;
@@ -24,7 +24,7 @@
     box-shadow: none !important;
     text-shadow: none !important;
     border-radius: inherit !important;
-  }
+  } */
 
   /* Prevent blur effects on text in diagrams when hovering */
   canvas {
