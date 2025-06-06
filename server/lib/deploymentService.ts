@@ -34,7 +34,13 @@ export class FlyDeploymentService {
 
       // Launch the app without deploying first
       console.log(`📦 Launching app: ${config.appName}`);
-      await execAsync(`flyctl launch --name ${config.appName} --region ${config.region} --no-deploy --copy-config`);
+      
+      const flyAccessToken = process.env.FLY_ACCESS_TOKEN;
+      if (!flyAccessToken) {
+        throw new Error('FLY_ACCESS_TOKEN environment variable is required');
+      }
+      
+      await execAsync(`flyctl launch --name ${config.appName} --region ${config.region} --no-deploy --copy-config -t ${flyAccessToken}`);
 
       // Set the password secret
       console.log(`🔐 Setting password for: ${config.appName}`);
@@ -60,9 +66,14 @@ export class FlyDeploymentService {
   async destroyServer(appName: string): Promise<void> {
     try {
       console.log(`🗑️ Destroying server: ${appName}`);
+
+      const flyAccessToken = process.env.FLY_ACCESS_TOKEN;
+      if (!flyAccessToken) {
+        throw new Error('FLY_ACCESS_TOKEN environment variable is required');
+      }
       
       // Destroy the app
-      await execAsync(`flyctl apps destroy ${appName} --yes`);
+      await execAsync(`flyctl apps destroy ${appName} --yes --t ${flyAccessToken}`);
       
       console.log(`✅ Server destroyed successfully: ${appName}`);
     } catch (error) {
