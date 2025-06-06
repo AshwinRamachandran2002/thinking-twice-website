@@ -108,7 +108,8 @@ export default function Dashboard() {
   // Function to destroy sandbox server
   const destroySandboxServer = async (sessionId: string) => {
     try {
-      const response = await fetch('/api/destroy-sandbox', {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      const response = await fetch(`${apiBaseUrl}/api/destroy-sandbox`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -145,7 +146,8 @@ export default function Dashboard() {
       const password = `contextfort-demo-${randomNumber}`;
 
       // Call backend API to deploy server
-      const response = await fetch('/api/deploy-sandbox', {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      const response = await fetch(`${apiBaseUrl}/api/deploy-sandbox`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -188,7 +190,8 @@ export default function Dashboard() {
 
     const poll = async () => {
       try {
-        const response = await fetch(`/api/deployment-status/${sessionId}`);
+        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
+        const response = await fetch(`${apiBaseUrl}/api/deployment-status/${sessionId}`);
         if (!response.ok) {
           throw new Error('Failed to get deployment status');
         }
