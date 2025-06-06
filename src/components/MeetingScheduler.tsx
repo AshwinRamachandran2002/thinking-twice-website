@@ -1,9 +1,10 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "lucide-react";
+
+const GOOGLE_CALENDAR_URL = 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2-LisBxMgnCRJ-LKKb-R3pFbF841mGLD05pQdMbsBW-4MJvb0Jy2ksFKVYziMHfKcECrF9yIHt';
 
 const MeetingScheduler = () => {
   const [name, setName] = useState('');
@@ -15,12 +16,8 @@ const MeetingScheduler = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Meeting request submitted:', { name, email, company, message });
-    // create a meeting on calendly
-    // Optional: Pre-fill Calendly info using query parameters
-    const calendlyUrl = `https://calendly.com/ashwinramachandrang/30min?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&a1=${encodeURIComponent(company)}&a2=${encodeURIComponent(message)}`;
-
-    window.open(calendlyUrl, '_blank'); // Open in new tab or use window.location.href to redirect
-
+    // Open Google Calendar appointment scheduling URL
+    window.open(GOOGLE_CALENDAR_URL, '_blank'); 
     setSubmitted(true);
   };
 
@@ -29,7 +26,7 @@ const MeetingScheduler = () => {
       <div className="bg-white p-8 rounded-lg shadow-lg text-center">
         <h3 className="text-xl font-semibold mb-4">Thank you for your interest!</h3>
         <p className="text-gray-600">
-          We've received your request and will be in touch shortly to schedule a demo of Context Fort's security layer.
+          Please select a suitable time slot in the calendar that just opened. We look forward to discussing how Context Fort can help protect your systems.
         </p>
       </div>
     );
@@ -95,7 +92,7 @@ const MeetingScheduler = () => {
           />
         </div>
         <div className="flex justify-center">
-          <Button type="submit" className="bg-purple-600 hover:bg-purple-700 flex items-center gap-2">
+          <Button type="submit" className="bg-[#ffa62b] hover:bg-orange-600 flex items-center gap-2">
             <Calendar className="h-5 w-5" />
             Schedule a Demo
           </Button>

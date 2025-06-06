@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { motion } from 'framer-motion';
 import { Calendar } from "lucide-react";
 
+const GOOGLE_CALENDAR_URL = 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2-LisBxMgnCRJ-LKKb-R3pFbF841mGLD05pQdMbsBW-4MJvb0Jy2ksFKVYziMHfKcECrF9yIHt';
+
 const ContactForm = () => {
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
@@ -18,6 +20,7 @@ const ContactForm = () => {
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     // Let the form submit happen first, then redirect
     setTimeout(() => {
       setSubmitted(true);
@@ -33,10 +36,8 @@ const ContactForm = () => {
     }));
   };
   
-  const openCalendly = () => {
-    // Pre-fill Calendly info using query parameters if form data is available
-    const calendlyUrl = `https://calendly.com/ashwinramachandrang/30min?name=${encodeURIComponent(formData.name)}&email=${encodeURIComponent(formData.email)}&a1=${encodeURIComponent(formData.company)}&a2=${encodeURIComponent(formData.description)}`;
-    window.open(calendlyUrl, '_blank');
+  const openCalendar = () => {
+    window.open(GOOGLE_CALENDAR_URL, '_blank');
   };
 
   if (submitted) {
@@ -57,91 +58,55 @@ const ContactForm = () => {
               damping: 20,
               delay: 0.1 
             }}
-            className="w-20 h-20 bg-[#ffa62b]/20 rounded-full mx-auto mb-6 flex items-center justify-center"
+            className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center"
           >
-            <svg className="w-10 h-10 text-[#ffa62b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path 
+            <svg 
+              className="w-8 h-8 text-green-500" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <motion.path
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
                 strokeLinecap="round" 
                 strokeLinejoin="round" 
-                strokeWidth="2" 
+                strokeWidth={2} 
                 d="M5 13l4 4L19 7"
               />
             </svg>
           </motion.div>
-          <motion.h3 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-3xl font-bold mb-3 text-slate-800"
-          >
-            Thank You!
-          </motion.h3>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="text-slate-600 text-lg mb-4"
-          >
-            Your submission has been received successfully.
-          </motion.p>
         </div>
-        
-        <div className="space-y-6 max-w-md mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-white p-6 rounded-lg shadow-sm border border-[#ffa62b]/20"
+        <motion.h3 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-xl font-semibold mb-4"
+        >
+          Thank you for reaching out!
+        </motion.h3>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="text-gray-600 mb-8"
+        >
+          We've received your message and will get back to you soon.
+        </motion.p>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+        >
+          <Button 
+            onClick={openCalendar}
+            className="bg-[#ffa62b] hover:bg-orange-600 text-white flex items-center gap-2 mx-auto"
           >
-            <h4 className="font-semibold text-[#ffa62b] mb-3 flex items-center">
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              What happens next?
-            </h4>
-            <p className="text-slate-600">
-              Our team will review your submission and reach out within 24-48 hours to discuss how we can help secure your agentic applications. We'll send a confirmation email shortly.
-            </p>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 }}
-            className="bg-[#ffa62b]/10 p-6 rounded-lg"
-          >
-            <h4 className="font-semibold text-orange-700 mb-3 flex items-center">
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-              Meanwhile, explore our research
-            </h4>
-            <div className="text-[#ffa62b] space-y-3">
-              <a 
-                href="https://arxiv.org/abs/2312.02119" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="block hover:text-orange-600 transition-colors flex items-center"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-                Read our TAP Algorithm Paper
-              </a>
-              <a 
-                href="https://storage.googleapis.com/deepmind-media/Security%20and%20Privacy/Gemini_Security_Paper.pdf" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="block hover:text-orange-600 transition-colors flex items-center"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-                Learn about agent security best practices
-              </a>
-            </div>
-          </motion.div>
-        </div>
+            <Calendar className="h-5 w-5" />
+            Schedule a Meeting
+          </Button>
+        </motion.div>
       </motion.div>
     );
   }
@@ -237,7 +202,7 @@ const ContactForm = () => {
           </Button>
           <Button 
             type="button"
-            onClick={openCalendly}
+            onClick={openCalendar}
             className="flex items-center gap-2 rounded-lg bg-white/80 backdrop-blur-sm border border-[#ffa62b]/20 text-slate-600 shadow-md hover:bg-[#ffa62b]/10 transform transition-all duration-300 hover:scale-105"
           >
             <Calendar className="h-5 w-5" />

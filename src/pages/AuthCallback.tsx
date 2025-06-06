@@ -11,67 +11,110 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Get the hash fragment from the URL
-        const hashFragment = window.location.hash.substring(1);
-        const params = new URLSearchParams(hashFragment);
+        console.log('Starting auth callback handling...');
+        console.log('Full URL:', window.location.href);
         
-        // Get the callback type from URL
+        // Get both URL parameters and hash fragments
         const searchParams = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        
+        // Log all parameters for debugging
+        console.log('Search params:', Object.fromEntries(searchParams.entries()));
+        console.log('Hash params:', Object.fromEntries(hashParams.entries()));
+        
+        // Get the callback type from either source
         const callbackType = searchParams.get('type');
-        
-        // Extract tokens and data
-        const accessToken = params.get('access_token');
-        const refreshToken = params.get('refresh_token');
-        const type = callbackType || 'signup'; // default to signup if not specified
-        
-        if (!accessToken) {
-          throw new Error('No access token found in the callback URL');
-        }
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        const error = hashParams.get('error') || searchParams.get('error');
+        const errorDescription = hashParams.get('error_description') || searchParams.get('error_description');
 
-        // Set the session in Supabase
-        const { error } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken || '',
+        console.log('Parsed auth data:', {
+          callbackType,
+          hasAccessToken: !!accessToken,
+          error,
+          errorDescription
         });
 
-        if (error) {
-          throw error;
+        // Handle error cases first
+        if (error || errorDescription) {
+          console.error('Auth error from URL:', { error, errorDescription });
+          throw new Error(errorDescription || error || 'An error occurred during authentication');
         }
 
-        // Clear the URL fragment for security
-        window.history.replaceState(null, '', window.location.pathname);
-        
-        // Handle different callback types
-        if (type === 'recovery') {
-          setMessage('Password reset successful! Redirecting to dashboard...');
-          toast({
-            title: "Password Reset Successful",
-            description: "Your password has been reset successfully. You are now logged in.",
-            variant: "default",
+        // Check if we're handling email verification
+        if (callbackType === 'signup') {
+          console.log('Handling signup verification...');
+          // For email verification, get the current session
+          const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+          console.log('Current session:', { 
+            hasSession: !!session, 
+            error: sessionError 
           });
+          
+          if (sessionError) {
+            console.error('Session error:', sessionError);
+            throw sessionError;
+          }
+
+          if (!session) {
+            console.log('No session found, attempting to refresh...');
+            const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession();
+            
+            console.log('Session refresh result:', {
+              hasSession: !!refreshedSession,
+              error: refreshError
+            });
+
+            if (refreshError) throw refreshError;
+            if (!refreshedSession) throw new Error('Could not establish session');
+          }
+
+        } else if (accessToken) {
+          // For other auth flows with tokens
+          console.log('Setting session with tokens...');
+          const { error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken || '',
+          });
+
+          if (sessionError) {
+            console.error('Error setting session:', sessionError);
+            throw sessionError;
+          }
         } else {
-          setMessage('Authentication successful! Redirecting to dashboard...');
-          toast({
-            title: "Authentication Successful",
-            description: "You have been logged in successfully. Redirecting to your dashboard...",
-            variant: "default",
-          });
+          console.error('No tokens found and not a signup verification');
+          throw new Error('Invalid authentication state');
         }
-        
-        setTimeout(() => navigate('/dashboard'), 1500);
-      } catch (error: unknown) {
-        console.error('Error processing authentication:', error);
-        setMessage(`Authentication error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        
-        toast({
-          title: "Authentication Error",
-          description: error instanceof Error ? error.message : 'Unknown authentication error occurred',
-          variant: "destructive",
+
+        // Verify final session state
+        const { data: { session: finalSession }, error: finalSessionError } = await supabase.auth.getSession();
+        console.log('Final session state:', {
+          hasSession: !!finalSession,
+          error: finalSessionError
         });
-        
-        // Clear the URL fragment even on error
+
+        if (finalSessionError) throw finalSessionError;
+        if (!finalSession) throw new Error('No session established after authentication');
+
+        // Clear sensitive data from URL
         window.history.replaceState(null, '', window.location.pathname);
-        setTimeout(() => navigate('/proxy'), 3000);
+        
+        // Successful auth, redirect to dashboard
+        console.log('Authentication successful, redirecting to dashboard...');
+        setMessage('Authentication successful, redirecting...');
+        navigate('/dashboard', { replace: true });
+
+      } catch (error) {
+        console.error('Auth callback error:', error);
+        setMessage('Authentication failed. Please try again.');
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: error instanceof Error ? error.message : 'An error occurred during authentication'
+        });
+        // On error, redirect to login page
+        navigate('/proxy', { replace: true });
       }
     };
 
@@ -79,11 +122,10 @@ export default function AuthCallback() {
   }, [navigate, toast]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#fef9f3' }}>
-      <div className="text-center max-w-md p-8 bg-white rounded-xl shadow-md">
-        <div className="w-16 h-16 border-4 border-t-[#ffa62b] border-b-orange-600 border-l-[#ffa62b] border-r-orange-600 rounded-full animate-spin mx-auto"></div>
-        <h2 className="mt-6 text-xl font-semibold text-slate-800">Authentication in Progress</h2>
-        <p className="mt-2 text-slate-600">{message}</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-t-teal-500 border-b-teal-700 border-l-teal-500 border-r-teal-700 rounded-full animate-spin mx-auto"></div>
+        <p className="mt-4 text-slate-600">{message}</p>
       </div>
     </div>
   );

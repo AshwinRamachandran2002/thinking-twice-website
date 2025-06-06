@@ -1,33 +1,58 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import slackLogo from '../assets/slack.svg';
-import calendarLogo from '../assets/calendar.svg';
-import githubLogo from '../assets/github.svg';
-import driveLogo from '../assets/drive.svg';
-import hubspotLogo from '../assets/hubspot.svg';
-import sheetsLogo from '../assets/sheets.svg';
 import { useInViewport } from "../hooks/use-in-viewport";
 import { useScrollOptimization } from "../hooks/use-scroll-optimization";
-import { getPreloadedImage } from "../lib/preload";
 
-// Memoize static data to prevent unnecessary recreations
-const externalInfoSources = [
-  { name: 'GitHub', icon: githubLogo, description: 'Code & Issues' },
-  { name: 'Calendar', icon: calendarLogo, description: 'Meetings & Events' },
-  { name: 'HubSpot', icon: hubspotLogo, description: 'CRM Data' },
-];
+interface SecuritySource {
+  name: string;
+  description: string;
+}
 
-const externalTools = [
-  { name: 'Slack', icon: slackLogo, description: 'Private Communication' },
-  { name: 'Google Drive', icon: driveLogo, description: 'File Storage' },
-  { name: 'Sheets', icon: sheetsLogo, description: 'Analytical Data' },
-];
+interface SecuritySourceProps {
+  source: SecuritySource;
+  index: number;
+}
 
-// Define interface for Card props
 interface CardProps {
   children: React.ReactNode;
   isContextFort?: boolean;
   className?: string;
 }
+
+const externalTools: SecuritySource[] = [
+  { name: 'Slack', description: 'Private Communication' },
+  { name: 'Drive', description: 'Document Storage' },
+  { name: 'Sheets', description: 'Data Management' },
+];
+
+const SecuritySource = React.memo(({ source, index }: SecuritySourceProps) => {
+  return (
+    <div 
+      className="flex items-center space-x-3 p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-all duration-300"
+      style={{ 
+        animationDelay: `${index * 150}ms`,
+        animation: 'fadeInUp 0.6s ease-out forwards'
+      }}
+    >
+      <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
+        {source.name.charAt(0)}
+      </div>
+      <div>
+        <div 
+          className="text-sm font-bold text-black" 
+          style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+        >
+          {source.name}
+        </div>
+        <div 
+          className="text-xs text-gray-600" 
+          style={{ fontFamily: "Gellix, Inter, sans-serif" }}
+        >
+          {source.description}
+        </div>
+      </div>
+    </div>
+  );
+});
 
 // Memoized card for better performance
 const Card = React.memo(({ children, isContextFort = false, className = "" }: CardProps) => {
@@ -47,59 +72,6 @@ const Card = React.memo(({ children, isContextFort = false, className = "" }: Ca
         }}
       >
         {children}
-      </div>
-    </div>
-  );
-});
-
-// Define interface for service item
-interface ServiceSource {
-  name: string;
-  icon: string;
-  description: string;
-}
-
-interface ServiceItemProps {
-  source: ServiceSource;
-  index: number;
-}
-
-// Memoized component to render one service item
-const ServiceItem = React.memo(({ source, index }: ServiceItemProps) => {
-  // Preload image
-  const imageRef = useRef<HTMLImageElement>(null);
-  useEffect(() => {
-    // Use preloaded image if available
-    const preloadedImg = getPreloadedImage(source.icon);
-    if (preloadedImg && imageRef.current) {
-      imageRef.current.src = preloadedImg.src;
-    }
-  }, [source.icon]);
-
-  return (
-    <div 
-      className="flex items-center space-x-3 p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-all duration-300"
-      style={{ 
-        animationDelay: `${index * 150}ms`,
-        animation: 'fadeInUp 0.6s ease-out forwards'
-      }}
-    >
-      <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
-        <img ref={imageRef} src={source.icon} alt={source.name} className="w-5 h-5" />
-      </div>
-      <div>
-        <div 
-          className="text-sm font-bold text-black" 
-          style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-        >
-          {source.name}
-        </div>
-        <div 
-          className="text-xs text-gray-600" 
-          style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-        >
-          {source.description}
-        </div>
       </div>
     </div>
   );
@@ -198,8 +170,8 @@ export const SecurityDiagram = () => {
 
               {/* Service Icons - Using memoized components */}
               <div className="space-y-4">
-                {externalInfoSources.map((source, index) => (
-                  <ServiceItem key={source.name} source={source} index={index} />
+                {externalTools.map((source, index) => (
+                  <SecuritySource key={source.name} source={source} index={index} />
                 ))}
               </div>
 
@@ -313,13 +285,13 @@ export const SecurityDiagram = () => {
                     className="text-sm font-bold text-black mb-1" 
                     style={{ fontFamily: "Gellix, Inter, sans-serif" }}
                   >
-                    Threat Detection
+                    Contextual Security
                   </div>
                   <div 
                     className="text-xs text-gray-600" 
                     style={{ fontFamily: "Gellix, Inter, sans-serif" }}
                   >
-                    Real-time security monitoring
+                    Understands user intent and allows only required tool calls with constrained arguments
                   </div>
                 </div>
                 
@@ -328,28 +300,13 @@ export const SecurityDiagram = () => {
                     className="text-sm font-bold text-black mb-1" 
                     style={{ fontFamily: "Gellix, Inter, sans-serif" }}
                   >
-                    Policy Enforcement
+                    Content Scanning
                   </div>
                   <div 
                     className="text-xs text-gray-600" 
                     style={{ fontFamily: "Gellix, Inter, sans-serif" }}
                   >
-                    Automated security controls
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-[#ffa62b]/10 transition-colors duration-300">
-                  <div 
-                    className="text-sm font-bold text-black mb-1" 
-                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                  >
-                    Audit Logging
-                  </div>
-                  <div 
-                    className="text-xs text-gray-600" 
-                    style={{ fontFamily: "Gellix, Inter, sans-serif" }}
-                  >
-                    Complete activity tracking
+                    Scans inputs and outputs for potential prompt injections and suspicious patterns
                   </div>
                 </div>
               </div>
@@ -381,7 +338,7 @@ export const SecurityDiagram = () => {
               {/* Tool Icons - Using memoized components */}
               <div className="space-y-4">
                 {externalTools.map((tool, index) => (
-                  <ServiceItem key={tool.name} source={tool} index={index} />
+                  <SecuritySource key={tool.name} source={tool} index={index} />
                 ))}
               </div>
 

@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
-import Navbar from '../components/Navbar';
+import Navbar from '@/components/Navbar';
+
+const siteUrl = import.meta.env.VITE_APP_URL || window.location.origin;
 
 export default function ProxyAccess() {
   const [email, setEmail] = useState('');
@@ -92,8 +94,9 @@ export default function ProxyAccess() {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (loading) return;
-
+    
     // Validate email domain first
     if (!validateEmailDomain(email)) {
       toast({
@@ -175,7 +178,7 @@ export default function ProxyAccess() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${siteUrl}/auth/callback?type=signup`,
         },
       });
       
@@ -191,7 +194,7 @@ export default function ProxyAccess() {
         type: "success", 
         text: "Registration successful! Please check your email to confirm your account." 
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred during registration';
       
       toast({
