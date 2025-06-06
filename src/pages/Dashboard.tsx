@@ -10,7 +10,11 @@ import { useToast } from '@/hooks/use-toast';
 import Navbar from '../components/Navbar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RefreshCw, Copy, CheckCircle, ChevronRight, Terminal, AlertCircle, CreditCard, Zap, BarChart, Activity } from 'lucide-react';
+import { 
+  RefreshCw, Copy, CheckCircle, ChevronRight, Terminal, AlertCircle, CreditCard, 
+  Zap, BarChart, Activity, ArrowRight, ExternalLink, Github, Database, ShieldAlert,
+  Info, FileText, Link, Lock, Play, Shield
+} from 'lucide-react';
 
 export default function Dashboard() {
   const [session, setSession] = useState<Session | null>(null);
@@ -611,6 +615,282 @@ export default function Dashboard() {
                     <p className="text-sm text-muted-foreground">
                       If you encounter any issues with your sandbox session, try creating a new session or contact our support team.
                     </p>
+                  </div>
+
+                  {/* Attack Demo Section */}
+                  <div className="mt-8 pt-6 border-t border-slate-200">
+                    <h2 className="text-xl font-bold mb-4">Attack Demonstration: GitHub Issue &amp; Airtable Data Leakage</h2>
+                    <div className="bg-orange-50 border border-orange-200 rounded-md p-4 mb-6">
+                      <h3 className="text-lg font-semibold text-orange-800 flex items-center gap-2 mb-2">
+                        <ShieldAlert className="h-5 w-5" />
+                        Attack Scenario: Private Airtable Data Leak
+                      </h3>
+                      <p className="text-sm text-orange-700 mb-4">
+                        This demo shows how an attacker could attempt to leak sensitive Airtable data through a GitHub issue prompt injection attack,
+                        and how ContextFort prevents this attack vector.
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-white p-4 rounded-md shadow-sm border border-slate-200">
+                          <h4 className="font-medium flex items-center gap-2 mb-2">
+                            <Database className="h-4 w-4 text-blue-500" /> 
+                            1. Private Airtable Data
+                          </h4>
+                          <p className="text-xs text-slate-600 mb-3">
+                            Sensitive company data stored in a private Airtable database that should remain confidential.
+                          </p>
+                          <div className="mt-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="w-full text-xs"
+                              onClick={() => window.open("https://airtable.com/invite/l?inviteId=invMHlNERdRcTBnYd&inviteToken=4263087b3938b04347a4591dfa46fc6e7f2bb1a2b54f4d9123e69191a82b64c5&utm_medium=email&utm_source=product_team&utm_content=transactional-alerts", "_blank")}
+                            >
+                              <ExternalLink className="h-3 w-3 mr-1" />
+                              View Airtable Database
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-white p-4 rounded-md shadow-sm border border-slate-200">
+                          <h4 className="font-medium flex items-center gap-2 mb-2">
+                            <Github className="h-4 w-4 text-slate-800" /> 
+                            2. GitHub Issue with Prompt Injection
+                          </h4>
+                          <p className="text-xs text-slate-600 mb-3">
+                            An attacker creates a GitHub issue with embedded prompt injection commands to extract and leak Airtable data.
+                          </p>
+                          <div className="mt-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="w-full text-xs"
+                              onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/1", "_blank")}
+                            >
+                              <ExternalLink className="h-3 w-3 mr-1" />
+                              View GitHub Issue #1
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-white p-4 rounded-md shadow-sm border border-slate-200">
+                          <h4 className="font-medium flex items-center gap-2 mb-2">
+                            <FileText className="h-4 w-4 text-red-500" /> 
+                            3. Data Leaked to New Issue
+                          </h4>
+                          <p className="text-xs text-slate-600 mb-3">
+                            Without protection, an AI assistant would process the prompt injection and leak sensitive Airtable data to Issue #2.
+                          </p>
+                          <div className="mt-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="w-full text-xs"
+                              onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/2", "_blank")}
+                            >
+                              <ExternalLink className="h-3 w-3 mr-1" />
+                              View GitHub Issue #2
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h3 className="text-lg font-semibold mb-3">Attack Flow Visualization</h3>
+                        <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                          <div className="flex flex-col space-y-5">
+                            <div className="flex items-center gap-3">
+                              <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <Database className="h-5 w-5 text-blue-600" />
+                              </div>
+                              <div className="flex-grow">
+                                <h4 className="font-medium text-sm">Private Airtable Database</h4>
+                                <p className="text-xs text-slate-500">Contains sensitive company information</p>
+                              </div>
+                            </div>
+                            
+                            <div className="ml-5 border-l-2 border-slate-300 pl-8 pb-2">
+                              <ArrowRight className="h-5 w-5 text-slate-400 -ml-[38px] -mt-1 bg-white p-1" />
+                            </div>
+                            
+                            <div className="flex items-center gap-3">
+                              <div className="flex-shrink-0 w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
+                                <Github className="h-5 w-5 text-slate-800" />
+                              </div>
+                              <div className="flex-grow">
+                                <h4 className="font-medium text-sm">GitHub Issue #1 Created</h4>
+                                <p className="text-xs text-slate-500">Contains prompt injection payload</p>
+                              </div>
+                            </div>
+                            
+                            <div className="ml-5 border-l-2 border-slate-300 pl-8 pb-2">
+                              <ArrowRight className="h-5 w-5 text-slate-400 -ml-[38px] -mt-1 bg-white p-1" />
+                            </div>
+                            
+                            <div className="flex items-center gap-3">
+                              <div className="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                                <Play className="h-5 w-5 text-amber-600" />
+                              </div>
+                              <div className="flex-grow">
+                                <h4 className="font-medium text-sm">User Requests Summary</h4>
+                                <p className="text-xs text-slate-500">Asks AI to summarize the GitHub issue</p>
+                              </div>
+                            </div>
+                            
+                            <div className="ml-5 border-l-2 border-red-300 pl-8 pb-2">
+                              <ArrowRight className="h-5 w-5 text-red-400 -ml-[38px] -mt-1 bg-white p-1" />
+                              <div className="bg-red-50 border border-red-200 rounded-md p-2 mt-1">
+                                <p className="text-xs text-red-700">Without protection, injected commands execute</p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-3">
+                              <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                <FileText className="h-5 w-5 text-red-600" />
+                              </div>
+                              <div className="flex-grow">
+                                <h4 className="font-medium text-sm">GitHub Issue #2 Created</h4>
+                                <p className="text-xs text-red-500">Sensitive Airtable data leaked</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-lg font-semibold mb-3">ContextFort's Tool Call Protection</h3>
+                        <div className="bg-gradient-to-br from-teal-50 to-emerald-50 p-5 rounded-lg border border-emerald-200 shadow-sm">
+                          <div className="flex flex-col space-y-5">
+                            <div className="flex items-center gap-3">
+                              <div className="flex-shrink-0 w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+                                <ShieldAlert className="h-5 w-5 text-teal-600" />
+                              </div>
+                              <div className="flex-grow">
+                                <h4 className="font-medium text-sm">ContextFort Deployment</h4>
+                                <p className="text-xs text-slate-500">AI protection layer activated</p>
+                              </div>
+                            </div>
+                            
+                            <div className="ml-5 border-l-2 border-emerald-300 pl-8 pb-2">
+                              <ArrowRight className="h-5 w-5 text-emerald-500 -ml-[38px] -mt-1 bg-white p-1" />
+                            </div>
+                            
+                            <div className="flex items-center gap-3">
+                              <div className="flex-shrink-0 w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
+                                <Github className="h-5 w-5 text-slate-800" />
+                              </div>
+                              <div className="flex-grow">
+                                <h4 className="font-medium text-sm">Injection Analyzed</h4>
+                                <p className="text-xs text-slate-500">Detected attempt to call external Airtable API</p>
+                              </div>
+                            </div>
+                            
+                            <div className="ml-5 border-l-2 border-emerald-300 pl-8 pb-2">
+                              <ArrowRight className="h-5 w-5 text-emerald-500 -ml-[38px] -mt-1 bg-white p-1" />
+                            </div>
+                            
+                            <div className="flex items-center gap-3">
+                              <div className="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                                <Lock className="h-5 w-5 text-amber-600" />
+                              </div>
+                              <div className="flex-grow">
+                                <h4 className="font-medium text-sm">Tool Call Intercepted</h4>
+                                <p className="text-xs text-slate-500">Unauthorized Airtable API call blocked</p>
+                              </div>
+                            </div>
+                            
+                            <div className="ml-5 border-l-2 border-emerald-300 pl-8 pb-2">
+                              <ArrowRight className="h-5 w-5 text-emerald-500 -ml-[38px] -mt-1 bg-white p-1" />
+                              <div className="bg-emerald-50 border border-emerald-200 rounded-md p-2 mt-1">
+                                <p className="text-xs text-emerald-700">AI responds safely: "I've detected a potentially malicious tool call and blocked it for your security."</p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-3">
+                              <div className="flex-shrink-0 w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                                <Shield className="h-5 w-5 text-emerald-600" />
+                              </div>
+                              <div className="flex-grow">
+                                <h4 className="font-medium text-sm">Malicious Tool Call Blocked</h4>
+                                <p className="text-xs text-emerald-600">Prevented unauthorized API access attempt</p>
+                              </div>
+                            </div>
+                            
+                            <div className="mt-4 bg-white rounded-md p-3 border border-emerald-200">
+                              <h4 className="text-sm font-medium text-emerald-700 mb-2">Protection Activated:</h4>
+                              <div className="text-xs text-slate-600 mb-3">
+                                ContextFort specializes in blocking malicious tool calls, preventing AI systems from executing dangerous actions requested through prompt injections.
+                              </div>
+                              <div className="flex items-start gap-2 mb-2">
+                                <CheckCircle className="h-3.5 w-3.5 text-emerald-500 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <span className="font-medium">Malicious Tool Call Blocking</span>
+                                  <p className="text-xs text-slate-500 mt-0.5">Detected and blocked unauthorized attempt to access external API (Airtable)</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6">
+                      <h3 className="text-lg font-semibold mb-4">Try It Yourself</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                          <h4 className="font-medium mb-3 text-slate-800">Demo the Attack</h4>
+                          <p className="text-sm text-slate-600 mb-4">
+                            Follow these steps to see how the attack would work without protection:
+                          </p>
+                          <ol className="text-xs text-slate-600 space-y-3 list-decimal list-inside">
+                            <li>Visit GitHub Issue #1 containing the prompt injection</li>
+                            <li>Observe how the issue has hidden commands to access Airtable</li>
+                            <li>See how in Issue #2, sensitive data has been exposed</li>
+                            <li>This demonstrates the risk of unprotected AI systems</li>
+                          </ol>
+                          <div className="mt-4">
+                            <Button 
+                              onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/1", "_blank")}
+                              className="w-full bg-slate-800 hover:bg-slate-700"
+                            >
+                              View Attack Demo
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-white p-4 rounded-lg border border-teal-200 shadow-sm">
+                          <h4 className="font-medium mb-3 text-teal-800">Experience ContextFort Protection</h4>
+                          <p className="text-sm text-slate-600 mb-4">
+                            See how ContextFort prevents malicious tool calls in our sandbox:
+                          </p>
+                          <ol className="text-xs text-slate-600 space-y-3 list-decimal list-inside">
+                            <li>Create a sandbox session (if you haven't already)</li>
+                            <li>In the sandbox, try asking the AI about GitHub Issue #1</li>
+                            <li>Watch how ContextFort identifies and blocks the malicious API call</li>
+                            <li>The AI will alert you that it detected an unauthorized tool call</li>
+                          </ol>
+                          <div className="mt-4">
+                            {!sandboxSession || sessionExpired ? (
+                              <Button 
+                                onClick={createNewSession}
+                                disabled={isCreatingSession}
+                                className="w-full bg-teal-600 hover:bg-teal-700"
+                              >
+                                {isCreatingSession ? "Deploying Server..." : "Create Sandbox Session"}
+                              </Button>
+                            ) : (
+                              <Button 
+                                onClick={() => window.open(sandboxSession.sandbox_url, "_blank")}
+                                className="w-full bg-teal-600 hover:bg-teal-700"
+                              >
+                                Open Sandbox
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -1315,6 +1595,288 @@ func main() {
                   </Card>
                 </div>
               </div>
+            </TabsContent>
+            
+            <TabsContent value="demo">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Attack Demo: GitHub Issue &amp; Airtable Data Leakage</CardTitle>
+                  <CardDescription>
+                    This interactive demo showcases how ContextFort prevents prompt injection attacks that attempt to leak sensitive information.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="bg-orange-50 border border-orange-200 rounded-md p-4">
+                    <h3 className="text-lg font-semibold text-orange-800 flex items-center gap-2 mb-2">
+                      <ShieldAlert className="h-5 w-5" />
+                      Attack Scenario: Private Airtable Data Leak
+                    </h3>
+                    <p className="text-sm text-orange-700 mb-4">
+                      This demo shows how an attacker could attempt to leak sensitive Airtable data through a GitHub issue prompt injection attack,
+                      and how ContextFort prevents this attack vector.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-white p-4 rounded-md shadow-sm border border-slate-200">
+                        <h4 className="font-medium flex items-center gap-2 mb-2">
+                          <Database className="h-4 w-4 text-blue-500" /> 
+                          1. Private Airtable Data
+                        </h4>
+                        <p className="text-xs text-slate-600 mb-3">
+                          Sensitive company data stored in a private Airtable database that should remain confidential.
+                        </p>
+                        <div className="mt-4">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="w-full text-xs"
+                            onClick={() => window.open("https://airtable.com/invite/l?inviteId=invMHlNERdRcTBnYd&inviteToken=4263087b3938b04347a4591dfa46fc6e7f2bb1a2b54f4d9123e69191a82b64c5&utm_medium=email&utm_source=product_team&utm_content=transactional-alerts", "_blank")}
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            View Airtable Database
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-white p-4 rounded-md shadow-sm border border-slate-200">
+                        <h4 className="font-medium flex items-center gap-2 mb-2">
+                          <Github className="h-4 w-4 text-slate-800" /> 
+                          2. GitHub Issue with Prompt Injection
+                        </h4>
+                        <p className="text-xs text-slate-600 mb-3">
+                          An attacker creates a GitHub issue with embedded prompt injection commands to extract and leak Airtable data.
+                        </p>
+                        <div className="mt-4">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="w-full text-xs"
+                            onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/1", "_blank")}
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            View GitHub Issue #1
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-white p-4 rounded-md shadow-sm border border-slate-200">
+                        <h4 className="font-medium flex items-center gap-2 mb-2">
+                          <FileText className="h-4 w-4 text-red-500" /> 
+                          3. Data Leaked to New Issue
+                        </h4>
+                        <p className="text-xs text-slate-600 mb-3">
+                          Without protection, an AI assistant would process the prompt injection and leak sensitive Airtable data to Issue #2.
+                        </p>
+                        <div className="mt-4">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="w-full text-xs"
+                            onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/2", "_blank")}
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            View GitHub Issue #2
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">Attack Flow Visualization</h3>
+                      <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                        <div className="flex flex-col space-y-5">
+                          <div className="flex items-center gap-3">
+                            <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                              <Database className="h-5 w-5 text-blue-600" />
+                            </div>
+                            <div className="flex-grow">
+                              <h4 className="font-medium text-sm">Private Airtable Database</h4>
+                              <p className="text-xs text-slate-500">Contains sensitive company information</p>
+                            </div>
+                          </div>
+                          
+                          <div className="ml-5 border-l-2 border-slate-300 pl-8 pb-2">
+                            <ArrowRight className="h-5 w-5 text-slate-400 -ml-[38px] -mt-1 bg-white p-1" />
+                          </div>
+                          
+                          <div className="flex items-center gap-3">
+                            <div className="flex-shrink-0 w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
+                              <Github className="h-5 w-5 text-slate-800" />
+                            </div>
+                            <div className="flex-grow">
+                              <h4 className="font-medium text-sm">GitHub Issue #1 Created</h4>
+                              <p className="text-xs text-slate-500">Contains prompt injection payload</p>
+                            </div>
+                          </div>
+                          
+                          <div className="ml-5 border-l-2 border-slate-300 pl-8 pb-2">
+                            <ArrowRight className="h-5 w-5 text-slate-400 -ml-[38px] -mt-1 bg-white p-1" />
+                          </div>
+                          
+                          <div className="flex items-center gap-3">
+                            <div className="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                              <Play className="h-5 w-5 text-amber-600" />
+                            </div>
+                            <div className="flex-grow">
+                              <h4 className="font-medium text-sm">User Requests Summary</h4>
+                              <p className="text-xs text-slate-500">Asks AI to summarize the GitHub issue</p>
+                            </div>
+                          </div>
+                          
+                          <div className="ml-5 border-l-2 border-red-300 pl-8 pb-2">
+                            <ArrowRight className="h-5 w-5 text-red-400 -ml-[38px] -mt-1 bg-white p-1" />
+                            <div className="bg-red-50 border border-red-200 rounded-md p-2 mt-1">
+                              <p className="text-xs text-red-700">Without protection, injected commands execute</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-3">
+                            <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                              <FileText className="h-5 w-5 text-red-600" />
+                            </div>
+                            <div className="flex-grow">
+                              <h4 className="font-medium text-sm">GitHub Issue #2 Created</h4>
+                              <p className="text-xs text-red-500">Sensitive Airtable data leaked</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">ContextFort's Protection</h3>
+                      <div className="bg-gradient-to-br from-teal-50 to-emerald-50 p-5 rounded-lg border border-emerald-200 shadow-sm">
+                        <div className="flex flex-col space-y-5">
+                          <div className="flex items-center gap-3">
+                            <div className="flex-shrink-0 w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+                              <ShieldAlert className="h-5 w-5 text-teal-600" />
+                            </div>
+                            <div className="flex-grow">
+                              <h4 className="font-medium text-sm">ContextFort Deployment</h4>
+                              <p className="text-xs text-slate-500">AI protection layer activated</p>
+                            </div>
+                          </div>
+                          
+                          <div className="ml-5 border-l-2 border-emerald-300 pl-8 pb-2">
+                            <ArrowRight className="h-5 w-5 text-emerald-500 -ml-[38px] -mt-1 bg-white p-1" />
+                          </div>
+                          
+                          <div className="flex items-center gap-3">
+                            <div className="flex-shrink-0 w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
+                              <Github className="h-5 w-5 text-slate-800" />
+                            </div>
+                            <div className="flex-grow">
+                              <h4 className="font-medium text-sm">GitHub Issue #1 Analyzed</h4>
+                              <p className="text-xs text-slate-500">Prompt injection detected</p>
+                            </div>
+                          </div>
+                          
+                          <div className="ml-5 border-l-2 border-emerald-300 pl-8 pb-2">
+                            <ArrowRight className="h-5 w-5 text-emerald-500 -ml-[38px] -mt-1 bg-white p-1" />
+                          </div>
+                          
+                          <div className="flex items-center gap-3">
+                            <div className="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                              <Lock className="h-5 w-5 text-amber-600" />
+                            </div>
+                            <div className="flex-grow">
+                              <h4 className="font-medium text-sm">Attack Neutralized</h4>
+                              <p className="text-xs text-slate-500">Malicious commands blocked</p>
+                            </div>
+                          </div>
+                          
+                          <div className="ml-5 border-l-2 border-emerald-300 pl-8 pb-2">
+                            <ArrowRight className="h-5 w-5 text-emerald-500 -ml-[38px] -mt-1 bg-white p-1" />
+                            <div className="bg-emerald-50 border border-emerald-200 rounded-md p-2 mt-1">
+                              <p className="text-xs text-emerald-700">AI responds safely with legitimate summary</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-3">
+                            <div className="flex-shrink-0 w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                              <Shield className="h-5 w-5 text-emerald-600" />
+                            </div>
+                            <div className="flex-grow">
+                              <h4 className="font-medium text-sm">Data Remains Protected</h4>
+                              <p className="text-xs text-emerald-600">No sensitive information leaked</p>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-4 bg-white rounded-md p-3 border border-emerald-200">
+                            <h4 className="text-sm font-medium text-emerald-700 mb-2">Key Protections Activated:</h4>
+                            <ul className="text-xs space-y-1 text-slate-600">
+                              <li className="flex items-start gap-2">
+                                <CheckCircle className="h-3.5 w-3.5 text-emerald-500 mt-0.5 flex-shrink-0" />
+                                <span>Prompt injection detection</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <CheckCircle className="h-3.5 w-3.5 text-emerald-500 mt-0.5 flex-shrink-0" />
+                                <span>External resource access prevention</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <CheckCircle className="h-3.5 w-3.5 text-emerald-500 mt-0.5 flex-shrink-0" />
+                                <span>System role jailbreak protection</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <CheckCircle className="h-3.5 w-3.5 text-emerald-500 mt-0.5 flex-shrink-0" />
+                                <span>Data exfiltration blocking</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border-t border-slate-200 pt-5 mt-6">
+                    <h3 className="text-lg font-semibold mb-4">Try It Yourself</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                        <h4 className="font-medium mb-3 text-slate-800">Demo the Attack</h4>
+                        <p className="text-sm text-slate-600 mb-4">
+                          Follow these steps to see how the attack would work without protection:
+                        </p>
+                        <ol className="text-xs text-slate-600 space-y-3 list-decimal list-inside">
+                          <li>Visit GitHub Issue #1 containing the prompt injection</li>
+                          <li>Observe how the issue has hidden commands to access Airtable</li>
+                          <li>See how in Issue #2, sensitive data has been exposed</li>
+                          <li>This demonstrates the risk of unprotected AI systems</li>
+                        </ol>
+                        <div className="mt-4">
+                          <Button 
+                            onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/1", "_blank")}
+                            className="w-full bg-slate-800 hover:bg-slate-700"
+                          >
+                            View Attack Demo
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-white p-4 rounded-lg border border-teal-200 shadow-sm">
+                        <h4 className="font-medium mb-3 text-teal-800">Experience ContextFort Protection</h4>
+                        <p className="text-sm text-slate-600 mb-4">
+                          See how ContextFort prevents this attack in our sandbox:
+                        </p>
+                        <ol className="text-xs text-slate-600 space-y-3 list-decimal list-inside">
+                          <li>Create a sandbox session from the "Proxy" tab</li>
+                          <li>In the sandbox, try asking the AI about GitHub Issue #1</li>
+                          <li>Watch how ContextFort blocks the prompt injection</li>
+                          <li>Your sensitive data remains protected from exfiltration</li>
+                        </ol>
+                        <div className="mt-4">
+                          <Button 
+                            onClick={() => setActiveTab('proxy')}
+                            className="w-full bg-teal-600 hover:bg-teal-700"
+                          >
+                            Go to Sandbox Demo
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>
