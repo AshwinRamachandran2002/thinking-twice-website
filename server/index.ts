@@ -109,7 +109,7 @@ app.get('/test-supabase', async (req, res) => {
     
     const { data, error } = await supabase
       .from('user_sandbox_sessions')
-      .select('count(*)')
+      .select('id')
       .limit(1);
     
     if (error) {
