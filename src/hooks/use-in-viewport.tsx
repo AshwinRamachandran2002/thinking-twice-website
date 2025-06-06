@@ -17,6 +17,7 @@ export const useInViewport = (options = {}) => {
           // Only set to true if actually intersecting
           requestAnimationFrame(() => {
             setIsInViewport(true);
+            setHasBeenInViewport(true); // Set this to true once it's been in viewport
           });
         } else if (!entry.isIntersecting && entry.intersectionRatio === 0) {
           // Only set to false if fully out of view

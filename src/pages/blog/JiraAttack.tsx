@@ -577,43 +577,6 @@ const JiraAttack = () => {
                     </div>
                   </div>
                   
-                  {/* Related articles */}
-                  <div className="mt-16">
-                    <h3 className="text-2xl font-bold mb-8 text-slate-900">Related Articles</h3>
-                    <div className="grid md:grid-cols-2 gap-8">
-                      <Link to="/blog/tool-calling-security" className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-slate-100 transform hover:translate-y-[-4px]">
-                        <div className="h-48 overflow-hidden">
-                          <img 
-                            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" 
-                            alt="How Tool-Calling Agents Are Changing Security" 
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        </div>
-                        <div className="p-6 flex-grow">
-                          <div className="text-xs font-medium text-[#ffa62b] uppercase tracking-wider mb-2">Security Research</div>
-                          <h4 className="text-xl font-bold mb-3 group-hover:text-[#ffa62b] transition-colors">How Tool-Calling Agents Are Changing Security</h4>
-                          <p className="text-slate-600 mb-4">Explore the new security challenges and opportunities as AI agents gain tool-calling capabilities.</p>
-                          <div className="text-sm text-slate-500">May 20, 2025 • 12 min read</div>
-                        </div>
-                      </Link>
-                      
-                      <Link to="/blog/red-teaming-agents" className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-slate-100 transform hover:translate-y-[-4px]">
-                        <div className="h-48 overflow-hidden">
-                          <img 
-                            src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" 
-                            alt="Red Teaming Autonomous Agents: Lessons Learned" 
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        </div>
-                        <div className="p-6 flex-grow">
-                          <div className="text-xs font-medium text-[#ffa62b] uppercase tracking-wider mb-2">Security Research</div>
-                          <h4 className="text-xl font-bold mb-3 group-hover:text-[#ffa62b] transition-colors">Red Teaming Autonomous Agents: Lessons Learned</h4>
-                          <p className="text-slate-600 mb-4">A deep dive into real-world red teaming of LLM-powered agents, including indirect prompt injection and defense strategies.</p>
-                          <div className="text-sm text-slate-500">April 10, 2025 • 15 min read</div>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
                 </div>
               </div>
             </motion.article>

@@ -78,18 +78,6 @@ const Card = React.memo(({ children, isContextFort = false, className = "" }: Ca
 });
 
 export const SecurityDiagram = () => {
-  const externalInfoSources = [
-    { name: 'GitHub', icon: githubLogo, description: 'Code & Issues' },
-    { name: 'Calendar', icon: calendarLogo, description: 'Meetings & Events' },
-    { name: 'HubSpot', icon: hubspotLogo, description: 'CRM Data' },
-  ];
-
-  const externalTools = [
-    { name: 'Slack', icon: slackLogo, description: 'Private Communication' },
-    { name: 'Google Drive', icon: driveLogo, description: 'File Storage' },
-    { name: 'Sheets', icon: sheetsLogo, description: 'Analytical Data' },
-  ];
-
   return (
     <div className="w-full py-20 px-4">
       <div className="max-w-7xl mx-auto">
@@ -304,15 +292,15 @@ export const SecurityDiagram = () => {
                   >
                     Content Scanning
                   </div>
-                  <h3 
-                    className="text-xl font-bold text-black mb-2" 
+                  <div 
+                    className="text-xs text-gray-600" 
                     style={{ fontFamily: "Gellix, Inter, sans-serif" }}
                   >
                     Scans inputs and outputs for potential prompt injections and suspicious patterns
                   </div>
                 </div>
               </div>
-            </div>
+            </Card>
 
             {/* External Tools Card */}
             <div className="group">
@@ -359,8 +347,6 @@ export const SecurityDiagram = () => {
 
         </div>
       </div>
-
-      {/* Custom animations */}
       <style>{`
         @keyframes fadeInUp {
           from {

@@ -6,16 +6,16 @@ import slackLogo from '../assets/slack.svg';
 // MiniContextFortSolutionDiagram: faithful mini version of FlowDiagram's Agent → ContextFort → Integrations (right)
 export const MiniContextFortSolutionDiagram = () => {
   // SVG layout constants (compact, but proportional to FlowDiagram)
-  const width = 400;
-  const height = 160;
+  const width = 600;
+  const height = 200;
   // Agent and Fort box positions (proportional to FlowDiagram)
-  const agentBox = { x: 40, y: 60, w: 80, h: 40 };
-  const fortBox = { x: 160, y: 30, w: 100, h: 100 };
+  const agentBox = { x: 10, y: 60, w: 120, h: 90 };
+  const fortBox = { x: 220, y: 30, w: 200, h: 130 };
   // Integration positions
   const integrations = [
-    { x: 300, y: 40, icon: jiraLogo, label: "Jira" },
-    { x: 300, y: 80, icon: zendeskLogo, label: "Zendesk" },
-    { x: 300, y: 120, icon: slackLogo, label: "Slack" }
+    { x: 500, y: 40, icon: jiraLogo, label: "Jira" },
+    { x: 500, y: 80, icon: zendeskLogo, label: "Zendesk" },
+    { x: 500, y: 120, icon: slackLogo, label: "Slack" }
   ];
 
   return (
