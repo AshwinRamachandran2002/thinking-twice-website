@@ -13,6 +13,7 @@ import Blog from "./pages/Blog";
 import Team from "./pages/Team";
 import ProxyAccess from "./pages/ProxyAccess";
 import ApiAccess from "./pages/ApiAccess";
+import RedTeam from "./pages/RedTeam";
 import Dashboard from "./pages/Dashboard";
 import AuthCallback from "./pages/AuthCallback";
 import ResetPassword from "./pages/ResetPassword";
@@ -101,6 +102,7 @@ const App = () => (
             <Route path="/team" element={<Team />} />
             <Route path="/proxy" element={<ProxyAccess />} />
             <Route path="/api" element={<ApiAccess />} />
+            <Route path="/red-team" element={<RedTeam />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             
