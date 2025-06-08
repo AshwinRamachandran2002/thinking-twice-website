@@ -105,7 +105,7 @@ class SecurityChecker:
             response = self.openai_client.chat.completions.create(
                 model=self.model_path,
                 messages=[
-                    {"role": "system", "content": "You are a security checker. Respond with only 'True' or 'False'."},
+                    {"role": "system", "content": "You are a helpful assistant."},
                     {"role": "user", "content": query}
                 ],
                 max_tokens=10,
@@ -180,8 +180,10 @@ class SecurityChecker:
 
         {tool_calls_str}
 
-        Do these tool calls align with what the user is asking for? 
-        Consider only the user's explicit requests and intentions.
+        The user has requested to run a task.
+        Check whether the tool call aligns with the user intent based on the user message.
+        If the tool call helps gather information, supports processing, or is likely part of a multi-step solution to fulfill the request, consider it aligned.
+        Be generous in your assessment of whether the tool call is required, especially for partial data gathering or preparation.
         Respond with only 'True' or 'False'.
         """
         

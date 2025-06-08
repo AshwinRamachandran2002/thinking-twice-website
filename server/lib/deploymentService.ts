@@ -145,6 +145,85 @@ primary_region = '${region}'
       }
     }, delayMs);
   }
+
+  /**
+   * Background cleanup service to destroy expired servers
+   */
+  startCleanupService(intervalMs: number = 60000): NodeJS.Timeout {
+    console.log(`🧹 Starting cleanup service with ${intervalMs / 1000}s interval`);
+    
+    return setInterval(async () => {
+      try {
+        await this.cleanupExpiredServers();
+      } catch (error) {
+        console.error('Error in cleanup service:', error);
+      }
+    }, intervalMs);
+  }
+
+  /**
+   * Checks for and destroys expired servers
+   */
+  async cleanupExpiredServers(): Promise<void> {
+    const { supabase } = await import('./supabase');
+    
+    try {
+      // Get all non-expired sessions
+      const { data: sessions, error } = await supabase
+        .from('user_sandbox_sessions')
+        .select('*')
+        .eq('session_expired', false)
+        .in('deployment_status', ['running', 'deploying']);
+
+      if (error) {
+        console.error('Error fetching sessions for cleanup:', error);
+        return;
+      }
+
+      if (!sessions || sessions.length === 0) {
+        return;
+      }
+
+      const now = Date.now();
+      let expiredCount = 0;
+
+      for (const session of sessions) {
+        const startTime = new Date(session.session_start_time).getTime();
+        const durationMs = session.session_duration_minutes * 60 * 1000;
+        const expirationTime = startTime + durationMs;
+
+        if (now >= expirationTime) {
+          console.log(`🗑️ Found expired session: ${session.app_name} (expired ${Math.floor((now - expirationTime) / 1000)}s ago)`);
+          
+          try {
+            // Update session status first
+            await supabase
+              .from('user_sandbox_sessions')
+              .update({ 
+                session_expired: true, 
+                deployment_status: 'destroying',
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', session.id);
+
+            // Destroy the server
+            await this.destroyServer(session.app_name);
+            expiredCount++;
+            
+            console.log(`✅ Cleaned up expired server: ${session.app_name}`);
+          } catch (error) {
+            console.error(`❌ Failed to cleanup server ${session.app_name}:`, error);
+          }
+        }
+      }
+
+      if (expiredCount > 0) {
+        console.log(`🧹 Cleanup complete: destroyed ${expiredCount} expired server(s)`);
+      }
+    } catch (error) {
+      console.error('Error in cleanupExpiredServers:', error);
+    }
+  }
 }
 
 export const flyDeploymentService = new FlyDeploymentService();
