@@ -678,7 +678,7 @@ export default function Dashboard() {
                               variant="outline" 
                               size="sm"
                               className="w-full text-xs"
-                              onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/1", "_blank")}
+                              onClick={() => window.open("https://github.com/johnriley9123/sample/issues/1", "_blank")}
                             >
                               <ExternalLink className="h-3 w-3 mr-1" />
                               View GitHub Issue #1
@@ -699,7 +699,7 @@ export default function Dashboard() {
                               variant="outline" 
                               size="sm"
                               className="w-full text-xs"
-                              onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/2", "_blank")}
+                              onClick={() => window.open("https://github.com/johnriley9123/sample/issues/2", "_blank")}
                             >
                               <ExternalLink className="h-3 w-3 mr-1" />
                               View GitHub Issue #2
@@ -865,7 +865,7 @@ export default function Dashboard() {
                           </ol>
                           <div className="mt-4">
                             <Button 
-                              onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/1", "_blank")}
+                              onClick={() => window.open("https://github.com/johnriley9123/sample/issues/1", "_blank")}
                               className="w-full bg-slate-800 hover:bg-slate-700"
                             >
                               View Attack Demo
@@ -1771,7 +1771,7 @@ func main() {
                             variant="outline" 
                             size="sm"
                             className="w-full text-xs"
-                            onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/1", "_blank")}
+                            onClick={() => window.open("https://github.com/johnriley9123/sample/issues/1", "_blank")}
                           >
                             <ExternalLink className="h-3 w-3 mr-1" />
                             View GitHub Issue #1
@@ -1792,7 +1792,7 @@ func main() {
                             variant="outline" 
                             size="sm"
                             className="w-full text-xs"
-                            onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/2", "_blank")}
+                            onClick={() => window.open("https://github.com/johnriley9123/sample/issues/2", "_blank")}
                           >
                             <ExternalLink className="h-3 w-3 mr-1" />
                             View GitHub Issue #2
@@ -1966,7 +1966,7 @@ func main() {
                         </ol>
                         <div className="mt-4">
                           <Button 
-                            onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/1", "_blank")}
+                            onClick={() => window.open("https://github.com/johnriley9123/sample/issues/1", "_blank")}
                             className="w-full bg-slate-800 hover:bg-slate-700"
                           >
                             View Attack Demo
