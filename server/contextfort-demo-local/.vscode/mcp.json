@@ -1,0 +1,9 @@
+{
+	"mcp": {
+		"servers": {
+			"Github": {
+				"url": "https://mcp.pipedream.net/51335cca-89b0-4530-94ea-e6edc8c26879/github"
+			}
+		}
+	}
+}

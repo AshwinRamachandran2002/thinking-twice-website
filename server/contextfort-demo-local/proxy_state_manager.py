@@ -9,8 +9,8 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 # Path to the state file that the extension will update
-STATE_FILE = "/home/ashwin/Desktop/thinking-twice-website/server/contextfort-demo-local/contextfort_proxy_state.json"
-LOG_DIR = "/home/ashwin/Desktop/thinking-twice-website/server/contextfort-demo-local/contextfort_logs"
+STATE_FILE = "~/Desktop/project/thinking-twice-website/server/contextfort-demo-local/contextfort_proxy_state.json"
+LOG_DIR = "~/Desktop.project/thinking-twice-website/server/contextfort-demo-local/contextfort_logs"
 
 # Ensure log directory exists
 os.makedirs(LOG_DIR, exist_ok=True)

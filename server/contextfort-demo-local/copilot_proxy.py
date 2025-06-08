@@ -5,6 +5,7 @@ import json
 import importlib.util
 import sys
 import dotenv
+from mitmproxy.http import Response
 
 dotenv.load_dotenv()
 
@@ -124,9 +125,13 @@ def detect_tool_calls_in_response(response_body: str) -> bool:
     tool_calls = extract_tool_calls_from_response(response_body)
     return len(tool_calls) > 0
 
+import time
+
 def perform_security_check(request_data: dict, response_data: dict):
     """Perform security check using SecurityChecker class directly."""
     try:
+        start_time = time.time()  # Start timer
+        
         # Extract messages from request body
         request_body = json.loads(request_data['body'])
         messages = request_body.get('messages', [])
@@ -134,14 +139,14 @@ def perform_security_check(request_data: dict, response_data: dict):
         if not messages:
             print("❌ No messages found in request")
             return
-            
+        
         # Extract tool calls from response data
         response_tool_calls = extract_tool_calls_from_response(response_data['body'])
         
         if not response_tool_calls:
             print("ℹ️  No tool calls found in response")
             return
-            
+        
         print(f"🔍 Processing context with {len(messages)} messages")
         print(f"🔧 Found {len(response_tool_calls)} tool calls in response:")
         
@@ -162,7 +167,11 @@ def perform_security_check(request_data: dict, response_data: dict):
         context = Context(updated_messages)
         checker = SecurityChecker(model_path='gpt-4.1-nano-2025-04-14')
         
-        beta_result = checker.beta_check(context)
+        beta_result = checker.alpha_check(context)
+        
+        # Calculate elapsed time
+        elapsed_time = time.time() - start_time
+        print(f"⏱️ Security check took {elapsed_time:.3f} seconds")
         
         # Log the security decision with detailed information
         security_log = {
@@ -170,7 +179,8 @@ def perform_security_check(request_data: dict, response_data: dict):
             "request_url": request_data["url"],
             "tool_calls": response_tool_calls,
             "decision": "allowed" if beta_result else "blocked",
-            "reason": "Security check passed" if beta_result else "Security check failed"
+            "reason": "Security check passed" if beta_result else "Security check failed",
+            "time_taken_seconds": elapsed_time
         }
         
         # Save the decision log
@@ -182,9 +192,9 @@ def perform_security_check(request_data: dict, response_data: dict):
             json.dump(security_log, log_file, indent=4)
 
         return beta_result
-            
     except Exception as e:
         print(f"❌ Error performing security check: {e}")
+
 
 def log_response(flow: http.HTTPFlow):
     """Logs the response details to a file."""
@@ -240,7 +250,7 @@ def log_response(flow: http.HTTPFlow):
                             "allowed"
                         )
                     else:
-                        flow.response = http.HTTPResponse.make(
+                        flow.response = Response.make(
                             403,
                             b"Blocked by Copilot Proxy: Security check failed.",
                             {"Content-Type": "text/plain"}
@@ -271,6 +281,9 @@ def log_response(flow: http.HTTPFlow):
 
 def request(flow: http.HTTPFlow):
     """Intercept and log Copilot requests."""
+    if "openai.com" in flow.request.pretty_host:
+        return
+    
     if "githubcopilot.com" in flow.request.pretty_host or "individual.githubcopilot.com" in flow.request.pretty_host:
         if flow.request.path.startswith(INTERCEPTED_PATH):
             # Always log requests regardless of proxy state
@@ -278,12 +291,15 @@ def request(flow: http.HTTPFlow):
 
 def response(flow: http.HTTPFlow):
     """Intercept and log Copilot responses."""
+    if "openai.com" in flow.request.pretty_host:
+        return
+    
     if "githubcopilot.com" in flow.request.pretty_host or "individual.githubcopilot.com" in flow.request.pretty_host:
         if flow.request.path.startswith(INTERCEPTED_PATH):
             # Always log responses regardless of proxy state
             log_response(flow)
-    elif "/chat/completions" in flow.request.pretty_url:
-        print(flow.request.pretty_url, "oh oj")
+    # elif "/chat/completions" in flow.request.pretty_url:
+    #     print(flow.request.pretty_url, "oh oj")
 
 def log_security_decision(request_url, tool_calls, decision, reason=None):
     """
