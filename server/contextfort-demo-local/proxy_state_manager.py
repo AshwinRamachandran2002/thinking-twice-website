@@ -41,6 +41,18 @@ class StateFileHandler(FileSystemEventHandler):
 def is_proxy_filtering_enabled():
     """Function that can be imported by the proxy script to check if filtering is enabled"""
     global proxy_enabled
+    
+    # Also directly check the file on each call for redundancy
+    try:
+        with open(STATE_FILE, 'r') as f:
+            state = json.load(f)
+            current_state = state.get('enabled', True)
+            if current_state != proxy_enabled:
+                proxy_enabled = current_state
+                log_message(f"Direct check: Proxy filtering {'enabled' if proxy_enabled else 'disabled'}")
+    except Exception as e:
+        log_message(f"Error in direct check of state file: {e}")
+    
     return proxy_enabled
 
 def create_default_state_file():

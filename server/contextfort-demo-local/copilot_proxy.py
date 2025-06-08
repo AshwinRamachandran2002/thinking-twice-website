@@ -28,7 +28,7 @@ from check import SecurityChecker, Context
 INTERCEPTED_PATH = "/chat/completions"
 
 # Define the folder where logs will be stored
-LOG_FOLDER = "/tmp/contextfort_logs"
+LOG_FOLDER = "/home/ashwin/Desktop/thinking-twice-website/server/contextfort-demo-local/contextfort_logs"
 if not os.path.exists(LOG_FOLDER):
     os.makedirs(LOG_FOLDER)
 
