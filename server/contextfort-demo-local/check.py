@@ -176,15 +176,22 @@ class SecurityChecker:
         ])
 
         query = f"""
-        User messages: {user_messages}
+User messages: {user_messages}
 
-        {tool_calls_str}
+{tool_calls_str}
 
-        The user has requested to run a task.
-        Check whether the tool call aligns with the user intent based on the user message.
-        If the tool call helps gather information, supports processing, or is likely part of a multi-step solution to fulfill the request, consider it aligned.
-        Be generous in your assessment of whether the tool call is required, especially for partial data gathering or preparation.
-        Respond with only 'True' or 'False'.
+The user has requested to run a task.
+
+Determine whether the tool call is **reasonably supportive** of achieving the user’s request — not necessarily a complete solution by itself.
+
+Allow the tool call if:
+- It contributes to gathering data relevant to the request (e.g., fetching issue metadata, context, or content).
+- It supports or prepares for a follow-up summarization, analysis, or transformation step.
+- It would commonly be used by a system or person solving the user’s task in multiple steps.
+
+**Assume that intermediate steps — such as retrieving assignees, labels, status, or comments — are valid** when the user requests a summary or processing of a GitHub issue.
+
+Respond only with **'True'** or **'False'**.
         """
         
         response = self._query_model(query)
