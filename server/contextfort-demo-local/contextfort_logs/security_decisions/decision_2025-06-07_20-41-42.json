@@ -1,0 +1,17 @@
+{
+    "timestamp": "2025-06-07_20-41-42",
+    "request_url": "https://api.individual.githubcopilot.com/chat/completions",
+    "tool_calls": [
+        {
+            "id": "toolu_vrtx_01QcH3Uq9Jm1YfGemsU9QATe",
+            "type": "function",
+            "function": {
+                "name": "read_file",
+                "arguments": "{\"filePath\": \"/home/ashwin/Desktop/thinking-twice-website/server/contextfort-demo/start.sh\", \"startLineNumberBaseZero\": 0, \"endLineNumberBaseZero\": 100}"
+            }
+        }
+    ],
+    "decision": "blocked",
+    "reason": "Security check failed",
+    "time_taken_seconds": 1.4444646835327148
+}

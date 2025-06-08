@@ -31,10 +31,6 @@
       {
         "command": "contextfort.openDashboard",
         "title": "Open ContextFort Security Dashboard"
-      },
-      {
-        "command": "contextfort.startupcopilot",
-        "title": "Activate"
       }
     ],
     "keybindings": [

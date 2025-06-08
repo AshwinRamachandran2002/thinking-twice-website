@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { ProxyConfig } from './config';
 import { SecurityDashboard } from './dashboard';
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   // Initialize the proxy configuration
   ProxyConfig.initialize(context);
   
@@ -10,11 +10,8 @@ export function activate(context: vscode.ExtensionContext) {
   const securityDashboard = new SecurityDashboard(context);
 
   // Register the startupcopilot command to open GitHub Copilot
-  const startupCopilotCommand = vscode.commands.registerCommand('contextfort.startupcopilot', () => {
-    // Simulate Ctrl+Alt+I keyboard shortcut to open GitHub Copilot
-    vscode.commands.executeCommand('workbench.action.terminal.sendSequence', { text: '\u0011\u0009' }); // Ctrl+Alt+I
-    console.log('Simulated Ctrl+Alt+I keyboard shortcut to open GitHub Copilot');
-  });
+  vscode.commands.executeCommand('workbench.panel.chat.view.copilot.focus');
+
 
   // Register the startup command
   const startupCommand = vscode.commands.registerCommand('contextfort.startup', () => {
@@ -77,29 +74,15 @@ export function activate(context: vscode.ExtensionContext) {
   // Register the message handler for the security dashboard
   securityDashboard.registerMessageHandler();
 
-  context.subscriptions.push(startupCommand, toggleCommand, dashboardCommand, startupCopilotCommand);
+  context.subscriptions.push(startupCommand, toggleCommand, dashboardCommand);
 
   // When the extension activates on fly.io deployment:
   // 1. Open ContextFort instructions and dashboard
-  vscode.commands.executeCommand('contextfort.openDashboard');
+  await vscode.commands.executeCommand('contextfort.openDashboard');
   
-  // 2. Open settings.json file
-  vscode.workspace.openTextDocument(vscode.Uri.parse('/home/coder/.local/share/code-server/User/settings.json'))
-    .then(doc => {
-      vscode.window.showTextDocument(doc);
-      console.log('Opened settings.json file');
-    }, err => {
-      console.error('Failed to open settings.json:', err);
-    });
+  await vscode.commands.executeCommand('workbench.action.openSettingsJson');
+  await vscode.commands.executeCommand('contextfort.startup');
 
-  vscode.commands.executeCommand('contextfort.startup');
-  // 3. Set a timeout to open GitHub Copilot after 5 seconds
-  setTimeout(() => {
-    // Use the vscode.commands.executeCommand to simulate the keypress
-    // This will run the command that Ctrl+Alt+I is bound to
-    vscode.commands.executeCommand('contextfort.startupcopilot');
-    console.log('Auto-triggered Ctrl+Alt+I equivalent keypress after 5-second delay');
-  }, 5000); // Wait 5 seconds after startup
 }
 
 export function deactivate() {
