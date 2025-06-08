@@ -2,9 +2,10 @@ import os
 from mitmproxy import http
 from datetime import datetime
 import json
-import importlib.util
 import sys
 import dotenv
+from mitmproxy.http import Response
+
 
 dotenv.load_dotenv()
 
@@ -123,11 +124,15 @@ def detect_tool_calls_in_response(response_body: str) -> bool:
     """Check if the response body contains tool calls."""
     tool_calls = extract_tool_calls_from_response(response_body)
     return len(tool_calls) > 0
+import time
+
 
 def perform_security_check(request_data: dict, response_data: dict):
     """Perform security check using SecurityChecker class directly."""
     try:
+        start_time = time.time()  # Start timer
         # Extract messages from request body
+
         request_body = json.loads(request_data['body'])
         messages = request_body.get('messages', [])
         
@@ -162,7 +167,11 @@ def perform_security_check(request_data: dict, response_data: dict):
         context = Context(updated_messages)
         checker = SecurityChecker(model_path='gpt-4.1-nano-2025-04-14')
         
-        beta_result = checker.beta_check(context)
+        # beta_result = checker.beta_check(context)
+        beta_result = checker.alpha_check(context)
+        # Calculate elapsed time
+        elapsed_time = time.time() - start_time
+        print(f"⏱️ Security check took {elapsed_time:.3f} seconds")
         
         # Log the security decision with detailed information
         security_log = {
@@ -170,7 +179,8 @@ def perform_security_check(request_data: dict, response_data: dict):
             "request_url": request_data["url"],
             "tool_calls": response_tool_calls,
             "decision": "allowed" if beta_result else "blocked",
-            "reason": "Security check passed" if beta_result else "Security check failed"
+            "reason": "Security check passed" if beta_result else "Security check failed",
+            "time_taken_seconds": elapsed_time
         }
         
         # Save the decision log
@@ -240,7 +250,7 @@ def log_response(flow: http.HTTPFlow):
                             "allowed"
                         )
                     else:
-                        flow.response = http.HTTPResponse.make(
+                        flow.response = Response.make(
                             403,
                             b"Blocked by Copilot Proxy: Security check failed.",
                             {"Content-Type": "text/plain"}
@@ -271,6 +281,8 @@ def log_response(flow: http.HTTPFlow):
 
 def request(flow: http.HTTPFlow):
     """Intercept and log Copilot requests."""
+    if "openai.com" in flow.request.pretty_host:
+        return
     if "githubcopilot.com" in flow.request.pretty_host or "individual.githubcopilot.com" in flow.request.pretty_host:
         if flow.request.path.startswith(INTERCEPTED_PATH):
             # Always log requests regardless of proxy state
@@ -278,6 +290,8 @@ def request(flow: http.HTTPFlow):
 
 def response(flow: http.HTTPFlow):
     """Intercept and log Copilot responses."""
+    if "openai.com" in flow.request.pretty_host:
+        return
     if "githubcopilot.com" in flow.request.pretty_host or "individual.githubcopilot.com" in flow.request.pretty_host:
         if flow.request.path.startswith(INTERCEPTED_PATH):
             # Always log responses regardless of proxy state

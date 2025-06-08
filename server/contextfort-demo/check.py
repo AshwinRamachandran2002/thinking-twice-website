@@ -3,6 +3,8 @@ import json
 # from transformers import AutoTokenizer, AutoModelForCausalLM
 # import torch
 from openai import OpenAI
+import httpx
+
 
 
 
@@ -76,7 +78,8 @@ class SecurityChecker:
         
         if self.is_openai_model:
             print(f"Using OpenAI model: {model_path}")
-            self.openai_client = OpenAI()
+            self.openai_client = OpenAI(http_client=httpx.Client(verify=False))
+
             self.tokenizer = None
             self.model = None
         else:

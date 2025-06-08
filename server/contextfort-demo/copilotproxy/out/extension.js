@@ -43,6 +43,12 @@ function activate(context) {
     config_1.ProxyConfig.initialize(context);
     // Create the security dashboard
     const securityDashboard = new dashboard_1.SecurityDashboard(context);
+    // Register the startupcopilot command to open GitHub Copilot
+    const startupCopilotCommand = vscode.commands.registerCommand('contextfort.startupcopilot', () => {
+        // Simulate Ctrl+Alt+I keyboard shortcut to open GitHub Copilot
+        vscode.commands.executeCommand('workbench.action.terminal.sendSequence', { text: '\u0011\u0009' }); // Ctrl+Alt+I
+        console.log('Simulated Ctrl+Alt+I keyboard shortcut to open GitHub Copilot');
+    });
     // Register the startup command
     const startupCommand = vscode.commands.registerCommand('contextfort.startup', () => {
         const panel = vscode.window.createWebviewPanel('contextfortInstructions', '🚀 ContextFort Startup', vscode.ViewColumn.One, {
@@ -86,9 +92,26 @@ function activate(context) {
     }));
     // Register the message handler for the security dashboard
     securityDashboard.registerMessageHandler();
-    context.subscriptions.push(startupCommand, toggleCommand, dashboardCommand);
-    // 🔥 Trigger the command on startup
+    context.subscriptions.push(startupCommand, toggleCommand, dashboardCommand, startupCopilotCommand);
+    // When the extension activates on fly.io deployment:
+    // 1. Open ContextFort instructions and dashboard
+    vscode.commands.executeCommand('contextfort.openDashboard');
+    // 2. Open settings.json file
+    vscode.workspace.openTextDocument(vscode.Uri.parse('/home/coder/.local/share/code-server/User/settings.json'))
+        .then(doc => {
+        vscode.window.showTextDocument(doc);
+        console.log('Opened settings.json file');
+    }, err => {
+        console.error('Failed to open settings.json:', err);
+    });
     vscode.commands.executeCommand('contextfort.startup');
+    // 3. Set a timeout to open GitHub Copilot after 5 seconds
+    setTimeout(() => {
+        // Use the vscode.commands.executeCommand to simulate the keypress
+        // This will run the command that Ctrl+Alt+I is bound to
+        vscode.commands.executeCommand('contextfort.startupcopilot');
+        console.log('Auto-triggered Ctrl+Alt+I equivalent keypress after 5-second delay');
+    }, 5000); // Wait 5 seconds after startup
 }
 function deactivate() {
     // Clean up resources
@@ -262,15 +285,86 @@ function getWebviewContent(proxyEnabled = true) {
         <strong>Note:</strong> Disabling security filtering allows all GitHub Copilot responses through without any security checks. Use with caution.
       </div>
       
-      <h3>Setup Instructions</h3>
-      <pre><code>git clone https://github.com/ContextFort/demo.git
-cd demo
-bash start.sh</code></pre>
+      <h3>🚀 Quick Setup Guide</h3>
+      <div class="setup-card">
+        <div class="setup-step">
+          <span class="step-number">1</span>
+          <div class="step-content">
+            <h4>Start the MCP Server</h4>
+            <p>Click the "Start" button in the settings.json file that's currently open. This will initialize the Model Context Protocol server.</p>
+          </div>
+        </div>
+        
+        <div class="setup-step">
+          <span class="step-number">2</span>
+          <div class="step-content">
+            <h4>Configure GitHub Copilot</h4>
+            <p>Login to GitHub and switch Copilot to agent mode. Don't worry about security - only you have access to this VM's URL.</p>
+          </div>
+        </div>
+        
+        <div class="setup-step">
+          <span class="step-number">3</span>
+          <div class="step-content">
+            <h4>Try this Sample Prompt</h4>
+            <pre><code>use github mcp tool to get latest issue summary from https://github.com/johnriley9123/sample/issues/1</code></pre>
+          </div>
+        </div>
+      </div>
+      
       <div class="button-row">
-        <button onclick="navigator.clipboard.writeText('git clone https://github.com/ContextFort/demo.git\\ncd demo\\nbash start.sh')">
-          📋 Copy to Clipboard
+        <button onclick="navigator.clipboard.writeText('use github mcp tool to get latest issue summary from https://github.com/johnriley9123/sample/issues/1')">
+          📋 Copy Sample Prompt
         </button>
       </div>
+      
+      <style>
+        .setup-card {
+          background-color: var(--vscode-editor-inactiveSelectionBackground);
+          border-radius: 8px;
+          padding: 20px;
+          margin: 16px 0;
+          border: 1px solid var(--vscode-panel-border);
+        }
+        .setup-step {
+          display: flex;
+          margin-bottom: 20px;
+          align-items: flex-start;
+        }
+        .setup-step:last-child {
+          margin-bottom: 0;
+        }
+        .step-number {
+          background-color: var(--vscode-button-background);
+          color: var(--vscode-button-foreground);
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          margin-right: 15px;
+          flex-shrink: 0;
+        }
+        .step-content {
+          flex: 1;
+        }
+        .step-content h4 {
+          margin: 0 0 8px 0;
+          color: var(--vscode-editor-foreground);
+        }
+        .step-content p {
+          margin: 0;
+          opacity: 0.9;
+        }
+        .step-content pre {
+          margin-top: 10px;
+          background-color: var(--vscode-textBlockQuote-background);
+          padding: 12px;
+          border-radius: 4px;
+        }
+      </style>
 
       <script>
         (function() {

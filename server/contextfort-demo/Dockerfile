@@ -12,7 +12,7 @@ RUN python3 -m venv /opt/venv
 
 # Install openai inside it
 RUN /opt/venv/bin/pip install --upgrade pip && \
-    /opt/venv/bin/pip install mitmproxy openai watchdog
+    /opt/venv/bin/pip install mitmproxy openai watchdog dotenv
 
 # https://guhaogao.com/posts/2024-11-14/coder_copilot
 # Environment variable will be injected by Fly.io secrets
@@ -25,6 +25,7 @@ COPY copilot_proxy.py /copilot_proxy.py
 COPY proxy_state_manager.py /proxy_state_manager.py
 COPY copilot-chat-0.27.2.vsix /copilot-chat-0.27.2.vsix
 COPY copilotproxy-0.0.1.vsix /copilotproxy-0.0.1.vsix
+COPY .env /.env
 
 # Install the extensions
 # First, ensure the extension directory exists for the coder user

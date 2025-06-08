@@ -38,7 +38,7 @@ const vscode = __importStar(require("vscode"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 // Path to the security decisions folder
-const SECURITY_LOGS_PATH = '/tmp/security_decisions';
+const SECURITY_LOGS_PATH = '/tmp/contextfort_logs/security_decisions';
 class SecurityDashboard {
     panel;
     fileWatcher;
@@ -316,6 +316,10 @@ class SecurityDashboard {
                 input:checked + .slider:before {
                     transform: translateX(20px);
                 }
+                .time-taken {
+                    font-family: monospace;
+                    text-align: right;
+                }
             </style>
         </head>
         <body>
@@ -346,6 +350,10 @@ class SecurityDashboard {
                     <h3>Blocked</h3>
                     <p id="blocked-count">${this.securityLogs.filter(log => log.decision === 'blocked').length}</p>
                 </div>
+                <div class="stat-card">
+                    <h3>Avg Time (sec)</h3>
+                    <p id="avg-time">${this.calculateAverageTime()}</p>
+                </div>
             </div>
 
             ${this.securityLogs.length === 0 ? `
@@ -360,6 +368,7 @@ class SecurityDashboard {
                             <th>Time</th>
                             <th>Decision</th>
                             <th>Tool Calls</th>
+                            <th>Time Taken</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -376,15 +385,17 @@ class SecurityDashboard {
                                         <div class="tool-call-badge">${tool.function.name}</div>
                                     `).join('')}
                                 </td>
+                                <td class="time-taken">${log.time_taken_seconds !== undefined ? `${log.time_taken_seconds.toFixed(2)}s` : 'N/A'}</td>
                                 <td>
                                     <button class="expand-btn" onclick="toggleDetails(${index})">Details</button>
                                 </td>
                             </tr>
                             <tr class="log-row-details" id="log-details-${index}" style="display: none;">
-                                <td colspan="4">
+                                <td colspan="5">
                                     <div class="tool-call-details">
                                         <div><strong>URL:</strong> ${log.request_url}</div>
                                         <div><strong>Reason:</strong> ${log.reason || 'No reason provided'}</div>
+                                        <div><strong>Time Taken:</strong> ${log.time_taken_seconds !== undefined ? `${log.time_taken_seconds.toFixed(2)} seconds` : 'Not available'}</div>
                                         <div><strong>Tool Calls:</strong></div>
                                         ${log.tool_calls.map(tool => `
                                             <div style="margin-top: 8px; padding-left: 16px;">
@@ -506,6 +517,21 @@ class SecurityDashboard {
                 this.updateWebview();
             }
         }, 5000); // Refresh every 5 seconds
+    }
+    // Calculate average time taken for security decisions
+    calculateAverageTime() {
+        if (this.securityLogs.length === 0) {
+            return "N/A";
+        }
+        // Filter logs that have the time_taken_seconds field
+        const logsWithTime = this.securityLogs.filter(log => log.time_taken_seconds !== undefined);
+        if (logsWithTime.length === 0) {
+            return "N/A";
+        }
+        // Calculate the average
+        const totalTime = logsWithTime.reduce((sum, log) => sum + (log.time_taken_seconds || 0), 0);
+        const avgTime = totalTime / logsWithTime.length;
+        return avgTime.toFixed(2);
     }
     // Export logs to a file
     exportLogs() {

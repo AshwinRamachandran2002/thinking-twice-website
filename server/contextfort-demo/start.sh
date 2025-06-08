@@ -51,7 +51,7 @@ echo "🖥️ Starting code-server on 0.0.0.0:8080..."
 NODE_EXTRA_CA_CERTS="/usr/local/share/ca-certificates/mitmproxy-ca.crt" \
 HTTP_PROXY="http://127.0.0.1:8000" \
 HTTPS_PROXY="http://127.0.0.1:8000" \
-NO_PROXY="localhost,127.0.0.1,::1" \
+NO_PROXY="localhost,127.0.0.1,::1,api.openai.com,openai.com,oai.openai.com,auth0.openai.com" \
 code-server --auth password --bind-addr 0.0.0.0:8080
 # su -c "code-server --auth password --bind-addr 0.0.0.0:8080" coder
 
