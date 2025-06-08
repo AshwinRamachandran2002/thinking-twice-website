@@ -165,7 +165,7 @@ def perform_security_check(request_data: dict, response_data: dict):
         
         # Create context and security checker
         context = Context(updated_messages)
-        checker = SecurityChecker(model_path='gpt-4.1-nano-2025-04-14')
+        checker = SecurityChecker(model_path='gpt-4o')
         
         # beta_result = checker.beta_check(context)
         beta_result = checker.alpha_check(context)

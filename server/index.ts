@@ -122,6 +122,18 @@ app.get('/test-supabase', async (req, res) => {
   }
 });
 
+// Manual cleanup trigger for debugging
+app.post('/api/cleanup-expired', async (_req, res) => {
+  try {
+    console.log('Manual cleanup triggered');
+    await flyDeploymentService.cleanupExpiredServers();
+    res.json({ success: true, message: 'Cleanup completed successfully' });
+  } catch (error) {
+    console.error('Manual cleanup failed:', error);
+    res.status(500).json({ error: 'Cleanup failed', details: error });
+  }
+});
+
 // Async function to deploy server
 async function deployServer(sessionId: string, appName: string, password: string) {
   try {
@@ -156,10 +168,15 @@ async function destroyServer(appName: string, sessionId: string) {
   }
 }
 
+// Start cleanup service
+const cleanupInterval = parseInt(process.env.CLEANUP_INTERVAL_MS || '60000', 10); // Default: 1 minute
+flyDeploymentService.startCleanupService(cleanupInterval);
+
 // Start server
 const PORT = parseInt(process.env.PORT || '3001', 10);
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on 0.0.0.0:${PORT}`);
+  console.log(`Cleanup service running with ${cleanupInterval / 1000}s interval`);
 });
 
 export default app;

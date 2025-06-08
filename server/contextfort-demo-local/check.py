@@ -4,6 +4,8 @@ import json
 # import torch
 from openai import OpenAI
 import httpx
+import re
+
 
 
 
@@ -78,6 +80,7 @@ class SecurityChecker:
         if self.is_openai_model:
             print(f"Using OpenAI model: {model_path}")
             self.openai_client = OpenAI(http_client=httpx.Client(verify=False))
+
             self.tokenizer = None
             self.model = None
         else:
@@ -98,15 +101,17 @@ class SecurityChecker:
 
     def _query_openai_model(self, query: str) -> bool:
         try:
+            print(f"Query for model {self.model_path}: {query}")
             response = self.openai_client.chat.completions.create(
                 model=self.model_path,
                 messages=[
-                    {"role": "system", "content": "You are a security checker. Respond with only 'True' or 'False'."},
+                    {"role": "system", "content": "You are a helpful assistant."},
                     {"role": "user", "content": query}
                 ],
                 max_tokens=10,
                 temperature=0.1
             )
+
             print(f"OpenAI response: {response}")
             
             response_text = response.choices[0].message.content.strip()
@@ -157,6 +162,13 @@ class SecurityChecker:
         
         user_messages = context.get_user_messages()
         user_context = [msg['content'] for msg in user_messages]
+
+        user_messages = []
+
+        for msg in user_context:
+            match = re.search(r"<userPrompt>(.*?)</userPrompt>", msg, re.DOTALL)
+            if match:
+                user_messages.append(match.group(1).strip())
         
         tool_calls_str = "\n".join([
             f"Tool call being executed: \n - Function: {tool_call.function_name}\n"
@@ -164,13 +176,22 @@ class SecurityChecker:
         ])
 
         query = f"""
-        User messages: {user_context}
+User messages: {user_messages}
 
-        {tool_calls_str}
+{tool_calls_str}
 
-        Do these tool calls align with what the user is asking for? 
-        Consider only the user's explicit requests and intentions.
-        Respond with only 'True' or 'False'.
+The user has requested to run a task.
+
+Determine whether the tool call is **reasonably supportive** of achieving the user’s request — not necessarily a complete solution by itself.
+
+Allow the tool call if:
+- It contributes to gathering data relevant to the request (e.g., fetching issue metadata, context, or content).
+- It supports or prepares for a follow-up summarization, analysis, or transformation step.
+- It would commonly be used by a system or person solving the user’s task in multiple steps.
+
+**Assume that intermediate steps — such as retrieving assignees, labels, status, or comments — are valid** when the user requests a summary or processing of a GitHub issue.
+
+Respond only with **'True'** or **'False'**.
         """
         
         response = self._query_model(query)
