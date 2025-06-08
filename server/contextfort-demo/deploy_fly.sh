@@ -1,4 +1,9 @@
 fly apps create c9
 fly secrets set PASSWORD=contextfort2025
-fly secrets set OPENAI_API_KEY=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
+
+# Prompt for OpenAI API key instead of hardcoding it
+echo "Please enter your OpenAI API key (it will not be stored in the script):"
+read -s OPENAI_API_KEY
+fly secrets set OPENAI_API_KEY="$OPENAI_API_KEY"
+
 fly deploy
