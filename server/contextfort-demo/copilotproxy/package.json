@@ -1,7 +1,7 @@
 {
   "name": "copilotproxy",
   "displayName": "CopilotProxy",
-  "description": "",
+  "description": "ContextFort Security Proxy for GitHub Copilot",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.100.0"
@@ -9,10 +9,15 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": ["*"],
-
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ContextFort/demo"
+  },
+  "license": "MIT",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
-  
   "contributes": {
     "commands": [
       {
@@ -22,6 +27,10 @@
       {
         "command": "contextfort.toggleProxy",
         "title": "Toggle ContextFort Proxy Filtering"
+      },
+      {
+        "command": "contextfort.openDashboard",
+        "title": "Open ContextFort Security Dashboard"
       }
     ],
     "keybindings": [
@@ -34,6 +43,11 @@
         "command": "contextfort.toggleProxy",
         "key": "ctrl+alt+p",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "contextfort.openDashboard",
+        "key": "ctrl+alt+d",
+        "when": "editorTextFocus"
       }
     ]
   },
@@ -43,17 +57,20 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "package": "vsce package",
+    "package:patch": "npm version patch --no-git-tag-version && npm run compile && vsce package"
   },
   "devDependencies": {
-    "@types/vscode": "^1.100.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
+    "@types/vscode": "^1.100.0",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
     "@typescript-eslint/parser": "^8.31.1",
-    "eslint": "^9.25.1",
-    "typescript": "^5.8.3",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.5.2"
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.5.0",
+    "eslint": "^9.25.1",
+    "typescript": "^5.8.3"
   }
 }
