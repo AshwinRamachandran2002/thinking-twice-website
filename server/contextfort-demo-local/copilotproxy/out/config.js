@@ -67,7 +67,10 @@ class ProxyConfig {
         try {
             const configContent = fs.readFileSync(this.STATE_FILE_PATH, 'utf8');
             const config = JSON.parse(configContent);
-            return config.enabled === true;
+            // Explicitly check the boolean value to avoid type coercion issues
+            const isEnabled = config.enabled === true;
+            console.log(`Current proxy state read from file: ${isEnabled}`);
+            return isEnabled;
         }
         catch (error) {
             console.error('Error reading proxy config:', error);
@@ -76,10 +79,27 @@ class ProxyConfig {
     }
     static setProxyEnabled(enabled) {
         try {
-            fs.writeFileSync(this.STATE_FILE_PATH, JSON.stringify({
-                enabled,
+            // Force boolean conversion to ensure correct type
+            const boolEnabled = Boolean(enabled);
+            // Make sure we're writing the correct boolean value
+            const configData = {
+                enabled: boolEnabled,
                 timestamp: new Date().toISOString()
-            }, null, 2));
+            };
+            // Write to temporary file first
+            const tempFilePath = `${this.STATE_FILE_PATH}.tmp`;
+            fs.writeFileSync(tempFilePath, JSON.stringify(configData, null, 2));
+            // Rename the temp file to the actual file for atomic write
+            fs.renameSync(tempFilePath, this.STATE_FILE_PATH);
+            // Set permissions to ensure it's readable by everyone
+            try {
+                fs.chmodSync(this.STATE_FILE_PATH, 0o644);
+            }
+            catch (permError) {
+                console.error('Warning: Could not set file permissions:', permError);
+            }
+            // Verify the file was written correctly
+            console.log(`Proxy state updated to: ${boolEnabled ? 'enabled' : 'disabled'}`);
         }
         catch (error) {
             console.error('Error updating proxy config:', error);
@@ -88,8 +108,15 @@ class ProxyConfig {
     }
     static toggle() {
         const currentState = this.isProxyEnabled();
-        this.setProxyEnabled(!currentState);
-        return !currentState;
+        const newState = !currentState;
+        // Set the new state and ensure it's written correctly
+        this.setProxyEnabled(newState);
+        // Verify the change was applied
+        const updatedState = this.isProxyEnabled();
+        if (updatedState !== newState) {
+            console.error(`Failed to toggle proxy state. Expected: ${newState}, Got: ${updatedState}`);
+        }
+        return newState;
     }
 }
 exports.ProxyConfig = ProxyConfig;

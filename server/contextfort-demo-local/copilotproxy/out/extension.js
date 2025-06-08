@@ -49,9 +49,12 @@ function activate(context) {
         panel.webview.html = getWebviewContent(config_1.ProxyConfig.isProxyEnabled());
         // Handle messages from the webview
         panel.webview.onDidReceiveMessage(message => {
+            console.log('Received message from webview:', message);
             switch (message.command) {
                 case 'toggleProxy':
+                    console.log('Toggle command received from UI');
                     const newState = config_1.ProxyConfig.toggle();
+                    console.log(`New proxy state after toggle: ${newState}`);
                     vscode.window.showInformationMessage(`Proxy filtering ${newState ? 'enabled' : 'disabled'}`);
                     // Update the webview with the new state
                     panel.webview.html = getWebviewContent(newState);
@@ -232,12 +235,27 @@ bash start.sh</code></pre>
         (function() {
           const vscode = acquireVsCodeApi();
           
+          // Add click handler to the entire toggle container for better UX
+          document.querySelector('.toggle-container').addEventListener('click', function(e) {
+            // Don't trigger if clicking on the checkbox directly (it will handle itself)
+            if (e.target.id !== 'proxyToggle') {
+              const checkbox = document.getElementById('proxyToggle');
+              checkbox.checked = !checkbox.checked;
+              
+              // Manually dispatch message to VS Code
+              vscode.postMessage({
+                command: 'toggleProxy'
+              });
+            }
+          });
+          
+          // Original checkbox change handler
           document.getElementById('proxyToggle').addEventListener('change', function(e) {
+            console.log('Toggle checkbox changed:', e.target.checked);
             vscode.postMessage({
               command: 'toggleProxy'
             });
           });
-        })();
         })();
       </script>
     </body>
