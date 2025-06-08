@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import Navbar from '../components/Navbar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ContactForm from '@/components/ContactForm';
 import { 
   RefreshCw, Copy, CheckCircle, ChevronRight, Terminal, AlertCircle, CreditCard, 
   Zap, BarChart, Activity, ArrowRight, ExternalLink, Github, Database, ShieldAlert,
@@ -34,6 +35,7 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('python');
+  const [redTeamFormSubmitted, setRedTeamFormSubmitted] = useState(false);
   const codeRef = useRef<HTMLPreElement>(null);
   
   const { toast } = useToast();
@@ -47,6 +49,8 @@ export default function Dashboard() {
     // Set active tab based on the path that got us here
     if (location.pathname === '/api' || location.state?.from === 'api') {
       setActiveTab('api');
+    } else if (location.pathname === '/redteam' || location.state?.from === 'redteam') {
+      setActiveTab('redteam');
     } else {
       setActiveTab('proxy');
     }
@@ -150,7 +154,7 @@ export default function Dashboard() {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [navigate, location.pathname, location.state?.from]);
+  }, [navigate, location.pathname, location.state?.from, toast]);
 
   // Countdown timer effect
   useEffect(() => {
@@ -272,6 +276,15 @@ export default function Dashboard() {
     toast({
       title: "Code Copied",
       description: `The ${selectedLanguage} example has been copied to clipboard.`,
+    });
+  };
+  
+  // Handle Red Team form submission
+  const handleRedTeamFormSubmit = () => {
+    setRedTeamFormSubmitted(true);
+    toast({
+      title: "Request Submitted",
+      description: "Thank you for your interest in our Automated Red Teaming services. Our team will contact you shortly.",
     });
   };
 
@@ -502,9 +515,10 @@ export default function Dashboard() {
       <div className="container mx-auto py-8 px-4 mt-20">
         <div className="grid gap-4 md:gap-8 max-w-6xl mx-auto">
           <Tabs defaultValue={activeTab} onValueChange={(value) => setActiveTab(value)}>
-            <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="proxy">Proxy</TabsTrigger>
               <TabsTrigger value="api">API</TabsTrigger>
+              <TabsTrigger value="redteam">Automated Red Teaming</TabsTrigger>
             </TabsList>
             
             <TabsContent value="proxy">
@@ -664,7 +678,7 @@ export default function Dashboard() {
                               variant="outline" 
                               size="sm"
                               className="w-full text-xs"
-                              onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/1", "_blank")}
+                              onClick={() => window.open("https://github.com/johnriley9123/sample/issues/1", "_blank")}
                             >
                               <ExternalLink className="h-3 w-3 mr-1" />
                               View GitHub Issue #1
@@ -685,7 +699,7 @@ export default function Dashboard() {
                               variant="outline" 
                               size="sm"
                               className="w-full text-xs"
-                              onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/2", "_blank")}
+                              onClick={() => window.open("https://github.com/johnriley9123/sample/issues/2", "_blank")}
                             >
                               <ExternalLink className="h-3 w-3 mr-1" />
                               View GitHub Issue #2
@@ -851,7 +865,7 @@ export default function Dashboard() {
                           </ol>
                           <div className="mt-4">
                             <Button 
-                              onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/1", "_blank")}
+                              onClick={() => window.open("https://github.com/johnriley9123/sample/issues/1", "_blank")}
                               className="w-full bg-slate-800 hover:bg-slate-700"
                             >
                               View Attack Demo
@@ -889,6 +903,113 @@ export default function Dashboard() {
                             )}
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="redteam">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Automated Red Teaming</CardTitle>
+                  <CardDescription>Submit your URL for a comprehensive AI security assessment using our advanced attack simulation sandbox</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4">What is Automated Red Teaming?</h3>
+                      <p className="text-sm mb-4">
+                        Our automated red teaming service provides a dedicated sandbox environment where we run comprehensive attack simulations against your AI systems. We analyze your tool integrations and data connections to identify vulnerabilities that could be exploited through prompt injection, data exfiltration, and other AI-specific attacks.
+                      </p>
+                      
+                      <div className="bg-orange-50 border border-orange-200 rounded-md p-4 mb-6">
+                        <h4 className="text-md font-semibold text-orange-800 flex items-center gap-2 mb-2">
+                          <ShieldAlert className="h-5 w-5" />
+                          Benefits of Red Team Testing
+                        </h4>
+                        <ul className="text-sm text-orange-700 space-y-2">
+                          <li className="flex items-start gap-2">
+                            <CheckCircle className="h-4 w-4 mt-1 text-orange-600" />
+                            <span>Identify vulnerabilities in your tool integrations and data connections</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle className="h-4 w-4 mt-1 text-orange-600" />
+                            <span>Discover weaknesses in your prompt security and control mechanisms</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle className="h-4 w-4 mt-1 text-orange-600" />
+                            <span>Get detailed reports on potential attack vectors specific to your system</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle className="h-4 w-4 mt-1 text-orange-600" />
+                            <span>Receive actionable remediation recommendations with ContextFort integration</span>
+                          </li>
+                        </ul>
+                      </div>
+                      
+                      <h3 className="text-lg font-semibold mb-3">Our Red Teaming Approach</h3>
+                      <div className="space-y-4 mb-6">
+                        <div className="bg-white p-3 rounded-md border border-slate-200 shadow-sm">
+                          <h4 className="font-medium text-slate-800 mb-2">1. URL Analysis</h4>
+                          <p className="text-sm text-slate-600">
+                            Submit your application URL and we analyze the tool integrations and API connections to identify potential attack surfaces.
+                          </p>
+                        </div>
+                        
+                        <div className="bg-white p-3 rounded-md border border-slate-200 shadow-sm">
+                          <h4 className="font-medium text-slate-800 mb-2">2. Sandbox Deployment</h4>
+                          <p className="text-sm text-slate-600">
+                            We deploy a secure sandbox environment configured to specifically target vulnerabilities in your system's architecture.
+                          </p>
+                        </div>
+                        
+                        <div className="bg-white p-3 rounded-md border border-slate-200 shadow-sm">
+                          <h4 className="font-medium text-slate-800 mb-2">3. Attack Simulation</h4>
+                          <p className="text-sm text-slate-600">
+                            Our system runs thousands of attack patterns based on the latest research to test your specific implementation.
+                          </p>
+                        </div>
+                        
+                        <div className="bg-white p-3 rounded-md border border-slate-200 shadow-sm">
+                          <h4 className="font-medium text-slate-800 mb-2">4. Vulnerability Report</h4>
+                          <p className="text-sm text-slate-600">
+                            Receive a comprehensive report of all identified vulnerabilities with detailed remediation steps and ContextFort integration options.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4">Schedule a Red Team Assessment</h3>
+                      <p className="text-sm mb-6">
+                        Fill out the form below to request a demonstration of our automated red teaming capabilities. Our team will contact you to discuss how we can analyze your AI systems for security vulnerabilities.
+                      </p>
+                      
+                      <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
+                        <ContactForm />
+                      </div>
+                      
+                      <div className="mt-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h4 className="font-medium text-slate-800 mb-3">Research-Backed Methodology</h4>
+                        <p className="text-sm text-slate-600 mb-3">
+                          Our attack simulations are based on cutting-edge research in AI security:
+                        </p>
+                        <ul className="text-sm text-slate-600 space-y-3">
+                          <li className="flex items-start gap-2">
+                            <ExternalLink className="h-4 w-4 mt-1 text-blue-600" />
+                            <a href="https://arxiv.org/abs/2312.02119" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                              DeepMind: "Gemini: A Family of Highly Capable Multimodal Models"
+                            </a>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <ExternalLink className="h-4 w-4 mt-1 text-blue-600" />
+                            <a href="https://storage.googleapis.com/deepmind-media/Security%20and%20Privacy/Gemini_Security_Paper.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                              Google: "Gemini Security and Privacy Paper"
+                            </a>
+                          </li>
+                        </ul>
                       </div>
                     </div>
                   </div>
@@ -1650,7 +1771,7 @@ func main() {
                             variant="outline" 
                             size="sm"
                             className="w-full text-xs"
-                            onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/1", "_blank")}
+                            onClick={() => window.open("https://github.com/johnriley9123/sample/issues/1", "_blank")}
                           >
                             <ExternalLink className="h-3 w-3 mr-1" />
                             View GitHub Issue #1
@@ -1671,7 +1792,7 @@ func main() {
                             variant="outline" 
                             size="sm"
                             className="w-full text-xs"
-                            onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/2", "_blank")}
+                            onClick={() => window.open("https://github.com/johnriley9123/sample/issues/2", "_blank")}
                           >
                             <ExternalLink className="h-3 w-3 mr-1" />
                             View GitHub Issue #2
@@ -1845,7 +1966,7 @@ func main() {
                         </ol>
                         <div className="mt-4">
                           <Button 
-                            onClick={() => window.open("https://github.com/AshwinRamachandran2002/noduesapi/issues/1", "_blank")}
+                            onClick={() => window.open("https://github.com/johnriley9123/sample/issues/1", "_blank")}
                             className="w-full bg-slate-800 hover:bg-slate-700"
                           >
                             View Attack Demo

@@ -1,9 +1,13 @@
 import * as vscode from 'vscode';
 import { ProxyConfig } from './config';
+import { SecurityDashboard } from './dashboard';
 
 export function activate(context: vscode.ExtensionContext) {
   // Initialize the proxy configuration
   ProxyConfig.initialize(context);
+  
+  // Create the security dashboard
+  const securityDashboard = new SecurityDashboard(context);
 
   // Register the startup command
   const startupCommand = vscode.commands.registerCommand('contextfort.startup', () => {
@@ -32,6 +36,9 @@ export function activate(context: vscode.ExtensionContext) {
             // Update the webview with the new state
             panel.webview.html = getWebviewContent(newState);
             return;
+          case 'openDashboard':
+            vscode.commands.executeCommand('contextfort.openDashboard');
+            return;
         }
       },
       undefined,
@@ -44,8 +51,26 @@ export function activate(context: vscode.ExtensionContext) {
     const newState = ProxyConfig.toggle();
     vscode.window.showInformationMessage(`Proxy filtering ${newState ? 'enabled' : 'disabled'}`);
   });
+  
+  // Register the security dashboard command
+  const dashboardCommand = vscode.commands.registerCommand('contextfort.openDashboard', () => {
+    securityDashboard.open();
+  });
 
-  context.subscriptions.push(startupCommand, toggleCommand);
+  // Register webview message handler
+  context.subscriptions.push(
+    vscode.window.registerWebviewPanelSerializer('securityDashboard', {
+      async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
+        webviewPanel.webview.html = 'Loading...';
+        securityDashboard.open();
+      }
+    })
+  );
+
+  // Register the message handler for the security dashboard
+  securityDashboard.registerMessageHandler();
+
+  context.subscriptions.push(startupCommand, toggleCommand, dashboardCommand);
 
   // 🔥 Trigger the command on startup
   vscode.commands.executeCommand('contextfort.startup');
@@ -179,6 +204,20 @@ function getWebviewContent(proxyEnabled: boolean = true): string {
           border-left: 4px solid var(--vscode-inputValidation-infoBorder);
           border-radius: 4px;
         }
+        .card {
+          margin-top: 20px;
+          padding: 16px;
+          border: 1px solid var(--vscode-panel-border);
+          border-radius: 8px;
+          background-color: var(--vscode-editor-inactiveSelectionBackground);
+        }
+        .card h3 {
+          margin-top: 0;
+          margin-bottom: 12px;
+        }
+        .card-actions {
+          margin-top: 12px;
+        }
       </style>
     </head>
     <body>
@@ -195,6 +234,14 @@ function getWebviewContent(proxyEnabled: boolean = true): string {
             Security Filtering: ${proxyEnabled ? 'Enabled' : 'Disabled'}
           </strong>
           <p>When enabled, all Copilot API calls will be inspected for potentially harmful content</p>
+        </div>
+      </div>
+      
+      <div class="card">
+        <h3>📊 Security Dashboard</h3>
+        <p>View detailed information about security decisions made by the proxy.</p>
+        <div class="card-actions">
+          <button id="openDashboardBtn">Open Dashboard</button>
         </div>
       </div>
       
@@ -235,6 +282,13 @@ bash start.sh</code></pre>
             console.log('Toggle checkbox changed:', e.target.checked);
             vscode.postMessage({
               command: 'toggleProxy'
+            });
+          });
+
+          // Dashboard button click handler
+          document.getElementById('openDashboardBtn').addEventListener('click', function() {
+            vscode.postMessage({
+              command: 'openDashboard'
             });
           });
         })();

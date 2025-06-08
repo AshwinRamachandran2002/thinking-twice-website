@@ -3,14 +3,33 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-primary_region = 'sjc'
+app = 'contextfort-demo'
+primary_region = 'lax'
 
 [build]
   dockerfile = 'Dockerfile'
 
+[deploy]
+  release_command = "echo 'App is starting...'"
+  strategy = "immediate"
+
+[[vm]]
+  cpu_kind = "performance"
+  memory = "2048mb"
+  size = "performance-1x"
+
 [[services]]
   protocol = 'tcp'
   internal_port = 8080
+  
+  # Add health check
+  [[services.http_checks]]
+    interval = 10000
+    grace_period = "30s"
+    method = "get"
+    path = "/healthz"
+    protocol = "http"
+    timeout = 2000
 
   [[services.ports]]
     port = 80
@@ -19,8 +38,3 @@ primary_region = 'sjc'
   [[services.ports]]
     port = 443
     handlers = ['tls', 'http']
-
-[[vm]]
-  memory = '16gb'
-  cpu_kind = 'shared'
-  cpus = 8

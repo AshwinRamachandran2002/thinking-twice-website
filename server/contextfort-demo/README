@@ -19,3 +19,7 @@ fly ssh console
 tail -f /home/coder/mitmproxy.log
 
 fly secrets set PASSWORD=contextfort2025
+
+
+
+vsce package

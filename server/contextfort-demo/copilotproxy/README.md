@@ -1,71 +1,47 @@
-# copilotproxy README
+# ContextFort Security Extension
 
-This is the README for your extension "copilotproxy". After writing up a brief description, we recommend including the following sections.
+ContextFort is a security extension for Visual Studio Code that provides monitoring and filtering capabilities for AI assistant interactions. It helps protect sensitive information by acting as a proxy between your code editor and AI coding assistants.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Proxy Filtering**: Intercept and filter requests to AI assistants to prevent sensitive data leakage
+- **Security Dashboard**: Monitor all interactions and security decisions in real-time
+- **Toggle Protection**: Easily enable or disable the security proxy with a keyboard shortcut
+- **Detailed Logging**: Track all requests and security decisions for audit purposes
 
-For example if there is an image subfolder under your extension project workspace:
+## Getting Started
 
-\!\[feature X\]\(images/feature-x.png\)
+1. Install the extension from the Visual Studio Code Marketplace
+2. The extension will automatically activate and show the instructions panel
+3. Use the commands or keyboard shortcuts to manage the extension
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Commands
+
+- `Open ContextFort Instructions` (Ctrl+Alt+I): View detailed usage instructions
+- `Toggle ContextFort Proxy Filtering` (Ctrl+Alt+P): Enable or disable the security proxy
+- `Open ContextFort Security Dashboard` (Ctrl+Alt+D): View the security dashboard with logs of all interactions
+
+## How It Works
+
+ContextFort operates as a proxy between your editor and AI coding assistants. It monitors all requests and responses, applying security filters to prevent sensitive information from being sent to external AI services.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Visual Studio Code version 1.100.0 or higher
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+This extension doesn't add any VS Code settings directly, but manages its configuration through commands and UI.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+Please report any issues on the GitHub repository.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+- Initial release of the ContextFort extension
+- Basic proxy filtering functionality
+- Security dashboard for monitoring
+- Command palette integration
