@@ -4,6 +4,7 @@ import json
 # import torch
 from openai import OpenAI
 import httpx
+import re
 
 
 
@@ -100,6 +101,7 @@ class SecurityChecker:
 
     def _query_openai_model(self, query: str) -> bool:
         try:
+            print(f"Query for model {self.model_path}: {query}")
             response = self.openai_client.chat.completions.create(
                 model=self.model_path,
                 messages=[
@@ -109,6 +111,8 @@ class SecurityChecker:
                 max_tokens=10,
                 temperature=0.1
             )
+
+            print(f"OpenAI response: {response}")
             
             response_text = response.choices[0].message.content.strip()
             
@@ -158,6 +162,13 @@ class SecurityChecker:
         
         user_messages = context.get_user_messages()
         user_context = [msg['content'] for msg in user_messages]
+
+        user_messages = []
+
+        for msg in user_context:
+            match = re.search(r"<userPrompt>(.*?)</userPrompt>", msg, re.DOTALL)
+            if match:
+                user_messages.append(match.group(1).strip())
         
         tool_calls_str = "\n".join([
             f"Tool call being executed: \n - Function: {tool_call.function_name}\n"
@@ -165,7 +176,7 @@ class SecurityChecker:
         ])
 
         query = f"""
-        User messages: {user_context}
+        User messages: {user_messages}
 
         {tool_calls_str}
 

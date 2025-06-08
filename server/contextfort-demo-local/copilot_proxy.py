@@ -29,7 +29,7 @@ from check import SecurityChecker, Context
 INTERCEPTED_PATH = "/chat/completions"
 
 # Define the folder where logs will be stored
-LOG_FOLDER = "/home/ashwin/Desktop/thinking-twice-website/server/contextfort-demo-local/contextfort_logs"
+LOG_FOLDER = "~/Desktop/project/thinking-twice-website/server/contextfort-demo-local/contextfort_logs"
 if not os.path.exists(LOG_FOLDER):
     os.makedirs(LOG_FOLDER)
 
@@ -52,6 +52,8 @@ def log_request(flow: http.HTTPFlow):
         "body": flow.request.get_text(),  # Limit long bodies
         "timestamp": timestamp
     }
+
+    print(f"Logging request to {log_filename}")
 
     # Write request data to log file
     with open(log_filename, "w") as log_file:
@@ -165,7 +167,7 @@ def perform_security_check(request_data: dict, response_data: dict):
         
         # Create context and security checker
         context = Context(updated_messages)
-        checker = SecurityChecker(model_path='gpt-4.1-nano-2025-04-14')
+        checker = SecurityChecker(model_path='gpt-4o')
         
         beta_result = checker.alpha_check(context)
         
