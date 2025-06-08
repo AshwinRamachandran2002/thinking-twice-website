@@ -27,6 +27,10 @@
       {
         "command": "contextfort.toggleProxy",
         "title": "Toggle ContextFort Proxy Filtering"
+      },
+      {
+        "command": "contextfort.openDashboard",
+        "title": "Open ContextFort Security Dashboard"
       }
     ],
     "keybindings": [
@@ -38,6 +42,11 @@
       {
         "command": "contextfort.toggleProxy",
         "key": "ctrl+alt+p",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "contextfort.openDashboard",
+        "key": "ctrl+alt+d",
         "when": "editorTextFocus"
       }
     ]
