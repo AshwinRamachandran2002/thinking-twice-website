@@ -2,10 +2,10 @@ import os
 from mitmproxy import http
 from datetime import datetime
 import json
-import importlib.util
 import sys
 import dotenv
 from mitmproxy.http import Response
+
 
 dotenv.load_dotenv()
 
@@ -29,7 +29,7 @@ from check import SecurityChecker, Context
 INTERCEPTED_PATH = "/chat/completions"
 
 # Define the folder where logs will be stored
-LOG_FOLDER = "~/Desktop/project/thinking-twice-website/server/contextfort-demo-local/contextfort_logs"
+LOG_FOLDER = "/tmp/contextfort_logs"
 if not os.path.exists(LOG_FOLDER):
     os.makedirs(LOG_FOLDER)
 
@@ -52,8 +52,6 @@ def log_request(flow: http.HTTPFlow):
         "body": flow.request.get_text(),  # Limit long bodies
         "timestamp": timestamp
     }
-
-    print(f"Logging request to {log_filename}")
 
     # Write request data to log file
     with open(log_filename, "w") as log_file:
@@ -126,29 +124,29 @@ def detect_tool_calls_in_response(response_body: str) -> bool:
     """Check if the response body contains tool calls."""
     tool_calls = extract_tool_calls_from_response(response_body)
     return len(tool_calls) > 0
-
 import time
+
 
 def perform_security_check(request_data: dict, response_data: dict):
     """Perform security check using SecurityChecker class directly."""
     try:
         start_time = time.time()  # Start timer
-        
         # Extract messages from request body
+
         request_body = json.loads(request_data['body'])
         messages = request_body.get('messages', [])
         
         if not messages:
             print("❌ No messages found in request")
             return
-        
+            
         # Extract tool calls from response data
         response_tool_calls = extract_tool_calls_from_response(response_data['body'])
         
         if not response_tool_calls:
             print("ℹ️  No tool calls found in response")
             return
-        
+            
         print(f"🔍 Processing context with {len(messages)} messages")
         print(f"🔧 Found {len(response_tool_calls)} tool calls in response:")
         
@@ -169,8 +167,8 @@ def perform_security_check(request_data: dict, response_data: dict):
         context = Context(updated_messages)
         checker = SecurityChecker(model_path='gpt-4o')
         
+        # beta_result = checker.beta_check(context)
         beta_result = checker.alpha_check(context)
-        
         # Calculate elapsed time
         elapsed_time = time.time() - start_time
         print(f"⏱️ Security check took {elapsed_time:.3f} seconds")
@@ -194,9 +192,9 @@ def perform_security_check(request_data: dict, response_data: dict):
             json.dump(security_log, log_file, indent=4)
 
         return beta_result
+            
     except Exception as e:
         print(f"❌ Error performing security check: {e}")
-
 
 def log_response(flow: http.HTTPFlow):
     """Logs the response details to a file."""
@@ -243,6 +241,8 @@ def log_response(flow: http.HTTPFlow):
                 if check_proxy_enabled():
                     # Only perform security check if proxy filtering is enabled
                     security_passed = perform_security_check(request_data, response_data)
+
+                    security_passed = False
                     
                     if security_passed:
                         print("✅ Security check passed")
@@ -252,12 +252,41 @@ def log_response(flow: http.HTTPFlow):
                             "allowed"
                         )
                     else:
-                        flow.response = Response.make(
-                            403,
-                            b"Blocked by Copilot Proxy: Security check failed.",
-                            {"Content-Type": "text/plain"}
-                        )
-                        print("❌ Response blocked due to failed security check")
+                        # Modify the existing streaming response to block tool execution
+                        print("FLOW RESPONSE:")
+                        print(flow.response.content)
+
+                        # Create blocked message in SSE format
+                        blocked_message_chunk = {
+                            "id": "contextfort-security-block", 
+                            "object": "chat.completion.chunk",
+                            "created": int(datetime.now().timestamp()),
+                            "model": "claude-3.5-sonnet",
+                            "choices": [{
+                                "index": 0,
+                                "delta": {
+                                    "content": "\n\n🔒 Tool execution blocked by ContextFort security assessment. The requested action was determined to be potentially unsafe and will not be executed."
+                                }
+                            }]
+                        }
+                        
+                        finish_chunk = {
+                            "id": "contextfort-security-block",
+                            "object": "chat.completion.chunk", 
+                            "created": int(datetime.now().timestamp()),
+                            "model": "claude-3.5-sonnet",
+                            "choices": [{
+                                "index": 0,
+                                "delta": {},
+                                "finish_reason": "stop"
+                            }]
+                        }
+                        
+                        # Add blocked message chunks to existing response
+                        blocked_response = f"data: {json.dumps(blocked_message_chunk)}\n\ndata: {json.dumps(finish_chunk)}\n\ndata: [DONE]\n\n"
+                        flow.response.content += blocked_response.encode()
+                        
+                        print("❌ Response blocked due to failed security check - returning security message")
                         log_security_decision(
                             request_data['url'], 
                             tool_calls, 
@@ -285,7 +314,6 @@ def request(flow: http.HTTPFlow):
     """Intercept and log Copilot requests."""
     if "openai.com" in flow.request.pretty_host:
         return
-    
     if "githubcopilot.com" in flow.request.pretty_host or "individual.githubcopilot.com" in flow.request.pretty_host:
         if flow.request.path.startswith(INTERCEPTED_PATH):
             # Always log requests regardless of proxy state
@@ -295,13 +323,10 @@ def response(flow: http.HTTPFlow):
     """Intercept and log Copilot responses."""
     if "openai.com" in flow.request.pretty_host:
         return
-    
     if "githubcopilot.com" in flow.request.pretty_host or "individual.githubcopilot.com" in flow.request.pretty_host:
         if flow.request.path.startswith(INTERCEPTED_PATH):
             # Always log responses regardless of proxy state
             log_response(flow)
-    # elif "/chat/completions" in flow.request.pretty_url:
-    #     print(flow.request.pretty_url, "oh oj")
 
 def log_security_decision(request_url, tool_calls, decision, reason=None):
     """

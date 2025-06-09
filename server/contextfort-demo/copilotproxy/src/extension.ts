@@ -17,7 +17,6 @@ export async function activate(context: vscode.ExtensionContext) {
   const startupCommand = vscode.commands.registerCommand('contextfort.startup', () => {
     const panel = vscode.window.createWebviewPanel(
       'contextfortInstructions',
-      '🚀 ContextFort Startup',
       vscode.ViewColumn.One,
       { 
         enableScripts: true,
@@ -263,16 +262,18 @@ function getWebviewContent(proxyEnabled: boolean = true): string {
         <div class="setup-step">
           <span class="step-number">1</span>
           <div class="step-content">
-            <h4>Start the MCP Server</h4>
-            <p>Click the "Start" button in the settings.json file that's currently open. This will initialize the Model Context Protocol server.</p>
+            <h4>Configure GitHub Copilot</h4>
+            <p>Login to GitHub Copilot </p> 
+            <p>switch to agent mode and select Claude 3.5 Sonnet </p>
+            <p>Don't worry about security - your personal access tokens are encrypted by vscode.</p>
           </div>
         </div>
-        
+
         <div class="setup-step">
           <span class="step-number">2</span>
           <div class="step-content">
-            <h4>Configure GitHub Copilot</h4>
-            <p>Login to GitHub and switch Copilot to agent mode. Don't worry about security - only you have access to this VM's URL.</p>
+            <h4>Start the MCP Server</h4>
+            <p>Click the "Start" button in the settings.json file that's currently open. This will initialize the Model Context Protocol server.</p>
           </div>
         </div>
         
