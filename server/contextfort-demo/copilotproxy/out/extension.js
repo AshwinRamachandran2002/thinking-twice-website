@@ -47,7 +47,7 @@ async function activate(context) {
     vscode.commands.executeCommand('workbench.panel.chat.view.copilot.focus');
     // Register the startup command
     const startupCommand = vscode.commands.registerCommand('contextfort.startup', () => {
-        const panel = vscode.window.createWebviewPanel('contextfortInstructions', vscode.ViewColumn.One, {
+        const panel = vscode.window.createWebviewPanel('contextfortInstructions', 'ContextFort Instructions', vscode.ViewColumn.One, {
             enableScripts: true,
             retainContextWhenHidden: true
         });

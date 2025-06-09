@@ -17,6 +17,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const startupCommand = vscode.commands.registerCommand('contextfort.startup', () => {
     const panel = vscode.window.createWebviewPanel(
       'contextfortInstructions',
+      'ContextFort Instructions',
       vscode.ViewColumn.One,
       { 
         enableScripts: true,
