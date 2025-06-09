@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       port: 8080,
       proxy: {
         '/api': {
-          target: 'https://thinking-twice-server-sparkling-leaf-7661.fly.dev',
+          target: 'https://server-dawn-rain-126.fly.dev',
           changeOrigin: true,
         },
       },
