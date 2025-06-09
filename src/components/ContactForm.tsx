@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { motion } from 'framer-motion';
-import { Calendar } from "lucide-react";
+import { Calendar, Loader2 } from "lucide-react";
 
 const GOOGLE_CALENDAR_URL = 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2-LisBxMgnCRJ-LKKb-R3pFbF841mGLD05pQdMbsBW-4MJvb0Jy2ksFKVYziMHfKcECrF9yIHt';
 
 const ContactForm = () => {
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     company: '',
@@ -20,12 +21,38 @@ const ContactForm = () => {
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    // FormSubmit will handle the form processing but we need to prevent
+    // the default form redirect behavior to show our own success message
     e.preventDefault();
-    // Let the form submit happen first, then redirect
-    setTimeout(() => {
-      setSubmitted(true);
-      navigate('/success');
-    }, 1000);
+    
+    // Set loading state
+    setIsLoading(true);
+    
+    // Get the form element
+    const form = e.currentTarget;
+    
+    // Create FormData object
+    const formDataObj = new FormData(form);
+    
+    // Send the form data to FormSubmit endpoint
+    fetch("https://formsubmit.co/ashwin@contextfort.ai", {
+      method: "POST",
+      body: formDataObj,
+    })
+    .then(response => {
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        console.error("Form submission failed");
+        alert("Form submission failed. Please try again or contact us directly.");
+      }
+      setIsLoading(false);
+    })
+    .catch(error => {
+      console.error("Error submitting form:", error);
+      alert("Error submitting form. Please try again or contact us directly.");
+      setIsLoading(false);
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -114,8 +141,6 @@ const ContactForm = () => {
   return (
     <div className="bg-white p-8 rounded-lg shadow-lg">
       <form 
-        action="https://formsubmit.co/ashwinramachandrang@gmail.com" 
-        method="POST"
         className="space-y-6"
         onSubmit={handleSubmit}
       >
@@ -123,7 +148,8 @@ const ContactForm = () => {
         <input type="hidden" name="_subject" value="New Contact Form Submission - Context Fort" />
         <input type="hidden" name="_template" value="table" />
         <input type="hidden" name="_captcha" value="true" />
-        <input type="hidden" name="_next" value={window.location.origin + "/success"} />
+        <input type="hidden" name="_honey" value="" /> {/* Honeypot spam prevention */}
+        <input type="hidden" name="_autoresponse" value="Thank you for contacting us. We have received your submission and will get back to you soon." />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -197,13 +223,25 @@ const ContactForm = () => {
           />
         </div>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Button type="submit" className="bg-[#ffa62b] hover:bg-orange-600 text-white transform transition-all duration-300 hover:scale-105">
-            Submit Form
+          <Button 
+            type="submit" 
+            className="bg-[#ffa62b] hover:bg-orange-600 text-white transform transition-all duration-300 hover:scale-105"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Submitting...
+              </>
+            ) : (
+              "Submit Form"
+            )}
           </Button>
           <Button 
             type="button"
             onClick={openCalendar}
             className="flex items-center gap-2 rounded-lg bg-white/80 backdrop-blur-sm border border-[#ffa62b]/20 text-slate-600 shadow-md hover:bg-[#ffa62b]/10 transform transition-all duration-300 hover:scale-105"
+            disabled={isLoading}
           >
             <Calendar className="h-5 w-5" />
             Schedule Meeting
