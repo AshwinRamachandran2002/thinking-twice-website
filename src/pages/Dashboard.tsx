@@ -1127,7 +1127,7 @@ export default function Dashboard() {
                                   ></div>
                                 </div>
                               </div>
-                              
+{/*                               
                               {apiKey.payment_status !== 'paid' && (
                                 <Button 
                                   onClick={handleCheckout}
@@ -1138,7 +1138,7 @@ export default function Dashboard() {
                                   <CreditCard className="h-4 w-4" />
                                   {isCheckingOut ? "Processing..." : "Upgrade to Pro - $10/month"}
                                 </Button>
-                              )}
+                              )} */}
 
                               {apiKey.payment_status === 'paid' && (
                                 <div className="bg-emerald-50 border border-emerald-200 rounded-md p-2 text-xs text-emerald-700 mt-2">
@@ -1169,7 +1169,7 @@ export default function Dashboard() {
                       )}
                     </CardContent>
                   </Card>
-
+{/* 
                   <Card>
                     <CardHeader className="pb-2">
                       <CardTitle className="text-xl flex items-center gap-2">
@@ -1234,7 +1234,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </CardContent>
-                  </Card>
+                  </Card> */}
                 </div>
 
                 {/* Right column - Code example and docs */}
@@ -1256,10 +1256,10 @@ export default function Dashboard() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="python">Python</SelectItem>
-                              <SelectItem value="javascript">JavaScript</SelectItem>
+                              {/* <SelectItem value="javascript">JavaScript</SelectItem>
                               <SelectItem value="typescript">TypeScript</SelectItem>
                               <SelectItem value="java">Java</SelectItem>
-                              <SelectItem value="go">Go</SelectItem>
+                              <SelectItem value="go">Go</SelectItem> */}
                             </SelectContent>
                           </Select>
                           <Button 
@@ -1300,18 +1300,7 @@ api_key = "${apiKey?.api_key || 'your_api_key_here'}"
 
 # Example: Secure a tool call
 payload = {
-    "tool_calls": [
-        {
-            "name": "search_database",
-            "arguments": {
-                "query": "financial reports 2025",
-                "limit": 10
-            }
-        }
-    ],
-    "user_prompt": "Show me the latest financial reports",
-    "user_id": "user-123",
-    "context": "Financial data analysis session"
+  "messages": []
 }
 
 headers = {
@@ -1319,287 +1308,12 @@ headers = {
     "Content-Type": "application/json"
 }
 
-response = requests.post(url, json=payload, headers=headers)
-result = response.json()
-
-# Check if the tool call is allowed
-if result["allowed"]:
-    print("Tool call allowed")
-    # Execute your tool call here
-else:
-    print(f"Tool call blocked: {result['reason']}")` 
-: selectedLanguage === 'javascript' ? 
-`// Using fetch API
-const apiKey = "${apiKey?.api_key || 'your_api_key_here'}";
-const url = "https://api.contextfort.com/v1/secure";
-
-const payload = {
-  tool_calls: [
-    {
-      name: "search_database",
-      arguments: {
-        query: "financial reports 2025",
-        limit: 10
-      }
-    }
-  ],
-  user_prompt: "Show me the latest financial reports",
-  user_id: "user-123",
-  context: "Financial data analysis session"
-};
-
-async function secureToolCall() {
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': \`Bearer \${apiKey}\`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-    
-    const result = await response.json();
-    
-    if (result.allowed) {
-      console.log("Tool call allowed");
-      // Execute your tool call here
-    } else {
-      console.log(\`Tool call blocked: \${result.reason}\`);
-    }
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
-
-secureToolCall();`
-: selectedLanguage === 'typescript' ? 
-`// TypeScript implementation
-interface ToolCall {
-  name: string;
-  arguments: Record<string, any>;
-}
-
-interface SecurityPayload {
-  tool_calls: ToolCall[];
-  user_prompt: string;
-  user_id: string;
-  context: string;
-}
-
-interface SecurityResponse {
-  allowed: boolean;
-  reason?: string;
-}
-
-const apiKey = "${apiKey?.api_key || 'your_api_key_here'}";
-const url = "https://api.contextfort.com/v1/secure";
-
-const payload: SecurityPayload = {
-  tool_calls: [
-    {
-      name: "search_database",
-      arguments: {
-        query: "financial reports 2025",
-        limit: 10
-      }
-    }
-  ],
-  user_prompt: "Show me the latest financial reports",
-  user_id: "user-123",
-  context: "Financial data analysis session"
-};
-
-async function secureToolCall(): Promise<void> {
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': \`Bearer \${apiKey}\`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-    
-    const result: SecurityResponse = await response.json();
-    
-    if (result.allowed) {
-      console.log("Tool call allowed");
-      // Execute your tool call here
-    } else {
-      console.log(\`Tool call blocked: \${result.reason}\`);
-    }
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
-
-secureToolCall();`
-: selectedLanguage === 'java' ? 
-`import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import org.json.JSONObject;
-
-public class ContextFortApiExample {
-
-    public static void main(String[] args) {
-        String apiKey = "${apiKey?.api_key || 'your_api_key_here'}";
-        String url = "https://api.contextfort.com/v1/secure";
-        
-        // Create JSON payload
-        JSONObject arguments = new JSONObject();
-        arguments.put("query", "financial reports 2025");
-        arguments.put("limit", 10);
-        
-        JSONObject toolCall = new JSONObject();
-        toolCall.put("name", "search_database");
-        toolCall.put("arguments", arguments);
-        
-        JSONObject[] toolCalls = {toolCall};
-        
-        JSONObject payload = new JSONObject();
-        payload.put("tool_calls", toolCalls);
-        payload.put("user_prompt", "Show me the latest financial reports");
-        payload.put("user_id", "user-123");
-        payload.put("context", "Financial data analysis session");
-        
-        try {
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("Authorization", "Bearer " + apiKey)
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
-                .build();
-                
-            HttpResponse<String> response = client.send(request, 
-                HttpResponse.BodyHandlers.ofString());
-                
-            JSONObject result = new JSONObject(response.body());
-            
-            if (result.getBoolean("allowed")) {
-                System.out.println("Tool call allowed");
-                // Execute your tool call here
-            } else {
-                System.out.println("Tool call blocked: " + 
-                    result.getString("reason"));
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}`
-: selectedLanguage === 'go' ? 
-`package main
-
-import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-)
-
-type Arguments struct {
-	Query string \`json:"query"\`
-	Limit int    \`json:"limit"\`
-}
-
-type ToolCall struct {
-	Name      string    \`json:"name"\`
-	Arguments Arguments \`json:"arguments"\`
-}
-
-type SecurityPayload struct {
-	ToolCalls  []ToolCall \`json:"tool_calls"\`
-	UserPrompt string     \`json:"user_prompt"\`
-	UserID     string     \`json:"user_id"\`
-	Context    string     \`json:"context"\`
-}
-
-type SecurityResponse struct {
-	Allowed bool   \`json:"allowed"\`
-	Reason  string \`json:"reason,omitempty"\`
-}
-
-func main() {
-	apiKey := "${apiKey?.api_key || 'your_api_key_here'}"
-	url := "https://api.contextfort.com/v1/secure"
-
-	// Create the payload
-	payload := SecurityPayload{
-		ToolCalls: []ToolCall{
-			{
-				Name: "search_database",
-				Arguments: Arguments{
-					Query: "financial reports 2025",
-					Limit: 10,
-				},
-			},
-		},
-		UserPrompt: "Show me the latest financial reports",
-		UserID:     "user-123",
-		Context:    "Financial data analysis session",
-	}
-
-	// Convert payload to JSON
-	jsonData, err := json.Marshal(payload)
-	if err != nil {
-		fmt.Println("Error marshalling JSON:", err)
-		return
-	}
-
-	// Create request
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
-	if err != nil {
-		fmt.Println("Error creating request:", err)
-		return
-	}
-
-	// Set headers
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-	req.Header.Set("Content-Type", "application/json")
-
-	// Send request
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error sending request:", err)
-		return
-	}
-	defer resp.Body.Close()
-
-	// Read response
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Error reading response:", err)
-		return
-	}
-
-	// Parse response
-	var result SecurityResponse
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		fmt.Println("Error parsing response:", err)
-		return
-	}
-
-	// Check result
-	if result.Allowed {
-		fmt.Println("Tool call allowed")
-		// Execute your tool call here
-	} else {
-		fmt.Printf("Tool call blocked: %s\\n", result.Reason)
-	}
-}`
+response = requests.post(url, json=payload, headers=headers)`
 : "// Select a language from the dropdown"
 }</pre>
                       </div>
                     </CardContent>
-                    <CardFooter className="border-t pt-4 flex flex-col space-y-2">
+                    {/* <CardFooter className="border-t pt-4 flex flex-col space-y-2">
                       <div className="w-full flex justify-between items-center">
                         <span className="text-sm font-medium">Need help?</span>
                         <Button 
@@ -1615,9 +1329,9 @@ func main() {
                       <p className="text-xs text-muted-foreground">
                         Our API supports multiple languages including Python, JavaScript, Java, and more.
                       </p>
-                    </CardFooter>
+                    </CardFooter> */}
                   </Card>
-
+{/* 
                   <Card>
                     <CardHeader className="pb-2">
                       <CardTitle className="text-xl">Additional Resources</CardTitle>
@@ -1653,8 +1367,8 @@ func main() {
                         </Button>
                       </div>
                     </CardContent>
-                  </Card>
-
+                  </Card> */}
+{/* 
                   <Card>
                     <CardHeader className="pb-2">
                       <CardTitle className="text-xl">API Key Security</CardTitle>
@@ -1713,7 +1427,7 @@ func main() {
                         </div>
                       </div>
                     </CardContent>
-                  </Card>
+                  </Card> */}
                 </div>
               </div>
             </TabsContent>
