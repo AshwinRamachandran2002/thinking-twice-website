@@ -264,8 +264,8 @@ function getWebviewContent(proxyEnabled: boolean = true): string {
           <div class="step-content">
             <h4>Configure GitHub Copilot</h4>
             <p>Login to GitHub Copilot </p> 
-            <p>switch to agent mode and select Claude 3.5 Sonnet </p>
-            <p>Don't worry about security - your personal access tokens are encrypted by vscode.</p>
+            <p>Switch to agent mode and select Claude 3.5 Sonnet </p>
+            <p>Your personal access tokens are encrypted by vscode.</p>
           </div>
         </div>
 
@@ -282,6 +282,15 @@ function getWebviewContent(proxyEnabled: boolean = true): string {
           <div class="step-content">
             <h4>Try this Sample Prompt</h4>
             <pre><code>use github mcp tool to get latest issue summary from https://github.com/johnriley9123/sample/issues/1</code></pre>
+          </div>
+        </div>
+
+        <div class="setup-step">
+          <span class="step-number">3</span>
+          <div class="step-content">
+            <h4>Use the toggle to turn on/off the proxy</h4>
+            <h4>Check the dashboard to view security decisions</h4>
+            <h4>If the tool call is blocked, copilot will throw an error message</h4>
           </div>
         </div>
       </div>

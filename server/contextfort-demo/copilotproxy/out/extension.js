@@ -47,7 +47,7 @@ async function activate(context) {
     vscode.commands.executeCommand('workbench.panel.chat.view.copilot.focus');
     // Register the startup command
     const startupCommand = vscode.commands.registerCommand('contextfort.startup', () => {
-        const panel = vscode.window.createWebviewPanel('contextfortInstructions', '🚀 ContextFort Startup', vscode.ViewColumn.One, {
+        const panel = vscode.window.createWebviewPanel('contextfortInstructions', vscode.ViewColumn.One, {
             enableScripts: true,
             retainContextWhenHidden: true
         });
@@ -272,16 +272,18 @@ function getWebviewContent(proxyEnabled = true) {
         <div class="setup-step">
           <span class="step-number">1</span>
           <div class="step-content">
-            <h4>Start the MCP Server</h4>
-            <p>Click the "Start" button in the settings.json file that's currently open. This will initialize the Model Context Protocol server.</p>
+            <h4>Configure GitHub Copilot</h4>
+            <p>Login to GitHub Copilot </p> 
+            <p>Switch to agent mode and select Claude 3.5 Sonnet </p>
+            <p>Your personal access tokens are encrypted by vscode.</p>
           </div>
         </div>
-        
+
         <div class="setup-step">
           <span class="step-number">2</span>
           <div class="step-content">
-            <h4>Configure GitHub Copilot</h4>
-            <p>Login to GitHub and switch Copilot to agent mode. Don't worry about security - only you have access to this VM's URL.</p>
+            <h4>Start the MCP Server</h4>
+            <p>Click the "Start" button in the settings.json file that's currently open. This will initialize the Model Context Protocol server.</p>
           </div>
         </div>
         
@@ -290,6 +292,15 @@ function getWebviewContent(proxyEnabled = true) {
           <div class="step-content">
             <h4>Try this Sample Prompt</h4>
             <pre><code>use github mcp tool to get latest issue summary from https://github.com/johnriley9123/sample/issues/1</code></pre>
+          </div>
+        </div>
+
+        <div class="setup-step">
+          <span class="step-number">3</span>
+          <div class="step-content">
+            <h4>Use the toggle to turn on/off the proxy</h4>
+            <h4>Check the dashboard to view security decisions</h4>
+            <h4>If the tool call is blocked, copilot will throw an error message</h4>
           </div>
         </div>
       </div>
