@@ -46,6 +46,9 @@ export class FlyDeploymentService {
       console.log(`🔐 Setting password for: ${config.appName}`);
       await execAsync(`flyctl secrets set PASSWORD=${config.password} --app ${config.appName}`);
 
+      console.log(`🔐 Setting openAI for: ${config.appName}`);
+      await execAsync(`flyctl secrets set OPENAI_API_KEY=${process.env.OPENAI_API_KEY} --app ${config.appName}`);
+
       // Deploy the app
       console.log(`🚀 Deploying app: ${config.appName}`);
       await execAsync(`flyctl deploy --app ${config.appName}`);

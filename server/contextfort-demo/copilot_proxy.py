@@ -250,12 +250,33 @@ def log_response(flow: http.HTTPFlow):
                             "allowed"
                         )
                     else:
+                        # Create a proper chat response indicating tool execution was blocked
+                        blocked_message = {
+                            "id": "contextfort-security-block",
+                            "object": "chat.completion",
+                            "created": int(datetime.now().timestamp()),
+                            "model": "gpt-4",
+                            "choices": [{
+                                "index": 0,
+                                "message": {
+                                    "role": "assistant",
+                                    "content": "🔒 Tool execution blocked by ContextFort security assessment. The requested action was determined to be potentially unsafe and will not be executed."
+                                },
+                                "finish_reason": "stop"
+                            }],
+                            "usage": {
+                                "prompt_tokens": 0,
+                                "completion_tokens": 0,
+                                "total_tokens": 0
+                            }
+                        }
+                        
                         flow.response = Response.make(
-                            403,
-                            b"Blocked by Copilot Proxy: Security check failed.",
-                            {"Content-Type": "text/plain"}
+                            200,
+                            json.dumps(blocked_message).encode(),
+                            {"Content-Type": "application/json"}
                         )
-                        print("❌ Response blocked due to failed security check")
+                        print("❌ Response blocked due to failed security check - returning security message")
                         log_security_decision(
                             request_data['url'], 
                             tool_calls, 
