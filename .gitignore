@@ -26,4 +26,7 @@ dist-ssr
 .vite
 .env
 .vercel
-__pycache__
+__pycache__/
+*.py[cod]
+*$py.class
+server/contextfort-demo-local/~

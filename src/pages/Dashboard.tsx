@@ -657,7 +657,7 @@ export default function Dashboard() {
                               variant="outline" 
                               size="sm"
                               className="w-full text-xs"
-                              onClick={() => window.open("https://airtable.com/invite/l?inviteId=invMHlNERdRcTBnYd&inviteToken=4263087b3938b04347a4591dfa46fc6e7f2bb1a2b54f4d9123e69191a82b64c5&utm_medium=email&utm_source=product_team&utm_content=transactional-alerts", "_blank")}
+                              onClick={() => window.open("https://airtable.com/appkYxlSbnEHdr5xu/shrSN8FNBXjFcCakW", "_blank")}
                             >
                               <ExternalLink className="h-3 w-3 mr-1" />
                               View Airtable Database

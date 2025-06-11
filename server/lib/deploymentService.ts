@@ -76,7 +76,7 @@ export class FlyDeploymentService {
       }
       
       // Destroy the app
-      await execAsync(`flyctl apps destroy ${appName} --yes --t ${flyAccessToken}`);
+      await execAsync(`flyctl apps destroy ${appName} --yes -t ${flyAccessToken}`);
       
       console.log(`✅ Server destroyed successfully: ${appName}`);
     } catch (error) {
