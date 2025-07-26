@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+@layer base {
+  html,
+  body {
+    background-color: white;
+    color: black;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  /* Global container styles */
+  .container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Section padding */
+  section {
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+
+  @media (min-width: 1024px) {
+    section {
+      padding-top: 120px;
+      padding-bottom: 120px;
+    }
+  }
+
+  /* Custom utility for subtle shadow as per design system */
+  .shadow-subtle {
+    box-shadow: var(--shadow-subtle);
+  }
+
+  /* For card hover effects */
+  .card-hover-effect {
+    transition-duration: 300ms;
+    transition-timing-function: ease;
+  }
+
+  .card-hover-effect:hover {
+    transform: translateY(-4px);
+  }
+}
