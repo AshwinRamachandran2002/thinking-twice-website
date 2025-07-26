@@ -30,3 +30,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 server/contextfort-demo-local/~
+
+.next
+out

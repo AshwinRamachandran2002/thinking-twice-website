@@ -2,8 +2,7 @@
 const nextConfig = {
   output: 'export',
   trailingSlash: true,
-  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
-  basePath: '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? 'https://contextfort.ai' : '',
   images: {
     unoptimized: true
   },
