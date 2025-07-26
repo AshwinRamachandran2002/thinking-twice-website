@@ -2,12 +2,13 @@
 const nextConfig = {
   output: 'export',
   trailingSlash: true,
-  assetPrefix: process.env.NODE_ENV === 'production' ? 'https://contextfort.ai' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  basePath: '',
   images: {
     unoptimized: true
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   eslint: {
     ignoreDuringBuilds: true,
