@@ -6,11 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && cp CNAME out/ && cp .nojekyll out/",
-    "build:github": "next build && cp CNAME out/",
     "start": "next start",
-    "lint": "next lint",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d out"
+    "lint": "next lint"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.5",
