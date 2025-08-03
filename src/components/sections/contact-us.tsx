@@ -40,7 +40,7 @@ export function ContactUs() {
   };
 
   return (
-    <section className="relative z-50 py-16 px-2 sm:px-3 lg:px-4 bg-white">
+    <section className="relative z-50 py-16 px-2 sm:px-3 lg:px-4 bg-white" data-section="contact">
       <div className="container mx-auto max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Contact Information */}

@@ -3,15 +3,15 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 
 const YCombinatorBadge = () => (
-    <div className="inline-flex items-center justify-center gap-x-2.5 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-sm text-black backdrop-blur-sm transition-colors hover:border-white/50">
-        <span>Backed by</span>
+    <div className="inline-flex items-center justify-center gap-x-3 rounded-full border border-white/30 bg-white/10 px-6 py-2.5 text-base text-black backdrop-blur-sm transition-colors hover:border-white/50">
+        <span className="font-medium">Backed by</span>
         <span 
-            className="flex h-4 w-4 items-center justify-center rounded-sm" 
-            style={{ backgroundColor: '#FF6B35', padding: '1.5px', color: '#FFFFFF' }}
+            className="flex h-6 w-6 items-center justify-center rounded-sm" 
+            style={{ backgroundColor: '#FF6B35', padding: '2px', color: '#FFFFFF' }}
         >
-            <span className="text-xs font-bold" style={{ color: '#FFFFFF' }}>Y</span>
+            <span className="text-sm font-bold" style={{ color: '#FFFFFF' }}>Y</span>
         </span>
-        <span>Combinator</span>
+        <span className="font-medium">Combinator</span>
     </div>
 );
 
@@ -58,7 +58,7 @@ export default function HeroSection() {
                                     href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2-LisBxMgnCRJ-LKKb-R3pFbF841mGLD05pQdMbsBW-4MJvb0Jy2ksFKVYziMHfKcECrF9yIHt"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="rounded-full bg-transparent border-2 border-blue-600 text-blue-600 px-8 py-3.5 text-base font-semibold shadow-lg transition-all duration-200 hover:bg-blue-600 hover:text-white hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                                    className="rounded-full bg-blue-600 text-white px-8 py-3.5 text-base font-semibold shadow-lg transition-all duration-200 hover:bg-blue-700 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                                 >
                                     Book a demo
                                 </a>
@@ -90,7 +90,7 @@ export default function HeroSection() {
                 </div>
 
                 {/* Steps Section */}
-                <div className="py-16">
+                <div className="py-16" data-section="product">
                     <div className="w-full space-y-20">
                         
                         {/* Top Row - RFI Generation and Version Difference (Main Features) */}
@@ -103,7 +103,7 @@ export default function HeroSection() {
                                     </div>
                                     <div className="text-gray-700 text-lg lg:text-xl mb-4 font-medium">
                                         <p className="mb-2">Automatically identify issues</p>
-                                        <p>And generate RFIs respecting the spec sheet</p>
+                                        <p className="text-blue-600">And generate RFIs respecting the spec sheet</p>
                                     </div>
                                 </div>
                                 <div className="space-y-6">
@@ -171,7 +171,7 @@ export default function HeroSection() {
                                         <h3 className="text-3xl lg:text-4xl font-bold text-black tracking-tight">Version Control</h3>
                                     </div>
                                     <p className="text-gray-700 text-lg lg:text-xl mb-4 font-medium">Track changes across drawing revisions with precision</p>
-                                    <p className="text-blue-600 text-base lg:text-lg mb-4 font-medium">Eliminate manual Bluebeam eyeballing and ensure zero missed changes</p>
+                                    <p className="text-blue-600 text-lg lg:text-xl mb-4 font-medium">Eliminate manual Bluebeam eyeballing and ensure zero missed changes</p>
                                 </div>
                                 <div className="text-center">
                                     <div className="relative backdrop-blur-lg bg-gradient-to-br from-blue-50/80 to-blue-100/80 border border-blue-200/30 rounded-2xl p-6 mb-6 shadow-xl">
