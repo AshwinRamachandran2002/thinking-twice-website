@@ -3,15 +3,29 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 
 const YCombinatorBadge = () => (
-    <div className="inline-flex items-center justify-center gap-x-3 rounded-full border border-white/30 bg-white/10 px-6 py-2.5 text-base text-black backdrop-blur-sm transition-colors hover:border-white/50">
-        <span className="font-medium">Backed by</span>
-        <span 
-            className="flex h-6 w-6 items-center justify-center rounded-sm" 
-            style={{ backgroundColor: '#FF6B35', padding: '2px', color: '#FFFFFF' }}
+    <div className="flex items-center gap-4">
+        <div className="inline-flex items-center justify-center gap-x-3 rounded-full border border-white/30 bg-white/10 px-6 py-2.5 text-base text-black backdrop-blur-sm transition-colors hover:border-white/50">
+            <span className="font-medium">Backed by</span>
+            <span 
+                className="flex h-6 w-6 items-center justify-center rounded-sm" 
+                style={{ backgroundColor: '#FF6B35', padding: '2px', color: '#FFFFFF' }}
+            >
+                <span className="text-sm font-bold" style={{ color: '#FFFFFF' }}>Y</span>
+            </span>
+            <span className="font-medium">Combinator</span>
+        </div>
+        <a 
+            href="https://www.ycombinator.com/launches/O5c-contextfort-copilot-for-construction-drawing-review" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block hover:opacity-80 transition-opacity duration-200"
         >
-            <span className="text-sm font-bold" style={{ color: '#FFFFFF' }}>Y</span>
-        </span>
-        <span className="font-medium">Combinator</span>
+            <img 
+                alt="Launch YC: ContextFort - Copilot for Construction Drawing Review" 
+                src="https://www.ycombinator.com/launches/O5c-contextfort-copilot-for-construction-drawing-review/upvote_embed.svg"
+                className="h-10"
+            />
+        </a>
     </div>
 );
 
@@ -99,7 +113,7 @@ export default function HeroSection() {
                             <div className="relative backdrop-blur-md bg-white/5 border border-white/10 rounded-3xl p-6 shadow-xl">
                                 <div className="text-center mb-6">
                                     <div className="flex items-center justify-center gap-4 mb-4">
-                                        <h3 className="text-3xl lg:text-4xl font-bold text-black tracking-tight">Automated RFI Generation</h3>
+                                        <h3 className="text-3xl lg:text-4xl font-bold text-black tracking-tight">Automate RFI Generation</h3>
                                     </div>
                                     <div className="text-gray-700 text-lg lg:text-xl mb-4 font-medium">
                                         <p className="mb-2">Automatically identify issues</p>
@@ -168,7 +182,7 @@ export default function HeroSection() {
                             <div className="relative backdrop-blur-md bg-white/5 border border-white/10 rounded-3xl p-6 shadow-xl">
                                 <div className="text-center mb-6">
                                     <div className="flex items-center justify-center gap-4 mb-4">
-                                        <h3 className="text-3xl lg:text-4xl font-bold text-black tracking-tight">Version Control</h3>
+                                        <h3 className="text-3xl lg:text-4xl font-bold text-black tracking-tight">Compare Drawing Versions</h3>
                                     </div>
                                     <p className="text-gray-700 text-lg lg:text-xl mb-4 font-medium">Track changes across drawing revisions with precision</p>
                                     <p className="text-blue-600 text-lg lg:text-xl mb-4 font-medium">Eliminate manual Bluebeam eyeballing and ensure zero missed changes</p>
