@@ -13,8 +13,6 @@ export default function Home() {
       <Navigation />
       <main className="flex min-h-screen flex-col items-center justify-between">
         <HeroSection />
-        <AiAgentsFeature />
-        <GtmIntelligenceSection />
       </main>
       <ContactUs />
       <Footer />

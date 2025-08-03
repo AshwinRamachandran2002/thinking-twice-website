@@ -40,7 +40,7 @@ export function ContactUs() {
   };
 
   return (
-    <section className="py-16 px-2 sm:px-3 lg:px-4 bg-white">
+    <section className="relative z-50 py-16 px-2 sm:px-3 lg:px-4 bg-white">
       <div className="container mx-auto max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Contact Information */}
@@ -52,13 +52,13 @@ export function ContactUs() {
               
               <div className="space-y-4">
                 <div className="text-lg text-gray-700">
-                  +1 415 714 7580
+                  (858) 373-8362
                 </div>
                 <div className="text-lg text-gray-700">
-                  contact@useflywheel.ai
+                  ashwin@contextfort.ai
                 </div>
                 <div className="text-lg text-gray-700">
-                  San Francisco, California
+                  3rd Street, San Francisco, California
                 </div>
               </div>
             </div>

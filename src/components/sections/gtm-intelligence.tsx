@@ -2,38 +2,31 @@ import Image from 'next/image';
 
 const GtmIntelligenceSection = () => {
   return (
-    <section className="bg-dark-background relative overflow-hidden">
-      <div className="container py-24 sm:py-32 lg:py-40">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-20 items-center">
-          
-          {/* Text Content */}
-          <div className="relative z-10 lg:order-1 order-2 text-center lg:text-left">
-            <div className="inline-block mb-4">
-              <p className="text-base text-light-gray tracking-[0.15em] uppercase">
-                AI Insights
-              </p>
-            </div>
-            <h2 className="text-[40px] sm:text-[48px] font-semibold text-black leading-[1.2] tracking-tight mb-6 max-w-md mx-auto lg:mx-0">
-              Full visibility into every drawing and project
-            </h2>
-            <p className="text-lg text-light-gray max-w-[480px] mx-auto lg:mx-0">
-              Instantly access all key details and conflicts within your architectural documents—no more missed issues or overlooked codes. Let AI keep you a step ahead during construction reviews.
-            </p>
-          </div>
-
-          {/* Image */}
-          <div className="relative flex justify-center lg:justify-end items-center lg:order-2 order-1">
-            <Image
-              src="/blueprint.jpg"
-              alt="AI blueprint review for construction"
-              width={1200}
-              height={700}
-              className="relative z-10 w-full max-w-[700px] rounded-lg shadow-lg"
-            />
-          </div>
+    <div className="flex flex-col">
+      {/* Text content */}
+      <div className="text-center mb-8">
+        <h3 className="text-2xl lg:text-3xl font-semibold text-black leading-tight mb-4">
+          Trade-Specific Change Analysis
+        </h3>
+        <p className="text-base text-gray-600 leading-relaxed">
+          Know exactly what changed between two different versions instead of eyeballing it in Bluebeam. We analyze revisions and deliver trade-specific changes, highlighting modifications that impact electrical, plumbing, HVAC, and structural work.
+        </p>
+      </div>
+      
+      {/* Animated GIF content */}
+      <div className="flex justify-center">
+        <div className="w-full max-w-md">
+          <Image
+            src="/animated_screenshots.gif"
+            alt="Trade-specific change analysis demo"
+            width={400}
+            height={250}
+            className="w-full h-auto rounded-lg shadow-lg"
+            unoptimized
+          />
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 
